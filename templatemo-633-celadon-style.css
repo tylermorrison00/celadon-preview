@@ -2136,7 +2136,7 @@ body.dark-mode .bar {
     background-image: none !important;
     -webkit-backdrop-filter: blur(18px) !important;
     backdrop-filter: blur(18px) !important;
-    border: 1px solid rgba(255,255,255,.08) !important;
+    border: 1px solid transparent !important;
     box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
 }
 body.dark-mode .bar a { color: #b0b6c2 !important; }
@@ -2253,7 +2253,7 @@ body.dark-mode .core {
     background-image: none !important;
     -webkit-backdrop-filter: blur(16px) !important;
     backdrop-filter: blur(16px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid transparent !important;
 }
 /* Subtle green glow in background only */
 body.dark-mode {
