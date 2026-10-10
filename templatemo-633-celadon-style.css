@@ -2134,8 +2134,8 @@ body.lock .up {
 body.dark-mode .bar {
     background: rgba(22, 26, 34, 0.6) !important;
     background-image: none !important;
-    -webkit-backdrop-filter: blur(18px) !important;
-    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(12px) !important;
     border: 1px solid transparent !important;
     box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
 }
@@ -2255,8 +2255,8 @@ body.dark-mode .field,
 body.dark-mode .face {
     background: rgba(22, 26, 34, 0.6) !important;
     background-image: none !important;
-    -webkit-backdrop-filter: blur(18px) !important;
-    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(12px) !important;
     border: 1px solid transparent !important;
     box-shadow: 0 8px 24px rgba(0,0,0,.4) !important;
 }
@@ -2265,8 +2265,8 @@ body.dark-mode .plan,
 body.dark-mode .plan.hot {
     background: rgba(22, 26, 34, 0.45) !important;
     background-image: none !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    backdrop-filter: blur(12px) !important;
 }
 
 /* All background glows mint green in dark mode - bigger + more */
@@ -2300,4 +2300,3 @@ body.dark-mode .pad {
 }
 
 
-/* Deploy trigger 2026-10-10-2115 */
