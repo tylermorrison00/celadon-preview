@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Account - Creator's Arena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="templatemo-633-celadon-style.css">
+    <style>
+        .signup-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 120px 20px 60px; }
+        .signup-wrap .close-plate { max-width: 720px; width: 100%; }
+    </style>
+</head>
+<body>
+    <header class="top" id="top">
+        <div class="shell bar">
+            <a class="brand" href="index.html">Creator's Arena</a>
+            <nav class="nav">
+                <a href="index.html#features">Features</a>
+                <a href="index.html#how">How it works</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="index.html#faq">FAQ</a>
+            </nav>
+            <a class="btn solid" href="index.html">Back home</a>
+        </div>
+    </header>
+    <div class="signup-wrap">
+        <div class="close-plate">
+            <span class="eyebrow">Get started</span>
+            <h2>Point it at a week of your own feedback.</h2>
+            <p class="lede">Connect one channel and see what comes back. If the themes are wrong, you will know inside an hour.</p>
+            <div class="form">
+                <input class="field" type="email" placeholder="you@company.com" aria-label="Work email">
+                <button class="btn solid" type="button">Create account</button>
+            </div>
+            <p class="note">Free for 14 days. Cancel from the settings page in two clicks.</p>
+        </div>
+    </div>
+    <script>
+        if (localStorage.getItem('ca-theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+</body>
+</html>
