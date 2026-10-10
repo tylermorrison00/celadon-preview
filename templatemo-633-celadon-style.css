@@ -2195,7 +2195,6 @@ body.dark-mode {
     color: #f0f2f5;
 }
 /* Force ALL cards, boxes, nav to dark - no white */
-body.dark-mode .nav,
 body.dark-mode .quote,
 body.dark-mode .plan,
 body.dark-mode .stat,
