@@ -2099,3 +2099,32 @@ body.lock .up {
     .pill { font-size: 1rem; padding: 10px 24px 10px 12px; gap: 12px; }
     .pill b { font-size: .85rem; padding: 6px 16px; }
 }
+
+/* Tag pills (filter tags) */
+.tag-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-size: .85rem;
+    font-weight: 500;
+    color: var(--ink-2);
+    background: var(--gloss);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--lift), var(--lip);
+    transition: transform .15s;
+}
+.tag-pill:hover { transform: translateY(-2px); }
+.tag-pill .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+.tag-pill.active {
+    background: var(--gloss-jade);
+    color: #0E3A2E;
+    font-weight: 600;
+}
