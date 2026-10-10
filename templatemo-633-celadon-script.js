@@ -808,10 +808,11 @@
         if (e.target.closest("#create")) Sound.play("chime");
         else if (e.target.closest(".btn")) Sound.play("press");
         else if (e.target.closest(".chip")) Sound.play("tick");
+        else if (e.target.closest(".tag-pill")) Sound.play("tick");
     }, true);
     var lastHover = 0,
         lastEl = null;
-    var hoverSel = ".nav a, .drawer a, .chip, .btn, .arw, .stave:not(.open), .q, .switch, .footbar a, .up, .sbtn, .brand";
+    var hoverSel = ".nav a, .drawer a, .chip, .tag-pill, .btn, .arw, .stave:not(.open), .q, .switch, .footbar a, .up, .sbtn, .brand";
     window.addEventListener("pointerover", function(e) {
         if (e.pointerType && e.pointerType !== "mouse") return;
         var el = e.target.closest(hoverSel);
