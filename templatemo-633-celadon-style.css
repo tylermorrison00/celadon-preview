@@ -2152,29 +2152,25 @@ body.lock .up {
     color: #0E3A2E;
 }
 
-/* Dark mode */
+/* Dark mode - full variable overrides */
 body.dark-mode {
+    --canvas: #141926;
+    --plate: #1c2333;
+    --plate-2: #202839;
+    --sunk: #10141f;
     --ink: #e8ecf4;
-    --ink-2: #a8b0c0;
-    --ink-3: #7a8296;
-    background: #161b28;
+    --ink-2: #a8b0c2;
+    --line: rgba(255, 255, 255, .08);
+    --gloss: linear-gradient(180deg, #232b40 0%, #1e2536 46%, #1a2130 46.01%, #161c2a 100%);
+    --gloss-plate: linear-gradient(180deg, #202839 0%, #1c2333 46%, #19202f 46.01%, #151b29 100%);
+    --gloss-jade: linear-gradient(180deg, #8adcbD 0%, #7CCFB0 46%, #6abf9c 46.01%, #5aaf8c 100%);
+    --clay: 0 22px 38px -20px rgba(0, 0, 0, .6), 0 8px 16px -10px rgba(0, 0, 0, .4), inset 2px 3px 4px 0 rgba(255, 255, 255, .08), inset -3px -5px 9px 0 rgba(0, 0, 0, .3);
+    --clay-sm: 0 12px 22px -13px rgba(0, 0, 0, .5), inset 2px 2px 3px 0 rgba(255, 255, 255, .06), inset -2px -3px 6px 0 rgba(0, 0, 0, .2);
+    --well: inset 4px 5px 11px -3px rgba(0, 0, 0, .4), inset -2px -3px 6px 0 rgba(255, 255, 255, .05);
+    --lift: 0 18px 32px -18px rgba(0,0,0,.5);
+    --lip: inset 1px 2px 3px rgba(255,255,255,.08);
+    background: #141926;
     color: #e8ecf4;
 }
-body.dark-mode .nav {
-    background: rgba(22,27,40,0.9);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-}
-body.dark-mode .shell,
-body.dark-mode .card,
-body.dark-mode .quote,
-body.dark-mode .plan {
-    background: rgba(255,255,255,0.04);
-}
-body.dark-mode .field {
-    background: rgba(255,255,255,0.08);
-    color: #e8ecf4;
-    border-color: rgba(255,255,255,0.1);
-}
-body.dark-mode .field::placeholder {
-    color: #7a8296;
-}
+body.dark-mode .field::placeholder { color: #6a7285; }
+body.dark-mode img { opacity: .95; }
