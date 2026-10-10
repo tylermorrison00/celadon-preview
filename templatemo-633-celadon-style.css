@@ -2093,3 +2093,9 @@ body.lock .up {
         transform: none
     }
 }
+
+/* Larger pill on desktop */
+@media (min-width: 1024px) {
+    .pill { font-size: 1rem; padding: 10px 24px 10px 12px; gap: 12px; }
+    .pill b { font-size: .85rem; padding: 6px 16px; }
+}
