@@ -2254,6 +2254,7 @@ body.dark-mode .core {
     -webkit-backdrop-filter: blur(16px) !important;
     backdrop-filter: blur(16px) !important;
     border: 1px solid transparent !important;
+    box-shadow: none !important;
 }
 /* Subtle green glow in background only */
 body.dark-mode {
