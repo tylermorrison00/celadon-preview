@@ -2128,3 +2128,26 @@ body.lock .up {
     color: #0E3A2E;
     font-weight: 600;
 }
+
+/* Pagination buttons */
+.page-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--ink-2);
+    background: var(--gloss);
+    cursor: pointer;
+    box-shadow: var(--lift), var(--lip);
+    transition: transform .15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.page-btn:hover { transform: translateY(-2px); }
+.page-btn.active {
+    background: var(--gloss-jade);
+    color: #0E3A2E;
+}
