@@ -935,3 +935,46 @@
         })(qs[q]);
     }
 })();
+
+/* ---------- theme toggle (dark/light) ---------- */
+(function() {
+    var toggle = document.getElementById('themeToggle');
+    if (!toggle) return;
+    toggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        var isDark = document.body.classList.contains('dark-mode');
+        try { localStorage.setItem('ca-theme', isDark ? 'dark' : 'light'); } catch(e) {}
+    });
+    try {
+        if (localStorage.getItem('ca-theme') === 'dark') document.body.classList.add('dark-mode');
+    } catch(e) {}
+})();
+
+/* ---------- color theme switcher ---------- */
+(function() {
+    var btn = document.getElementById('colorTheme');
+    if (!btn) return;
+    var themes = [
+        { name: 'jade', jade: '#7CCFB0', light: '#9BDCC3', dark: '#5FBB9C' },
+        { name: 'sky', jade: '#7FB8E8', light: '#A8D0F0', dark: '#4A90C4' },
+        { name: 'coral', jade: '#F08A7B', light: '#F5B5A8', dark: '#D45A4A' },
+        { name: 'gold', jade: '#E8C87B', light: '#F0DCA8', dark: '#C4A04A' }
+    ];
+    var idx = 0;
+    btn.addEventListener('click', function() {
+        idx = (idx + 1) % themes.length;
+        var t = themes[idx];
+        var root = document.documentElement.style;
+        root.setProperty('--jade', t.jade);
+        try { localStorage.setItem('ca-color', t.name); } catch(e) {}
+    });
+    try {
+        var saved = localStorage.getItem('ca-color');
+        var found = themes.findIndex(function(t){ return t.name === saved; });
+        if (found > 0) {
+            idx = found;
+            var t = themes[idx];
+            document.documentElement.style.setProperty('--jade', t.jade);
+        }
+    } catch(e) {}
+})();

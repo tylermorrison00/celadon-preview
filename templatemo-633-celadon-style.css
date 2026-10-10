@@ -2151,3 +2151,16 @@ body.lock .up {
     background: var(--gloss-jade);
     color: #0E3A2E;
 }
+
+/* Dark mode */
+body.dark-mode {
+    --bg: #1a1f2e;
+    --ink: #e8ecf4;
+    --ink-2: #b8c0d0;
+    --gloss: rgba(255,255,255,0.06);
+    background: #1a1f2e;
+    color: #e8ecf4;
+}
+body.dark-mode .nav {
+    background: rgba(26,31,46,0.85);
+}
