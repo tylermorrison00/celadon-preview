@@ -2256,13 +2256,14 @@ body.dark-mode .core {
     border: 1px solid rgba(255, 255, 255, 0.06) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 }
-/* Uniform dark background - no colors */
+/* Uniform dark background - subtle green only, no red/white */
 body.dark-mode,
 body.dark-mode .wrap,
 body.dark-mode .shell,
 body.dark-mode section,
 body.dark-mode .pad {
     background: #0a0c10 !important;
-    background-image: none !important;
+    background-image:
+        radial-gradient(ellipse 50% 30% at 50% 0%, rgba(124,207,176,.03), transparent) !important;
 }
 
