@@ -2152,36 +2152,53 @@ body.lock .up {
     color: #0E3A2E;
 }
 
-/* Dark mode - deep clean dark like reference */
+/* Dark mode - fully dark, no white */
 body.dark-mode {
-    --canvas: #16181d;
-    --plate: #1e2128;
-    --plate-2: #23262e;
-    --sunk: #101216;
+    --canvas: #12151c;
+    --plate: #1a1e26;
+    --plate-2: #1e222b;
+    --sunk: #0d0f14;
     --ink: #f0f2f5;
     --ink-2: #b0b6c2;
     --ink-3: #7a8191;
-    --line: rgba(255, 255, 255, .07);
-    --gloss: linear-gradient(180deg, #242830 0%, #1e2128 100%);
-    --gloss-plate: linear-gradient(180deg, #23262e 0%, #1e2128 100%);
+    --line: rgba(255,255,255,.06);
+    --gloss: linear-gradient(180deg, #1e222b 0%, #1a1e26 100%);
+    --gloss-plate: linear-gradient(180deg, #1e222b 0%, #1a1e26 100%);
     --gloss-jade: linear-gradient(180deg, #8adbbd 0%, #7CCFB0 50%, #6abf9c 100%);
-    --clay: 0 20px 36px -18px rgba(0,0,0,.7), inset 1px 2px 3px rgba(255,255,255,.06);
-    --clay-sm: 0 10px 20px -12px rgba(0,0,0,.6), inset 1px 1px 2px rgba(255,255,255,.05);
+    --clay: 0 20px 36px -18px rgba(0,0,0,.7), inset 1px 2px 3px rgba(255,255,255,.05);
+    --clay-sm: 0 10px 20px -12px rgba(0,0,0,.6), inset 1px 1px 2px rgba(255,255,255,.04);
     --well: inset 3px 4px 10px rgba(0,0,0,.4);
     --lift: 0 16px 30px -16px rgba(0,0,0,.6);
-    --lip: inset 1px 2px 2px rgba(255,255,255,.06);
-    background: #16181d;
+    --lip: inset 1px 2px 2px rgba(255,255,255,.05);
+    background: #12151c;
+    background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124,207,176,.08), transparent);
     color: #f0f2f5;
+}
+/* Force ALL cards, boxes, nav to dark - no white */
+body.dark-mode .nav,
+body.dark-mode .quote,
+body.dark-mode .plan,
+body.dark-mode .stat,
+body.dark-mode .statplate,
+body.dark-mode .card,
+body.dark-mode .tag-pill,
+body.dark-mode .page-btn,
+body.dark-mode .pill,
+body.dark-mode .field,
+body.dark-mode .chip,
+body.dark-mode .face {
+    background: #1a1e26 !important;
+    background-image: none !important;
+    color: #f0f2f5 !important;
+    border-color: rgba(255,255,255,.06) !important;
 }
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3,
-body.dark-mode .h2 { color: #f0f2f5; }
-body.dark-mode p, body.dark-mode span { color: #b0b6c2; }
-body.dark-mode .nav { background: rgba(22,24,29,.92); }
-body.dark-mode .field {
-    background: #1e2128;
-    color: #f0f2f5;
-    border: 1px solid rgba(255,255,255,.08);
+body.dark-mode .h2, body.dark-mode b { color: #f0f2f5 !important; }
+body.dark-mode p, body.dark-mode span:not(.face) { color: #b0b6c2 !important; }
+body.dark-mode .field::placeholder { color: #5a6172 !important; }
+body.dark-mode .quote blockquote { color: #d0d5de !important; }
+/* Keep jade accents */
+body.dark-mode .btn.solid {
+    background: linear-gradient(180deg, #8adbbd, #7CCFB0) !important;
+    color: #0d281e !important;
 }
-body.dark-mode .field::placeholder { color: #5a6172; }
-body.dark-mode .quote blockquote { color: #d0d5de; }
-body.dark-mode .stat b { color: #f0f2f5; }
