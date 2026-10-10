@@ -2243,7 +2243,10 @@ body.dark-mode .tag-pill,
 body.dark-mode .page-btn,
 body.dark-mode .pill,
 body.dark-mode .card-mini,
-body.dark-mode .float-card {
+body.dark-mode .float-card,
+body.dark-mode .close-plate,
+body.dark-mode .plan.featured,
+body.dark-mode .q {
     background: rgba(26, 30, 38, 0.55) !important;
     background-image: none !important;
     -webkit-backdrop-filter: blur(16px) !important;
