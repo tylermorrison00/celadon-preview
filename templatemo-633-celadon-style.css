@@ -2154,13 +2154,27 @@ body.lock .up {
 
 /* Dark mode */
 body.dark-mode {
-    --bg: #1a1f2e;
     --ink: #e8ecf4;
-    --ink-2: #b8c0d0;
-    --gloss: rgba(255,255,255,0.06);
-    background: #1a1f2e;
+    --ink-2: #a8b0c0;
+    --ink-3: #7a8296;
+    background: #161b28;
     color: #e8ecf4;
 }
 body.dark-mode .nav {
-    background: rgba(26,31,46,0.85);
+    background: rgba(22,27,40,0.9);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+body.dark-mode .shell,
+body.dark-mode .card,
+body.dark-mode .quote,
+body.dark-mode .plan {
+    background: rgba(255,255,255,0.04);
+}
+body.dark-mode .field {
+    background: rgba(255,255,255,0.08);
+    color: #e8ecf4;
+    border-color: rgba(255,255,255,0.1);
+}
+body.dark-mode .field::placeholder {
+    color: #7a8296;
 }
