@@ -2256,17 +2256,21 @@ body.dark-mode .core {
     border: 1px solid rgba(255, 255, 255, 0.06) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
 }
-/* Uniform dark background with mint green blurred glows */
-body.dark-mode,
+/* Uniform dark background with mint green blurred glows - fixed, no flicker */
+body.dark-mode {
+    background: #0a0c10 !important;
+    background-image:
+        radial-gradient(ellipse 45% 30% at 12% 8%, rgba(124,207,176,.14), transparent),
+        radial-gradient(ellipse 40% 28% at 88% 32%, rgba(124,207,176,.11), transparent),
+        radial-gradient(ellipse 45% 32% at 25% 68%, rgba(124,207,176,.09), transparent),
+        radial-gradient(ellipse 40% 28% at 78% 88%, rgba(124,207,176,.12), transparent) !important;
+    background-attachment: fixed !important;
+}
 body.dark-mode .wrap,
 body.dark-mode .shell,
 body.dark-mode section,
 body.dark-mode .pad {
-    background: #0a0c10 !important;
-    background-image:
-        radial-gradient(ellipse 40% 25% at 15% 10%, rgba(124,207,176,.08), transparent),
-        radial-gradient(ellipse 35% 25% at 85% 35%, rgba(124,207,176,.06), transparent),
-        radial-gradient(ellipse 40% 30% at 30% 70%, rgba(124,207,176,.05), transparent),
-        radial-gradient(ellipse 35% 25% at 75% 90%, rgba(124,207,176,.07), transparent) !important;
+    background: transparent !important;
+    background-image: none !important;
 }
 
