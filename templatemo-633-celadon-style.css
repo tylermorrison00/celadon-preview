@@ -2139,6 +2139,13 @@ body.dark-mode .bar {
 body.dark-mode .bar a { color: #b0b6c2 !important; }
 body.dark-mode .brand { color: #f0f2f5 !important; }
 
+
+/* Nav links match bar */
+body.dark-mode .nav {
+    background: transparent !important;
+    background-image: none !important;
+}
+
 /* Pagination buttons */
 .page-btn {
     width: 44px;
