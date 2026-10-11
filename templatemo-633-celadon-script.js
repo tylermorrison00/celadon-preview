@@ -940,6 +940,7 @@
 (function() {
     var toggle = document.getElementById('themeToggle');
     if (!toggle) return;
+    return; /* TEMP (Oct 11): dark-theme button disabled — light theme only for now. Dark-mode code below kept intact for later. */
     toggle.addEventListener('click', function() {
         document.body.classList.toggle('dark-mode');
         var isDark = document.body.classList.contains('dark-mode');
