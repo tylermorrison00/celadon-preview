@@ -104,7 +104,7 @@
                         try { document.execCommand('copy'); btn.textContent = 'Copied!'; } catch (e2) { btn.textContent = 'Copy failed'; }
                         document.body.removeChild(ta);
                     }
-                    setTimeoutfunction press() { try { var AC = window.AudioContext || window.webkitAudioContext; var ctx = new AC(); var t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(390, t + 0.13); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.36, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13); o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.2); } catch (e) {} } (function() { btn.textContent = 'Copy prompt'; }, 1500);
+                    setTimeout(function() { btn.textContent = 'Copy prompt'; }, 1500);
                 });
                 try {
                     var s = await sb.auth.getSession();
