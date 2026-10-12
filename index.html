@@ -375,7 +375,11 @@
         <script src="templatemo-633-celadon-script.js"></script>
 
     <style>
-        #promptCards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;max-width:1200px;margin:64px auto 0;padding:0 12px}@media(max-width:768px){#promptCards{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;justify-items:center}}#promptCards .quote{display:flex; flex-direction: column; }
+        #promptCards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;max-width:1200px;margin:64px auto 0;padding:0 12px}
+        /* mobile in desktop-mode: center all sections */
+        body.mobdesk{overflow-x:hidden}
+        body.mobdesk .shell{width:min(var(--shell),calc(100% - 44px))!important;margin-left:auto!important;margin-right:auto!important}
+        body.mobdesk section{overflow-x:hidden}@media(max-width:768px){#promptCards{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;justify-items:center}}#promptCards .quote{display:flex; flex-direction: column; }
         #promptCards .pimg { width: calc(100% + 56px); max-width: none; margin: -28px -28px 14px; border-radius: 28px 28px 18px 18px; aspect-ratio: 16/9; object-fit: cover; background: #eef2f7; }
         #promptCards .ptitle { font-size: 1.05rem; font-weight: 600; margin: 6px 0 8px; }
         #promptCards .ptags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -436,6 +440,8 @@
         var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmeXVlYmtka3hoZHJsZHVxeG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTI1NDQsImV4cCI6MjEwNjc2ODU0NH0.RY-VU33zwySGKmPH34pHs72HaxRt9yi4lAhHO9xn7_4';
         var API = 'https://vfyuebkdkxhdrlduqxng.supabase.co';
         var sb = null;
+        /* detect mobile browser in desktop-site mode */
+        try { if (window.innerWidth > (window.screen.width || 0) * 1.3) document.body.classList.add('mobdesk'); } catch (e) {}
         var grid = document.getElementById('promptCards');
         if (!grid) return;
         function getSession() {
