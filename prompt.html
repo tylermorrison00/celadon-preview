@@ -85,10 +85,10 @@
                 var p = res.data;
                 var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg">' + esc(titleCase(t)) + '</span>'; }).join('');
                 var img = p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="">' : '';
-                var pro = p.is_pro ? '<span class="probadge">PRO</span>' : '';
+                
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(p.title || 'Untitled') + '</h1>' +
-                    '<div class="pmeta"><span class="catbadge">' + esc(p.category || 'prompt') + '</span>' + pro + '</div>' +
+                    
                     img +
                     (tags ? '<div class="ptags-lg">' + tags + '</div>' : '') +
                     '<div class="copybar"><button class="btn solid" id="copyBtn" style="font-size:1rem;padding:14px 34px;">Copy prompt</button></div>' +
