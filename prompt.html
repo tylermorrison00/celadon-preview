@@ -13,12 +13,13 @@
     .pmeta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; }
     .pimg-lg { width: 100%; border-radius: 22px; object-fit: cover; max-height: 480px; box-shadow: 0 12px 32px rgba(14,58,46,.12); background: #eef2f7; }
     .ptags-lg { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
-    body::before, body.dark-mode::before { display: none !important; } body.dark-mode { background-image: none !important; }
+    body::before, body.dark-mode::before { display: none !important; }
+    body.dark-mode { background-image: none !important; }
     .ptag-lg { display: inline-flex; align-items: center; gap: 6px; font-size: .68rem; padding: 5px 10px; border-radius: 99px; background: var(--gloss); color: var(--ink-2); font-weight: 500; border: none; box-shadow: var(--lift), var(--lip); }
     .copybar { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
     .pbox { background: #fff; border: 1px solid #e3ece8; border-radius: 18px; padding: 22px; font-size: .95rem; line-height: 1.75; color: #22312c; white-space: pre-wrap; word-break: break-word; box-shadow: 0 4px 18px rgba(14,58,46,.06); }
     .pempty { text-align: center; padding: 60px 20px; color: #6b7a74; font-size: 1rem; }
-    .probadge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 700; letter-spacing: .06em; background: #7DE3A8; color: #0E3A2E; padding: 5px 10px; border-radius: 999px; border: none; box-shadow: var(--lift-jade), var(--lip-jade); }
+    .probadge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 700; letter-spacing: .06em; background: #7DE3A8; color: #0E3A2E; padding: 5px 10px; border-radius: 999px; border: none; box-shadow: var(--lift), var(--lip); }
     .catbadge { display: inline-flex; align-items: center; font-size: .68rem; font-weight: 600; background: var(--gloss); color: var(--ink-2); padding: 5px 10px; border-radius: 999px; border: none; box-shadow: var(--lift), var(--lip); }
 </style>
 </head>
@@ -62,11 +63,44 @@
     <script src="templatemo-633-celadon-script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-    function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); } function press() { try { var AC = window.AudioContext || window.webkitAudioContext; var ctx = new AC(); var t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(520, t); o.frequency.exponentialRampToValueAtTime(390, t + 0.13); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.36, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13); o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.2); } catch (e) {} } (function() {
+    /* Prompt detail page — loads one prompt by ?id= */
+    function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
+    function tick() { try { if (window.matchMedia('(hover: hover)').matches) press(); } catch (e) {} }
+    function press() {
+        try {
+            var AC = window.AudioContext || window.webkitAudioContext;
+            var ctx = new AC();
+            var t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(520, t);
+            o.frequency.exponentialRampToValueAtTime(390, t + 0.13);
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(0.36, t + 0.012);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+            o.connect(g); g.connect(ctx.destination);
+            o.start(t); o.stop(t + 0.2);
+        } catch (e) {}
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.btn').forEach(function(b) { b.addEventListener('mouseenter', tick); });
+    });
+    (function() {
         var box = document.getElementById('promptDetail');
-        var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8']; function tagColor(t) { var h = 0; var s = String(t).toLowerCase(); for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997; return tagColors[h % tagColors.length]; } function titleCase(s) { return String(s == null ? '' : s).replace(/\w\S*/g, function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }); } function esc(s) {
+        function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+        var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8'];
+        function tagColor(t) {
+            var h = 0;
+            var s = String(t).toLowerCase();
+            for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997;
+            return tagColors[h % tagColors.length];
+        }
+        function titleCase(s) {
+            return String(s == null ? '' : s).replace(/\w\S*/g, function(w) {
+                return w.charAt(0).toUpperCase() + w.slice(1);
             });
         }
         async function init() {
@@ -86,13 +120,12 @@
                 var p = res.data;
                 var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:50%;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
                 var img = p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="">' : '';
-                
                 box.innerHTML =
-                    '<h1 class="ptitle-lg">' + esc(normTitle(p.title) || 'Untitled') + '</h1>' +
-                    
+                    '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
+
                     img +
                     (tags ? '<div class="ptags-lg">' + tags + '</div>' : '') +
-                    '<div class="copybar"><button class="btn solid" id="copyBtn" onclick="press()" style="font-size:1rem;padding:14px 34px;">Copy prompt</button></div>' +
+                    '<div class="copybar"><button class="btn solid" id="copyBtn" style="font-size:1rem;padding:14px 34px;" onclick="press()">Copy prompt</button></div>' +
                     '<div class="pbox" id="promptText">' + esc(p.prompt_text || '') + '</div>';
                 document.title = (p.title || 'Prompt') + ' — Creators Automation';
                 document.getElementById('copyBtn').addEventListener('click', async function() {
@@ -107,6 +140,7 @@
                     }
                     setTimeout(function() { btn.textContent = 'Copy prompt'; }, 1500);
                 });
+                // auth-aware nav (login/logout only)
                 try {
                     var s = await sb.auth.getSession();
                     var navAuth = document.getElementById('navAuth');
