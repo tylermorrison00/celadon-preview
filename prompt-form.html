@@ -12,13 +12,18 @@
     .pwrap { max-width: 700px; margin: 0 auto; padding: 96px 18px 60px; }
     .pform-title { font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 800; letter-spacing: -.02em; margin: 22px 0 20px; color: #0E3A2E; line-height: 1.2; }
     .pform .field, .pform textarea, .pform select { width: 100%; margin-bottom: 14px; font-family: inherit; box-sizing: border-box; }
-    .pform textarea { min-height: 200px; resize: vertical; border-radius: 18px; }
+    .pform select { appearance: none; -webkit-appearance: none; background-image: var(--gloss-jade); border: none; border-radius: 999px; padding: 14px 20px; font-weight: 600; color: #0E3A2E; cursor: pointer; box-shadow: var(--lift-jade), var(--lip-jade); }
+    .pform select option { background: #fff; color: #0E3A2E; }
+    .pform textarea { min-height: 200px; resize: vertical; border-radius: 18px; scrollbar-width: none; -ms-overflow-style: none; }
+    .pform textarea::-webkit-scrollbar { display: none; }
     .pform label.pro { display: flex; align-items: center; gap: 8px; font-size: .95rem; margin-bottom: 14px; color: #0E3A2E; font-weight: 600; cursor: pointer; }
     .pform label.pro input { width: 18px; height: 18px; accent-color: #0E3A2E; cursor: pointer; }
     .pform .flabel { display: block; font-size: .85rem; font-weight: 700; color: #0E3A2E; margin-bottom: 6px; }
     .pform .row { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; align-items: center; }
-    .pform .btn-cancel { font-size: .95rem; padding: 13px 28px; border-radius: 999px; border: 1px solid #dfe6f2; background: #fff; cursor: pointer; font-weight: 600; color: #0E3A2E; text-decoration: none; display: inline-block; }
+    .pform .btn-cancel { font-size: .95rem; padding: 13px 28px; border-radius: 999px; border: none; background-image: var(--gloss); cursor: pointer; font-weight: 600; color: var(--ink-2); text-decoration: none; display: inline-block; box-shadow: var(--lift), var(--lip); }
     .auth-err { display: none; color: #b3261e; font-size: .9rem; margin: 0 0 12px; }
+    #tagPills .tpill { padding: 6px 14px; font-size: .75rem; border-radius: 999px; background: var(--gloss); border: none; cursor: pointer; font-weight: 500; color: var(--ink-2); box-shadow: var(--lift), var(--lip); }
+    #tagPills .tpill.sel { background-image: var(--gloss-jade); color: #0E3A2E; font-weight: 700; }
     .ploading { text-align: center; padding: 60px 20px; color: #6b7a74; font-size: 1rem; }
 </style>
 </head>
@@ -70,9 +75,16 @@
                 <textarea class="field" id="pfText" placeholder="Prompt text..." aria-label="Prompt text"></textarea>
                 <label class="flabel" for="pfTags">Tags</label>
                 <input class="field" id="pfTags" type="text" placeholder="Tags (comma separated)" aria-label="Tags">
-                <label class="flabel" for="pfMedia">Media image URL</label>
-                <input class="field" id="pfMedia" type="text" placeholder="Media image URL (optional)" aria-label="Media URL">
+                <div id="tagPills" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 14px;"></div>
+                <label class="flabel">Media image</label>
+                <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
+                    <button class="btn solid" type="button" id="imgUploadBtn" onclick="press()">Add image</button>
+                    <input type="file" id="imgFile" accept="image/*" style="display:none;">
+                    <span id="imgName" style="font-size:.85rem;color:#6b7a74;">No image selected</span>
+                </div>
+                <input type="hidden" id="pfMedia">
                 <label class="pro"><input type="checkbox" id="pfPro"> Pro only</label>
+                <label class="pro"><input type="checkbox" id="pfTrend"> Trending</label>
                 <p class="auth-err" id="pfErr"></p>
                 <div class="row">
                     <button class="btn solid" type="submit" id="pfSave" onclick="press()">Save prompt</button>
@@ -114,6 +126,11 @@
         var fTags = document.getElementById('pfTags');
         var fMedia = document.getElementById('pfMedia');
         var fPro = document.getElementById('pfPro');
+        var fTrend = document.getElementById('pfTrend');
+        var tagPills = document.getElementById('tagPills');
+        var imgFile = document.getElementById('imgFile');
+        var imgName = document.getElementById('imgName');
+        var uploadedUrl = '';
         var fErr = document.getElementById('pfErr');
         var formTitle = document.getElementById('formTitle');
         var formWrap = document.getElementById('formWrap');
@@ -131,6 +148,48 @@
             formLoading.style.display = 'none';
             formWrap.style.display = 'block';
         }
+        // hover sound (laptop only)
+        function tick() { try { if (window.matchMedia('(hover: hover)').matches) press(); } catch (e) {} }
+        // load existing tags as pills
+        async function loadTagPills() {
+            try {
+                var r = await sb.from('prompts').select('tags');
+                var set = {};
+                (r.data || []).forEach(function(p) { (p.tags || []).forEach(function(t) { set[String(t).toLowerCase()] = t; }); });
+                var cur = fTags.value.split(',').map(function(s){return s.trim().toLowerCase();}).filter(Boolean);
+                tagPills.innerHTML = '';
+                Object.keys(set).sort().forEach(function(k) {
+                    var b = document.createElement('button');
+                    b.type = 'button'; b.className = 'tpill' + (cur.indexOf(k) >= 0 ? ' sel' : ''); b.textContent = set[k];
+                    b.onclick = function() { press(); toggleTagPill(b, set[k]); };
+                    b.onmouseenter = tick;
+                    tagPills.appendChild(b);
+                });
+            } catch (e) {}
+        }
+        function toggleTagPill(btn, tag) {
+            var cur = fTags.value.split(',').map(function(s){return s.trim();}).filter(Boolean);
+            var low = cur.map(function(s){return s.toLowerCase();});
+            var i = low.indexOf(String(tag).toLowerCase());
+            if (i >= 0) { cur.splice(i, 1); btn.classList.remove('sel'); }
+            else { cur.push(tag); btn.classList.add('sel'); }
+            fTags.value = cur.join(', ');
+        }
+        // image upload
+        document.getElementById('imgUploadBtn').addEventListener('click', function() { press(); imgFile.click(); });
+        imgFile.addEventListener('change', async function() {
+            var f = imgFile.files[0]; if (!f) return;
+            imgName.textContent = 'Uploading...';
+            try {
+                var name = Date.now() + '_' + f.name.replace(/[^a-zA-Z0-9.]/g, '_');
+                var up = await sb.storage.from('prompt-media').upload(name, f);
+                if (up.error) throw up.error;
+                var pub = sb.storage.from('prompt-media').getPublicUrl(name);
+                uploadedUrl = pub.data.publicUrl;
+                document.getElementById('pfMedia').value = uploadedUrl;
+                imgName.textContent = f.name;
+            } catch (e) { imgName.textContent = 'Upload failed'; }
+        });
 
         async function init() {
             if (!window.supabase || !window.supabase.createClient) {
@@ -173,7 +232,12 @@
                 fTags.value = (p.tags || []).join(', ');
                 fMedia.value = p.media_url || '';
                 fPro.checked = !!p.is_pro;
+                if (fTrend) fTrend.checked = !!p.is_trending;
+                if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
             }
+            loadTagPills();
+            // hover sounds for buttons (laptop only)
+            document.querySelectorAll('.pform .btn, .pform .tpill, #imgUploadBtn').forEach(function(b) { b.addEventListener('mouseenter', tick); });
             showForm();
         }
 
@@ -186,14 +250,16 @@
                 showErr('Title and prompt text are required.');
                 return;
             }
+            var mu = (uploadedUrl || document.getElementById('pfMedia').value || '').trim();
             var row = {
                 title: title,
                 category: fCat.value,
                 prompt_text: text,
                 tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
-                media_url: fMedia.value.trim() || null,
-                media_type: fMedia.value.trim() ? 'image' : null,
-                is_pro: fPro.checked
+                media_url: mu || null,
+                media_type: mu ? 'image' : null,
+                is_pro: fPro.checked,
+                is_trending: fTrend.checked
             };
             var btn = document.getElementById('pfSave');
             btn.disabled = true;
