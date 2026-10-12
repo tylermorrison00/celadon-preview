@@ -22,9 +22,6 @@
         .btn.google { background-color: #ffffff; color: #1f2937; border: 1px solid #dfe6f2; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
         .auth-err { display: none; color: #b3261e; font-size: .85rem; margin: 0 auto 12px; max-width: 420px; text-align: center; }
         .auth-err.show { display: block; }
-        .logged-panel { display: none; max-width: 420px; margin: 0 auto; text-align: center; }
-        .logged-panel.show { display: block; }
-        .logged-panel p { margin: 0 0 18px; font-size: 1rem; }
     </style>
 </head>
 <body>
@@ -46,10 +43,6 @@
                         Continue with Google
                     </button>
                 </div>
-            </div>
-            <div class="logged-panel" id="loggedPanel">
-                <p>Logged in as <b id="loggedEmail"></b></p>
-                <button class="btn solid" type="button" id="logoutBtn">Logout</button>
             </div>
         </div>
     </div>
@@ -95,9 +88,6 @@
             var passEl = document.getElementById('authPass');
             var errEl = document.getElementById('authErr');
             var authBox = document.getElementById('authBox');
-            var loggedPanel = document.getElementById('loggedPanel');
-            var loggedEmail = document.getElementById('loggedEmail');
-            var logoutBtn = document.getElementById('logoutBtn');
             if (!sw || !label || !action) return;
             function showErr(msg) {
                 errEl.textContent = msg || '';
@@ -109,16 +99,7 @@
                 action.textContent = signin ? 'Login' : 'Create account';
                 showErr('');
             }
-            function setLoggedIn(email) {
-                if (email) {
-                    loggedEmail.textContent = email;
-                    authBox.style.display = 'none';
-                    loggedPanel.classList.add('show');
-                } else {
-                    authBox.style.display = '';
-                    loggedPanel.classList.remove('show');
-                }
-            }
+            function goHome() { window.location.href = '/'; }
             function flip() {
                 var signin = sw.getAttribute('aria-checked') !== 'true';
                 setMode(signin);
@@ -141,7 +122,7 @@
                         ? await sb.auth.signInWithPassword({ email: email, password: password })
                         : await sb.auth.signUp({ email: email, password: password });
                     if (res.error) { showErr(res.error.message); return; }
-                    setLoggedIn(res.data.user && res.data.user.email);
+                    if (res.data.user) goHome();
                 } catch (e) {
                     showErr('Kuch ghalat hua — dobara try karo.');
                 } finally {
@@ -161,19 +142,12 @@
                     showErr('Google login abhi setup nahi hua.');
                 }
             });
-            logoutBtn.addEventListener('click', async function() {
-                Snd.press();
-                await sb.auth.signOut();
-                setLoggedIn(null);
-                passEl.value = '';
-            });
             sb.auth.getSession().then(function(res) {
                 var s = res.data && res.data.session;
-                if (s && s.user) setLoggedIn(s.user.email);
+                if (s && s.user) goHome();
             });
             sb.auth.onAuthStateChange(function(evt, session) {
-                if (evt === 'SIGNED_IN' && session && session.user) setLoggedIn(session.user.email);
-                if (evt === 'SIGNED_OUT') setLoggedIn(null);
+                if (evt === 'SIGNED_IN' && session && session.user) goHome();
             });
         })();
     </script>
