@@ -53,7 +53,14 @@
             <!-- hero -->
             <section class="hero">
                 <div class="shell">
-                    <span class="pill rv"><b style="display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0E3A2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></b> <strong>Prompt Vault</strong></span>
+                    <div class="vault-drop rv" id="vaultDrop">
+                        <button type="button" class="vault-btn" id="vaultBtn" aria-haspopup="true" aria-expanded="false"><b class="varr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0E3A2E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></b> <strong>Prompt Vault</strong></button>
+                        <div class="vault-list" id="vaultList" hidden>
+                            <a href="index.html" class="vault-opt" data-v="prompts">Prompt Vault</a>
+                            <a href="niches.html" class="vault-opt" data-v="niches">Niche Vault</a>
+                            <a href="tools.html" class="vault-opt" data-v="tools">Tools Vault</a>
+                        </div>
+                    </div>
                     <div class="form" style="margin-top:24px;max-width:650px;margin-left:auto;margin-right:auto;">
                         <input class="field" type="text" placeholder="Search prompts..." aria-label="Search prompts" id="promptSearch" style="flex:1;min-width:0;">
                         <button class="btn solid" type="button" id="searchBtn" style="flex-shrink:0;">Search</button>
@@ -242,7 +249,11 @@
         body.mobdesk section{overflow-x:hidden}
         body.mobdesk #promptCards{grid-template-columns:repeat(2,1fr)!important;max-width:800px!important;width:calc(100% - 24px)!important;margin:64px 0 0!important;justify-items:center!important;justify-content:center!important;position:relative!important;left:50%!important;transform:translateX(-50%)!important;box-sizing:border-box!important}
         body.mobdesk .plans{grid-template-columns:repeat(2,1fr)!important}
-        body.mobdesk .plans .plan:nth-child(3){grid-column:1/-1!important;max-width:420px!important;width:100%!important;justify-self:center!important;margin-left:auto!important;margin-right:auto!important}@media(max-width:768px){#promptCards{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;justify-items:center}}#promptCards .quote{display:flex; flex-direction: column; }
+        body.mobdesk .plans .plan:nth-child(3){grid-column:1/-1!important;max-width:420px!important;width:100%!important;justify-self:center!important;margin-left:auto!important;margin-right:auto!important}
+        body.mobdesk .nav{display:flex!important}
+        body.mobdesk .top .btn{display:inline-block!important}
+        body.mobdesk #navAuth{display:inline!important}
+        body.mobdesk .burger{display:none!important}@media(max-width:768px){#promptCards{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;justify-items:center}}#promptCards .quote{display:flex; flex-direction: column; }
         #promptCards .pimg { width: calc(100% + 56px); max-width: none; margin: -28px -28px 14px; border-radius: 28px 28px 18px 18px; aspect-ratio: 16/9; object-fit: cover; background: #eef2f7; }
         #promptCards .ptitle { font-size: 1.05rem; font-weight: 600; margin: 6px 0 8px; }
         #promptCards .ptags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
@@ -268,6 +279,15 @@
         #promptCards .pbtn.danger { color: #b3261e; border-color: #f1c6c2; }
         #promptCards .probadge { font-size: .68rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #0E3A2E; color: #fff; }
         #promptCards .pempty { grid-column: 1/-1; text-align: center; color: #64748b; padding: 40px 0; }
+        /* vault switcher dropdown (3D theme) */
+        .vault-drop { position: relative; display: inline-block; }
+        .vault-btn { display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px 8px 10px; border: none; border-radius: 99px; font-size: .82rem; font-weight: 500; color: var(--ink-2); background: var(--gloss); box-shadow: var(--lift), var(--lip); cursor: pointer; font-family: inherit; }
+        .vault-btn .varr { display: inline-flex; align-items: center; justify-content: center; padding: 6px 10px; border-radius: 99px; background: var(--gloss-jade); }
+        .vault-btn strong { font-weight: 700; }
+        .vault-list { position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); min-width: 180px; background: #fff; border-radius: 18px; box-shadow: 0 14px 34px rgba(14,58,46,.18); overflow: hidden; z-index: 60; padding: 6px; }
+        .vault-opt { display: block; padding: 11px 16px; border-radius: 12px; font-size: .88rem; font-weight: 600; color: #0E3A2E; text-decoration: none; white-space: nowrap; }
+        .vault-opt:hover { background: linear-gradient(180deg, #7DE3A8, #5BC8A0); }
+        .vault-opt.cur { background: #eef4f1; }
         .pscrim { position: fixed; inset: 0; background: rgba(10,25,20,.45); display: none; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
         .pscrim.show { display: flex; }
         .pmodal { background: #fff; border-radius: 24px; padding: 28px; width: 100%; max-width: 560px; max-height: 90vh; overflow: auto; }
@@ -340,15 +360,19 @@
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
             });
         }
+        var _favsCache = null;
         function getFavs() {
-            try { return JSON.parse(localStorage.getItem('ca_favs') || '[]'); }
-            catch (e) { return []; }
+            if (_favsCache) return _favsCache;
+            try { _favsCache = JSON.parse(localStorage.getItem('ca_favs') || '[]'); }
+            catch (e) { _favsCache = []; }
+            return _favsCache;
         }
         function isFav(id) { return getFavs().indexOf(String(id)) >= 0; }
         function toggleFav(id) {
             var f = getFavs(); var sid = String(id);
             var i = f.indexOf(sid);
             if (i >= 0) f.splice(i, 1); else f.push(sid);
+            _favsCache = f;
             try { localStorage.setItem('ca_favs', JSON.stringify(f)); } catch (e) {}
         }
         function titleCase(s) {
@@ -387,19 +411,50 @@
             } catch (e) {}
         }
 
-        async function loadPrompts() {
+        var PROMPTS_CACHE_KEY = 'ca_prompts_cache';
+        var PROMPTS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+        function getCachedPrompts() {
             try {
-                var res = await fetch(API + '/rest/v1/prompts?select=id,title,category,tags,media_url,media_type,is_pro,is_trending,sort_order,created_at&order=sort_order.asc&order=created_at.desc&limit=200', {
-                    headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
-                });
-                if (!res.ok) throw new Error('HTTP ' + res.status);
-                state.prompts = await res.json() || [];
-            } catch (err) {
-                grid.innerHTML = '<div class="pempty">Prompts load nahi ho rahe. Internet check karo aur refresh karo.</div>';
-                return;
+                var raw = localStorage.getItem(PROMPTS_CACHE_KEY);
+                if (!raw) return null;
+                var c = JSON.parse(raw);
+                if (!c || !c.data || !c.ts) return null;
+                if (Date.now() - c.ts > PROMPTS_CACHE_TTL) return null;
+                return c.data;
+            } catch (e) { return null; }
+        }
+        function setCachedPrompts(data) {
+            try { localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
+        }
+        async function fetchPrompts() {
+            var res = await fetch(API + '/rest/v1/prompts?select=id,title,category,tags,media_url,media_type,is_pro,is_trending,sort_order,created_at&order=sort_order.asc&order=created_at.desc&limit=200', {
+                headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
+            });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return await res.json() || [];
+        }
+        async function loadPrompts() {
+            // show cached immediately for instant render
+            var cached = getCachedPrompts();
+            if (cached && cached.length) {
+                state.prompts = cached;
+                renderTagPills();
+                render();
             }
-            renderTagPills();
-            render();
+            try {
+                var fresh = await fetchPrompts();
+                setCachedPrompts(fresh);
+                // only re-render if data changed
+                if (JSON.stringify(fresh) !== JSON.stringify(state.prompts)) {
+                    state.prompts = fresh;
+                    renderTagPills();
+                    render();
+                }
+            } catch (err) {
+                if (!state.prompts.length) {
+                    grid.innerHTML = '<div class="pempty">Prompts load nahi ho rahe. Internet check karo aur refresh karo.</div>';
+                }
+            }
         }
         function initAuth() {
             loadSupabaseJs(function() {
@@ -481,7 +536,7 @@
             if (del) {
                 if (!confirm('Delete this prompt?')) return;
                 var r = await sb.from('prompts').delete().eq('id', del);
-                if (!r.error) loadPrompts();
+                if (!r.error) { try { localStorage.removeItem(PROMPTS_CACHE_KEY); } catch (e) {} state.prompts = []; loadPrompts(); }
                 return;
             }
         });
@@ -551,6 +606,36 @@
             markActivePill();
             render();
         });
+        /* vault switcher dropdown */
+        (function() {
+            var vd = document.getElementById('vaultDrop');
+            var vb = document.getElementById('vaultBtn');
+            var vl = document.getElementById('vaultList');
+            if (!vd || !vb || !vl) return;
+            var isTouch = false;
+            try { isTouch = window.matchMedia('(hover: none)').matches; } catch (e) {}
+            function closeVault() { vl.hidden = true; vb.setAttribute('aria-expanded', 'false'); }
+            vb.addEventListener('click', function(e) {
+                e.stopPropagation(); press();
+                var open = vl.hidden;
+                closeVault();
+                if (open) { vl.hidden = false; vb.setAttribute('aria-expanded', 'true'); }
+            });
+            if (!isTouch) vb.addEventListener('mouseenter', function() { tick(); });
+            vl.querySelectorAll('.vault-opt').forEach(function(o) {
+                if (!isTouch) o.addEventListener('mouseenter', function() { tick(); });
+                o.addEventListener('click', function() { press(); });
+            });
+            document.addEventListener('click', function(e) { if (!vd.contains(e.target)) closeVault(); });
+            document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeVault(); });
+            /* mark current vault */
+            var path = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+            vl.querySelectorAll('.vault-opt').forEach(function(o) {
+                var href = o.getAttribute('href');
+                if ((path === '' || path === 'index.html') && href === 'index.html') o.classList.add('cur');
+                else if (path === href) o.classList.add('cur');
+            });
+        })();
         document.getElementById('platformPills').addEventListener('pointerover', function(e) {
             if (e.pointerType && e.pointerType !== 'mouse') return;
             var btn = e.target.closest('.plat-pill');
@@ -631,7 +716,7 @@
                 return;
             }
             closeModal();
-            loadPrompts();
+            try { localStorage.removeItem(PROMPTS_CACHE_KEY); } catch (e) {} state.prompts = []; loadPrompts();
         });
 
         /* ---- auth-aware nav + admin ---- */
@@ -671,10 +756,10 @@
             render();
         }
 
-        loadPrompts().then(function() {
-            if (getSession()) initAuth();
-            else renderNav();
-        });
+        // run prompts and auth in parallel — don't block one on the other
+        loadPrompts();
+        if (getSession()) initAuth();
+        else renderNav();
     })();
     </script>
     <!-- redeploy -->
