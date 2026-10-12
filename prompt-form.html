@@ -25,7 +25,7 @@
     .pform .btn-cancel:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14,58,46,.15), var(--lip); }
     .auth-err { display: none; color: #b3261e; font-size: .9rem; margin: 0 0 12px; }
     .cdrop { position: relative; margin-bottom: 14px; }
-    .cdrop-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-radius: 18px; border: 1px solid #e3ece8; background: #fff; font-weight: 500; color: #22312c; cursor: pointer; box-shadow: 0 2px 8px rgba(14,58,46,.06); font-size: .95rem; font-family: inherit; box-sizing: border-box; }
+    .cdrop-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 15px 24px; border: 0; border-radius: 99px; background: var(--sunk); box-shadow: var(--well); outline: none; font-size: .95rem; font-family: inherit; color: #22312c; cursor: pointer; box-sizing: border-box; }
     .cdrop-btn .carr { font-size: .8rem; }
     .cdrop-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px; background: #fff; border-radius: 18px; box-shadow: 0 12px 32px rgba(14,58,46,.15); overflow: hidden; z-index: 50; }
     .cdrop-opt { width: 100%; padding: 13px 20px; border: none; background: #fff; text-align: left; font-weight: 600; color: #0E3A2E; cursor: pointer; font-size: .95rem; font-family: inherit; }
@@ -91,7 +91,7 @@
                 <div id="tagPills" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 14px;"></div>
                 <label class="flabel">Media image</label>
                 <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
-                    <button class="btn solid" type="button" id="imgUploadBtn" onclick="press()">Add image</button>
+                    <button class="btn solid" type="button" id="imgUploadBtn">Add image</button>
                     <input type="file" id="imgFile" accept="image/*" style="display:none;">
                     <span id="imgName" style="font-size:.85rem;color:#6b7a74;">No image selected</span>
                 </div>
@@ -100,7 +100,7 @@
                 <label class="pro"><input type="checkbox" id="pfTrend"> Trending</label>
                 <p class="auth-err" id="pfErr"></p>
                 <div class="row">
-                    <button class="btn solid" type="submit" id="pfSave" onclick="press()">Save prompt</button>
+                    <button class="btn solid" type="submit" id="pfSave">Save prompt</button>
                     <a class="btn-cancel" href="index.html" onclick="press()">Cancel</a>
                 </div>
             </form>
