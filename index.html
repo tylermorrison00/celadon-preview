@@ -250,7 +250,8 @@
         body.mobdesk{overflow-x:hidden}
         body.mobdesk .shell{width:min(var(--shell),calc(100% - 44px))!important;margin-left:auto!important;margin-right:auto!important}
         body.mobdesk section{overflow-x:hidden}
-        body.mobdesk #promptCards{grid-template-columns:repeat(2,1fr)!important;max-width:800px!important;margin-left:auto!important;margin-right:auto!important;justify-items:center}@media(max-width:768px){#promptCards{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;justify-items:center}}#promptCards .quote{display:flex; flex-direction: column; }
+        body.mobdesk #promptCards{grid-template-columns:repeat(2,minmax(0,1fr))!important;width:100%!important;max-width:760px!important;margin:64px auto 0!important;padding:0 12px!important;justify-content:center!important;justify-items:center!important;box-sizing:border-box!important}
+        body.mobdesk #promptCards>div{width:100%!important;max-width:100%!important;box-sizing:border-box!important}@media(max-width:768px){#promptCards{grid-template-columns:1fr;max-width:480px;margin-left:auto;margin-right:auto;justify-items:center}}#promptCards .quote{display:flex; flex-direction: column; }
         #promptCards .pimg { width: calc(100% + 56px); max-width: none; margin: -28px -28px 14px; border-radius: 28px 28px 18px 18px; aspect-ratio: 16/9; object-fit: cover; background: #eef2f7; }
         #promptCards .ptitle { font-size: 1.05rem; font-weight: 600; margin: 6px 0 8px; }
         #promptCards .ptags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
