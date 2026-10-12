@@ -70,7 +70,7 @@
 
     <main class="pwrap">
         <a class="btn backlink" href="index.html" id="backBtn" onclick="press()">&larr; Back to all prompts</a>
-        <h1 class="pform-title" id="formTitle">Add new prompt</h1>
+        <h1 class="pform-title" id="formTitle">Add new</h1>
         <div id="formWrap" style="display:none;">
             <form class="pform" id="promptForm" onsubmit="return false;">
                 <label class="flabel" for="pfTitle">Title</label>
@@ -132,6 +132,8 @@
         var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmeXVlYmtka3hoZHJsZHVxeG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTI1NDQsImV4cCI6MjEwNjc2ODU0NH0.RY-VU33zwySGKmPH34pHs72HaxRt9yi4lAhHO9xn7_4';
         var API = 'https://vfyuebkdkxhdrlduqxng.supabase.co';
         var editId = new URLSearchParams(location.search).get('id');
+        var TABLE = new URLSearchParams(location.search).get('table') || 'prompts';
+        var singular = TABLE === 'niches' ? 'niche' : (TABLE === 'tools' ? 'tool' : 'prompt');
         var sb = null;
         var fTitle = document.getElementById('pfTitle');
         var fCat = document.getElementById('pfCategory');
@@ -167,7 +169,7 @@
         var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8'];
         async function loadTagPills() {
             try {
-                var r = await sb.from('prompts').select('tags');
+                var r = await sb.from(TABLE).select('tags');
                 var counts = {};
                 var orig = {};
                 (r.data || []).forEach(function(p) { (p.tags || []).forEach(function(t) { var k = String(t).toLowerCase(); counts[k] = (counts[k] || 0) + 1; if (!orig[k]) orig[k] = t; }); });
@@ -250,13 +252,14 @@
                 drawerAuth.innerHTML = '<button class="btn solid" type="button" id="drawerLogout" style="width:100%;text-align:center;">Logout</button>';
                 document.getElementById('drawerLogout').addEventListener('click', async function() { await sb.auth.signOut(); location.href = 'index.html'; });
             }
+            if (!editId) { formTitle.textContent = 'Add new ' + singular; document.title = 'Add ' + singular + ' — Creators Automation'; }
             // edit mode: load existing prompt
             if (editId) {
-                formTitle.textContent = 'Edit prompt';
-                document.title = 'Edit prompt — Creators Automation';
-                var res = await sb.from('prompts').select('*').eq('id', editId).single();
+                formTitle.textContent = 'Edit ' + singular;
+                document.title = 'Edit ' + singular + ' — Creators Automation';
+                var res = await sb.from(TABLE).select('*').eq('id', editId).single();
                 if (res.error || !res.data) {
-                    showErr('Prompt not found.');
+                    showErr('Not found.');
                     showForm();
                     return;
                 }
@@ -301,8 +304,8 @@
             btn.disabled = true;
             btn.textContent = 'Saving...';
             var res = editId
-                ? await sb.from('prompts').update(row).eq('id', editId)
-                : await sb.from('prompts').insert(row);
+                ? await sb.from(TABLE).update(row).eq('id', editId)
+                : await sb.from(TABLE).insert(row);
             if (res.error) {
                 showErr(res.error.message);
                 btn.disabled = false;
