@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompt — Creators Automation</title>
+<meta name="description" content="View and copy this AI prompt.">
+<link rel="stylesheet" href="templatemo-633-celadon-style.css">
+<style>
+    .pwrap { max-width: 860px; margin: 0 auto; padding: 110px 18px 60px; }
+    .backlink { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: .9rem; color: #0E3A2E; text-decoration: none; background: #fff; border: 1px solid #e3ece8; padding: 10px 18px; border-radius: 999px; box-shadow: 0 2px 10px rgba(14,58,46,.06); }
+    .backlink:hover { background: #f2f7f5; }
+    .ptitle-lg { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 800; letter-spacing: -.02em; margin: 22px 0 12px; color: #0E3A2E; line-height: 1.2; }
+    .pmeta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; }
+    .pimg-lg { width: 100%; border-radius: 22px; object-fit: cover; max-height: 480px; box-shadow: 0 12px 32px rgba(14,58,46,.12); background: #eef2f7; }
+    .ptags-lg { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+    .ptag-lg { font-size: .8rem; padding: 6px 14px; border-radius: 999px; background: #eef4f1; color: #0E3A2E; font-weight: 600; }
+    .copybar { display: flex; gap: 12px; margin: 20px 0; flex-wrap: wrap; }
+    .pbox { background: #fff; border: 1px solid #e3ece8; border-radius: 18px; padding: 22px; font-size: .95rem; line-height: 1.75; color: #22312c; white-space: pre-wrap; word-break: break-word; box-shadow: 0 4px 18px rgba(14,58,46,.06); }
+    .pempty { text-align: center; padding: 60px 20px; color: #6b7a74; font-size: 1rem; }
+    .probadge { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .06em; background: #0E3A2E; color: #fff; padding: 4px 10px; border-radius: 999px; }
+    .catbadge { display: inline-block; font-size: .78rem; font-weight: 700; background: #eef4f1; color: #0E3A2E; padding: 6px 14px; border-radius: 999px; }
+</style>
+</head>
+<body>
+    <header class="site-head" id="top">
+        <div class="bar">
+            <a class="brand" href="index.html" aria-label="Creators Automation home">
+                <span class="mono" aria-hidden="true">
+                    <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden="true">
+                        <rect x="4" y="4" width="56" height="56" rx="16" fill="#0E3A2E"/>
+                        <text x="32" y="42" text-anchor="middle" font-family="Georgia, serif" font-weight="bold" font-size="28" fill="#7DE3A8">CA</text>
+                    </svg>
+                </span>
+                <span class="word">Creators Automation</span>
+            </a>
+            <nav class="nav">
+                <a href="index.html#pricing">Pricing</a>
+                <a href="index.html#faq">FAQ</a>
+            </nav>
+            <div class="hact">
+                <span id="navAuth"><a class="btn solid" href="signup.html">Start free</a></span>
+                <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+        <div class="drawer" id="drawer">
+            <span class="dtag">Menu</span>
+            <a href="index.html#pricing">Pricing</a>
+            <a href="index.html#faq">FAQ</a>
+            <span class="dtag">Account</span>
+            <a class="btn solid" href="signup.html" style="text-align:center;">Start free</a>
+        </div>
+    </header>
+
+    <main class="pwrap">
+        <a class="backlink" href="index.html">&larr; Back to all prompts</a>
+        <div id="promptDetail"><div class="pempty">Loading...</div></div>
+    </main>
+
+    <script src="templatemo-633-celadon-script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    (function() {
+        var box = document.getElementById('promptDetail');
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+        function press() {
+            try {
+                var AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                var ctx = new AC(), o = ctx.createOscillator(), g = ctx.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(520, ctx.currentTime);
+                o.frequency.exponentialRampToValueAtTime(390, ctx.currentTime + .09);
+                g.gain.setValueAtTime(.12, ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .12);
+                o.connect(g); g.connect(ctx.destination);
+                o.start(); o.stop(ctx.currentTime + .13);
+            } catch (e) {}
+        }
+        async function init() {
+            var id = new URLSearchParams(location.search).get('id');
+            if (!id) { box.innerHTML = '<div class="pempty">No prompt selected.</div>'; return; }
+            if (!window.supabase || !window.supabase.createClient) {
+                box.innerHTML = '<div class="pempty">Could not load. Check your connection and refresh.</div>';
+                return;
+            }
+            var sb = window.supabase.createClient(
+                'https://vfyuebkdkxhdrlduqxng.supabase.co',
+                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmeXVlYmtka3hoZHJsZHVxeG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTI1NDQsImV4cCI6MjEwNjc2ODU0NH0.RY-VU33zwySGKmPH34pHs72HaxRt9yi4lAhHO9xn7_4'
+            );
+            try {
+                var res = await sb.from('prompts').select('*').eq('id', id).single();
+                if (res.error || !res.data) throw res.error || new Error('not found');
+                var p = res.data;
+                var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg">' + esc(t) + '</span>'; }).join('');
+                var img = p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="">' : '';
+                var pro = p.is_pro ? '<span class="probadge">PRO</span>' : '';
+                box.innerHTML =
+                    '<h1 class="ptitle-lg">' + esc(p.title || 'Untitled') + '</h1>' +
+                    '<div class="pmeta"><span class="catbadge">' + esc(p.category || 'prompt') + '</span>' + pro + '</div>' +
+                    img +
+                    (tags ? '<div class="ptags-lg">' + tags + '</div>' : '') +
+                    '<div class="copybar"><button class="btn solid" id="copyBtn" style="font-size:1rem;padding:14px 34px;">Copy prompt</button></div>' +
+                    '<div class="pbox" id="promptText">' + esc(p.prompt_text || '') + '</div>';
+                document.title = (p.title || 'Prompt') + ' — Creators Automation';
+                document.getElementById('copyBtn').addEventListener('click', async function() {
+                    var btn = this;
+                    try { await navigator.clipboard.writeText(p.prompt_text || ''); btn.textContent = 'Copied!'; press(); }
+                    catch (err) {
+                        var ta = document.createElement('textarea');
+                        ta.value = p.prompt_text || '';
+                        document.body.appendChild(ta); ta.select();
+                        try { document.execCommand('copy'); btn.textContent = 'Copied!'; } catch (e2) { btn.textContent = 'Copy failed'; }
+                        document.body.removeChild(ta);
+                    }
+                    setTimeout(function() { btn.textContent = 'Copy prompt'; }, 1500);
+                });
+                try {
+                    var s = await sb.auth.getSession();
+                    var navAuth = document.getElementById('navAuth');
+                    if (navAuth && s.data.session) {
+                        navAuth.innerHTML = '<button class="btn solid" type="button" id="navLogout" style="padding:10px 18px;">Logout</button>';
+                        document.getElementById('navLogout').addEventListener('click', async function() {
+                            await sb.auth.signOut(); location.reload();
+                        });
+                    }
+                } catch (e) {}
+            } catch (err) {
+                box.innerHTML = '<div class="pempty">Prompt not found.</div>';
+            }
+        }
+        init();
+    })();
+    </script>
+</body>
+</html>
