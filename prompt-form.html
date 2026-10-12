@@ -23,6 +23,12 @@
     .pform .btn-cancel { font-size: .95rem; padding: 13px 28px; border-radius: 999px; border: none; background-image: var(--gloss); cursor: pointer; font-weight: 600; color: var(--ink-2); text-decoration: none; display: inline-block; box-shadow: var(--lift), var(--lip); transition: transform .15s ease, box-shadow .15s ease; }
     .pform .btn-cancel:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14,58,46,.15), var(--lip); }
     .auth-err { display: none; color: #b3261e; font-size: .9rem; margin: 0 0 12px; }
+    .cdrop { position: relative; margin-bottom: 14px; }
+    .cdrop-btn { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; border-radius: 999px; border: none; background: var(--gloss); font-weight: 600; color: var(--ink-2); cursor: pointer; box-shadow: var(--lift), var(--lip); font-size: .95rem; font-family: inherit; }
+    .cdrop-btn .carr { font-size: .8rem; }
+    .cdrop-list { position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px; background: #fff; border-radius: 18px; box-shadow: 0 12px 32px rgba(14,58,46,.15); overflow: hidden; z-index: 50; }
+    .cdrop-opt { width: 100%; padding: 13px 20px; border: none; background: #fff; text-align: left; font-weight: 600; color: #0E3A2E; cursor: pointer; font-size: .95rem; font-family: inherit; }
+    .cdrop-opt:hover { background: linear-gradient(180deg, #7DE3A8, #5BC8A0); }
     #tagPills .tpill { padding: 6px 14px; font-size: .75rem; border-radius: 999px; background: var(--gloss); border: none; cursor: pointer; font-weight: 500; color: var(--ink-2); box-shadow: var(--lift), var(--lip); display: inline-flex; align-items: center; gap: 6px; }
     #tagPills .tpill .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     #tagPills .tpill.sel { background-image: var(--gloss-jade); color: #0E3A2E; font-weight: 700; }
@@ -68,11 +74,15 @@
             <form class="pform" id="promptForm" onsubmit="return false;">
                 <label class="flabel" for="pfTitle">Title</label>
                 <input class="field" id="pfTitle" type="text" placeholder="Title" aria-label="Title">
-                <label class="flabel" for="pfCategory">Category</label>
-                <select class="field" id="pfCategory" aria-label="Category">
-                    <option value="tiktok">TikTok</option>
-                    <option value="youtube">YouTube</option>
-                </select>
+                <label class="flabel">Category</label>
+                <div class="cdrop" id="catDrop">
+                    <button type="button" class="cdrop-btn" id="catBtn" onclick="press()"><span id="catLabel">TikTok</span><span class="carr">&#9662;</span></button>
+                    <div class="cdrop-list" id="catList" style="display:none;">
+                        <button type="button" class="cdrop-opt" data-val="tiktok" onclick="press()">TikTok</button>
+                        <button type="button" class="cdrop-opt" data-val="youtube" onclick="press()">YouTube</button>
+                    </div>
+                </div>
+                <input type="hidden" id="pfCategory" value="tiktok">
                 <label class="flabel" for="pfText">Prompt text</label>
                 <textarea class="field" id="pfText" placeholder="Prompt text..." aria-label="Prompt text"></textarea>
                 <label class="flabel" for="pfTags">Tags</label>
@@ -167,7 +177,8 @@
                     var c = tagColors[i % tagColors.length];
                     var b = document.createElement('button');
                     b.type = 'button'; b.className = 'tpill' + (cur.indexOf(k) >= 0 ? ' sel' : '');
-                    b.innerHTML = '<span class="dot" style="background:' + c + ';"></span>' + orig[k];
+                    var tc = orig[k].replace(/\w\S*/g, function(w){return w.charAt(0).toUpperCase()+w.slice(1);});
+                    b.innerHTML = '<span class="dot" style="background:' + c + ';"></span>' + tc;
                     (function(btn, tag) {
                         btn.onclick = function() { press(); toggleTagPill(btn, tag); };
                         btn.onmouseenter = tick;
@@ -183,6 +194,20 @@
             if (i >= 0) { cur.splice(i, 1); btn.classList.remove('sel'); }
             else { cur.push(tag); btn.classList.add('sel'); }
             fTags.value = cur.join(', ');
+        }
+        // custom category dropdown
+        var catBtn = document.getElementById('catBtn');
+        var catList = document.getElementById('catList');
+        var catLabel = document.getElementById('catLabel');
+        var pfCatHidden = document.getElementById('pfCategory');
+        if (catBtn) {
+            catBtn.addEventListener('click', function(e) { e.stopPropagation(); press(); catList.style.display = catList.style.display === 'none' ? 'block' : 'none'; });
+            catBtn.addEventListener('mouseenter', tick);
+            document.querySelectorAll('.cdrop-opt').forEach(function(o) {
+                o.addEventListener('mouseenter', tick);
+                o.addEventListener('click', function(e) { e.stopPropagation(); press(); pfCatHidden.value = o.getAttribute('data-val'); catLabel.textContent = o.textContent; catList.style.display = 'none'; });
+            });
+            document.addEventListener('click', function() { catList.style.display = 'none'; });
         }
         // image upload
         document.getElementById('imgUploadBtn').addEventListener('click', function() { press(); imgFile.click(); });
@@ -237,6 +262,7 @@
                 var p = res.data;
                 fTitle.value = p.title || '';
                 fCat.value = p.category || 'tiktok';
+                var cl = document.getElementById('catLabel'); if (cl) cl.textContent = (p.category === 'youtube') ? 'YouTube' : 'TikTok';
                 fText.value = p.prompt_text || '';
                 fTags.value = (p.tags || []).join(', ');
                 fMedia.value = p.media_url || '';
@@ -246,7 +272,7 @@
             }
             loadTagPills();
             // hover sounds for buttons (laptop only)
-            document.querySelectorAll('.pform .btn, .pform .tpill, #imgUploadBtn, #backBtn').forEach(function(b) { b.addEventListener('mouseenter', tick); });
+            document.querySelectorAll('.pform .btn, .pform .tpill, #imgUploadBtn, #backBtn, .pform .btn-cancel').forEach(function(b) { b.addEventListener('mouseenter', tick); });
             showForm();
         }
 
