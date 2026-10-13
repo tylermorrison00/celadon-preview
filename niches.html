@@ -435,7 +435,7 @@
                 return;
             }
             if (vw) { location.href = 'niche.html?id=' + encodeURIComponent(vw); return; }
-            if (ed) { location.href = 'prompt-form.html?id=' + encodeURIComponent(ed); return; }
+            if (ed) { location.href = 'prompt-form.html?table=niches&id=' + encodeURIComponent(ed); return; }
             if (del) {
                 if (!confirm('Delete this niche?')) return;
                 var r = await sb.from('niches').delete().eq('id', del);
