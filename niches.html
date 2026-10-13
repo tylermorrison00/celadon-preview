@@ -348,7 +348,7 @@
             try { localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
         async function fetchPrompts() {
-            var res = await fetch(API + '/rest/v1/niches?select=id,title,category,tags,media_url,media_type,is_pro,is_trending,sort_order,order_expires_at,trending_expires_at,created_at&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
+            var res = await fetch(API + '/rest/v1/niches?select=*&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
                 headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
             });
             if (!res.ok) throw new Error('HTTP ' + res.status);
