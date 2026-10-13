@@ -264,7 +264,7 @@
         .plat-pill.active { background-image: var(--gloss-jade); color: #0E3A2E; box-shadow: var(--lift-jade), var(--lip-jade); }
         #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; }
         #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; }
-        @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem; } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; } }
+        @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem; min-height: 38px; box-sizing: border-box; } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; min-height: 38px; } }
         #promptCards .favbtn { width: 38px; height: 38px; border-radius: 50%; padding: 0; font-size: 1.1rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
         #promptCards .favbtn.active { color: #E8A020; }
         #tagFilters .tag-pill .dot { width: 8px; height: 8px; }
