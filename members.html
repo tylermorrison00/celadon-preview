@@ -57,10 +57,11 @@
                 list.innerHTML = res.data.map(function(m) {
                     var plan = (m.plan || 'free').toLowerCase();
                     var planLabel = plan === 'pro' ? 'Pro' : plan === 'basic' ? 'Basic' : 'Free';
+                    var btnClass = plan === 'free' ? 'btn plan-btn' : 'btn solid plan-btn';
                     return '<div class="member-row">' +
                         '<span class="email">' + (m.email || '-') + '</span>' +
                         '<div class="plan-drop">' +
-                        '<button class="btn solid plan-btn" data-id="' + m.id + '">' + planLabel + ' &#9662;</button>' +
+                        '<button class="' + btnClass + '" data-id="' + m.id + '">' + planLabel + ' &#9662;</button>' +
                         '<div class="plan-list" hidden>' +
                         '<button class="plan-opt" data-plan="free" data-id="' + m.id + '">Free</button>' +
                         '<button class="plan-opt" data-plan="basic" data-id="' + m.id + '">Basic</button>' +
