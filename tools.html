@@ -354,10 +354,13 @@
 
         function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
         function cardHTML(p) {
-            var tags = (p.tags || []).map(function(t) { return '<span class="ptag">' + esc(t) + '</span>'; }).join('');
+            var tags = (p.tags || []).map(function(t, i) {
+                var c = tagColors[i % tagColors.length];
+                return '<span class="tag-pill" style="padding:6px 12px;font-size:.75rem;cursor:default;"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</span>';
+            }).join('');
             var paidBadge = p.is_paid
-                ? '<span class="ptag" style="background:#E8A0A0;color:#5a1a1a;">Paid</span>'
-                : '<span class="ptag" style="background:#7DE3A8;color:#0E3A2E;">Free</span>';
+                ? '<span class="tag-pill" style="padding:6px 12px;font-size:.75rem;cursor:default;background:#7DE3A8;"><span class="dot" style="background:#0E3A2E;"></span>Paid</span>'
+                : '<span class="tag-pill" style="padding:6px 12px;font-size:.75rem;cursor:default;background:#7DE3A8;"><span class="dot" style="background:#0E3A2E;"></span>Free</span>';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
@@ -365,10 +368,11 @@
                 ? '<a class="btn solid" href="' + esc(p.url) + '" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:12px 20px;" onclick="press()">Visit Tool</a>'
                 : '';
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
-            return '<article class="quote">' +
+            return '<article class="quote" style="position:relative;padding-top:52px;">' +
+                '<div style="position:absolute;top:14px;left:14px;">' + paidBadge + '</div>' +
+                (tags ? '<div style="position:absolute;top:14px;right:14px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:60%;">' + tags + '</div>' : '') +
                 '<div class="ptitle" style="font-size:1.35rem;font-weight:800;">' + esc(normTitle(p.name) || 'Untitled') + '</div>' +
                 (p.description ? '<div class="pdesc" style="margin:10px 0;color:#4a5a55;font-size:.95rem;line-height:1.5;">' + esc(p.description) + '</div>' : '') +
-                '<div class="ptags" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0;">' + paidBadge + tags + '</div>' +
                 '<div class="pactions" style="justify-content:center;">' + visitBtn + favBtn + adminBtns + '</div>' +
                 '</article>';
         }
