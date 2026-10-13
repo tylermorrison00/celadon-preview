@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="templatemo-633-celadon-style.css">
             <style>
         #themeToggle, #colorTheme { display: none !important; }
-        .trend-badge{position:absolute;top:10px;left:10px;background:linear-gradient(180deg,#ffa06a 0%,#ff7b2e 50%,#f06414 100%);color:#fff;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:20px;z-index:2;box-shadow:0 3px 6px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 3px rgba(0,0,0,.15);text-shadow:0 1px 2px rgba(0,0,0,.25);border:1px solid rgba(0,0,0,.1);}.quote{position:relative;}</style>
+        .quote{position:relative;}</style>
     </head>
     <body>
         <header class="top" id="top">
@@ -556,7 +556,7 @@
                 mainBtn = '<a class="btn solid" href="signup.html?next=index.html" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</a>';
             }
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
-            var trendBadge = isTrending(p) ? '<span class="trend-badge">Trending</span>' : ''; return '<article class="quote">' + trendBadge + img +
+            var trendBadge = isTrending(p) ? '<span class="tag-pill" style="position:absolute;top:10px;left:10px;cursor:default;pointer-events:none;z-index:2;"><span class="dot" style="background:#ff6b35;"></span>Trending</span>' : ''; return '<article class="quote">' + trendBadge + img +
                 '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + '</div>' +
                 '<div class="pactions" style="justify-content:center;">' + mainBtn + favBtn + adminBtns + '</div>' +
                 '</article>';
