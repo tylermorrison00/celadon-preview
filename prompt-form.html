@@ -88,6 +88,10 @@
                 </div>
                 <label class="flabel" for="pfText" id="lblText">Prompt text</label>
                 <textarea class="field" id="pfText" placeholder="Prompt text..." aria-label="Prompt text"></textarea>
+                <div id="detailWrap" style="display:none;">
+                <label class="flabel" for="pfDetail" id="lblDetail">What's inside</label>
+                <textarea class="field" id="pfDetail" placeholder="What's inside..." aria-label="What's inside"></textarea>
+                </div>
                 <label class="flabel" for="pfTags">Tags</label>
                 <input class="field" id="pfTags" type="text" placeholder="Tags (comma separated)" aria-label="Tags">
                 <div id="tagPills" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 14px;"></div>
@@ -143,12 +147,14 @@
         var TABLE = new URLSearchParams(location.search).get('table') || 'prompts';
         var singular = TABLE === 'niches' ? 'niche' : (TABLE === 'tools' ? 'tool' : 'prompt');
         var IS_TOOLS = TABLE === 'tools';
+        var IS_NICHES = TABLE === 'niches';
         var BACK_PAGE = TABLE === 'tools' ? 'tools.html' : (TABLE === 'niches' ? 'niches.html' : 'index.html');
         var BACK_LABEL = TABLE === 'tools' ? 'Back to all tools' : (TABLE === 'niches' ? 'Back to all niches' : 'Back to all prompts');
         var sb = null;
         var fTitle = document.getElementById('pfTitle');
         var fCat = document.getElementById('pfCategory');
         var fText = document.getElementById('pfText');
+        var fDetail = document.getElementById('pfDetail');
         var fTags = document.getElementById('pfTags');
         var fMedia = document.getElementById('pfMedia');
         var fPro = document.getElementById('pfPro');
@@ -196,6 +202,20 @@
             if (cancelBtn) cancelBtn.href = BACK_PAGE;
             var pfSave = document.getElementById('pfSave');
             if (pfSave) pfSave.textContent = 'Save tool';
+        }
+        function setupNichesMode() {
+            if (!IS_NICHES) return;
+            // Update labels: "Prompt text" -> "Why it works", show "What's inside"
+            var lblText = document.getElementById('lblText'); if (lblText) lblText.textContent = 'Why it works';
+            if (fText) { fText.placeholder = 'Why it works...'; fText.setAttribute('aria-label', 'Why it works'); }
+            var detailWrap = document.getElementById('detailWrap'); if (detailWrap) detailWrap.style.display = 'block';
+            // Update back/cancel links
+            var backBtn = document.getElementById('backBtn');
+            if (backBtn) { backBtn.href = BACK_PAGE; backBtn.innerHTML = '&larr; ' + BACK_LABEL; }
+            var cancelBtn = document.querySelector('.btn-cancel');
+            if (cancelBtn) cancelBtn.href = BACK_PAGE;
+            var pfSave = document.getElementById('pfSave');
+            if (pfSave) pfSave.textContent = 'Save niche';
         }
         // hover sound (laptop only)
         function tick() { try { if (window.matchMedia('(hover: hover)').matches) press(); } catch (e) {} }
@@ -304,6 +324,17 @@
                     fTags.value = (p.tags || []).join(', ');
                     var pfUrl = document.getElementById('pfUrl'); if (pfUrl) pfUrl.value = p.url || '';
                     var pfPro2 = document.getElementById('pfPro'); if (pfPro2) pfPro2.checked = !!p.is_paid;
+                } else if (IS_NICHES) {
+                    fTitle.value = p.title || '';
+                    fCat.value = p.category || 'tiktok';
+                    var cl = document.getElementById('catLabel'); if (cl) cl.textContent = (p.category === 'youtube') ? 'YouTube' : 'TikTok';
+                    fText.value = p.why_text || '';
+                    if (fDetail) fDetail.value = p.detail_text || '';
+                    fTags.value = (p.tags || []).join(', ');
+                    fMedia.value = p.media_url || '';
+                    fPro.checked = !!p.is_pro;
+                    if (fTrend) fTrend.checked = !!p.is_trending;
+                    if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                 } else {
                     fTitle.value = p.title || '';
                     fCat.value = p.category || 'tiktok';
@@ -317,6 +348,7 @@
                 }
             }
             setupToolsMode();
+            setupNichesMode();
             loadTagPills();
             // hover sounds for buttons (laptop only)
             document.querySelectorAll('.pform .btn, .pform .tpill, #imgUploadBtn, #backBtn, .pform .btn-cancel').forEach(function(b) { b.addEventListener('mouseenter', tick); });
@@ -342,6 +374,28 @@
                     url: tUrl,
                     tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
                     is_paid: document.getElementById('pfPro').checked
+                };
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+            } else if (IS_NICHES) {
+                var title = normTitle(fTitle.value.trim());
+                var why = fText.value.trim();
+                var detail = fDetail ? fDetail.value.trim() : '';
+                if (!title || !why) {
+                    showErr('Title and "Why it works" are required.');
+                    return;
+                }
+                var mu = (uploadedUrl || document.getElementById('pfMedia').value || '').trim();
+                row = {
+                    title: title,
+                    category: fCat.value,
+                    why_text: why,
+                    detail_text: detail || null,
+                    tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+                    media_url: mu || null,
+                    media_type: mu ? 'image' : null,
+                    is_pro: fPro.checked,
+                    is_trending: fTrend.checked
                 };
                 btn.disabled = true;
                 btn.textContent = 'Saving...';
@@ -372,7 +426,7 @@
             if (res.error) {
                 showErr(res.error.message);
                 btn.disabled = false;
-                btn.textContent = IS_TOOLS ? 'Save tool' : 'Save prompt';
+                btn.textContent = IS_TOOLS ? 'Save tool' : (IS_NICHES ? 'Save niche' : 'Save prompt');
                 return;
             }
             location.href = BACK_PAGE;

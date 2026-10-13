@@ -64,7 +64,7 @@
     <script src="templatemo-633-celadon-script.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-    /* Niche detail page — loads one prompt by ?id= */
+    /* Niche detail page — loads one niche by ?id= */
     function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
     function tick() { try { if (window.matchMedia('(hover: hover)').matches) press(); } catch (e) {} }
     function press() {
@@ -141,8 +141,8 @@
                 if (locked) {
                     bodyHtml = '<div class="pempty">This is a Pro niche.<br><a class="btn solid" href="niches.html" style="margin-top:14px;display:inline-block;">Unlock Membership</a></div>';
                 } else {
-                    if (p.why_text) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">Why this niche</h3><div class="pbox">' + esc(p.why_text) + '</div>';
-                    if (p.detail_text) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">Details</h3><div class="pbox">' + esc(p.detail_text) + '</div>';
+                    if (p.why_text) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">Why it works</h3><div class="pbox">' + esc(p.why_text) + '</div>';
+                    if (p.detail_text) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">What\'s inside</h3><div class="pbox">' + esc(p.detail_text) + '</div>';
                     if (p.how_to_use) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">How to use</h3><div class="pbox">' + esc(p.how_to_use) + '</div>';
                     if (p.link_url) bodyHtml += '<div class="copybar"><a class="btn solid" href="' + esc(p.link_url) + '" target="_blank" rel="noopener" style="font-size:1rem;padding:14px 34px;" onclick="press()">Open Link</a></div>';
                 }
