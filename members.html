@@ -42,7 +42,7 @@
             
             // Load members from profiles
             try {
-                var res = await sb.from('profiles').select('email, plan, created_at').order('created_at', { ascending: false }).limit(100);
+                var res = await sb.from('profiles').select('id, email, plan, created_at').order('created_at', { ascending: false }).limit(100);
                 if (res.error) throw res.error;
                 var list = document.getElementById('membersList');
                 if (!res.data || !res.data.length) {
@@ -50,8 +50,49 @@
                     return;
                 }
                 list.innerHTML = res.data.map(function(m) {
-                    return '<div class="member-row"><span class="email">' + (m.email || '-') + '</span><span class="plan">' + (m.plan || 'free') + '</span></div>';
+                    var plan = (m.plan || 'free').toLowerCase();
+                    var isPro = plan === 'pro';
+                    var btnStyle = 'padding:6px 12px;font-size:.8rem;margin:2px;';
+                    return '<div class="member-row" style="flex-wrap:wrap;">' +
+                        '<span class="email">' + (m.email || '-') + '</span>' +
+                        '<div>' +
+                        '<button class="btn' + (plan === 'free' ? ' solid' : '') + '" data-plan="free" data-id="' + m.id + '" style="' + btnStyle + '">Free</button>' +
+                        '<button class="btn solid" data-plan="basic" data-id="' + m.id + '" style="' + btnStyle + '">Basic</button>' +
+                        '<button class="btn solid" data-plan="pro" data-id="' + m.id + '" style="' + btnStyle + '">Pro</button>' +
+                        '<button class="btn solid" data-plan="pro_always" data-id="' + m.id + '" style="' + btnStyle + '">Pro (Always)</button>' +
+                        '</div></div>';
                 }).join('');
+                
+                // Plan change handlers
+                list.querySelectorAll('button[data-plan]').forEach(function(btn) {
+                    btn.addEventListener('click', async function() {
+                        var memberId = btn.getAttribute('data-id');
+                        var planType = btn.getAttribute('data-plan');
+                        btn.disabled = true;
+                        btn.textContent = '...';
+                        try {
+                            var update = {};
+                            var now = new Date();
+                            if (planType === 'free') {
+                                update = { plan: 'free', plan_expires_at: null };
+                            } else if (planType === 'basic') {
+                                var exp = new Date(now.getTime() + 30*24*60*60*1000);
+                                update = { plan: 'basic', plan_expires_at: exp.toISOString() };
+                            } else if (planType === 'pro') {
+                                var exp2 = new Date(now.getTime() + 30*24*60*60*1000);
+                                update = { plan: 'pro', plan_expires_at: exp2.toISOString() };
+                            } else if (planType === 'pro_always') {
+                                update = { plan: 'pro', plan_expires_at: null };
+                            }
+                            var ures = await sb.from('profiles').update(update).eq('id', memberId);
+                            if (ures.error) throw ures.error;
+                            init(); // reload
+                        } catch (e) {
+                            btn.disabled = false;
+                            btn.textContent = planType;
+                        }
+                    });
+                });
             } catch (e) {
                 document.getElementById('membersList').innerHTML = '<p style="color:#c0392b;">Could not load members.</p>';
             }
