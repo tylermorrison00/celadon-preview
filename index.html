@@ -458,8 +458,6 @@
             if (cached && cached.length) {
                 state.prompts = cached;
                 renderTagPills();
-            var pp = document.getElementById('platformPills');
-            if (pp) pp.style.visibility = 'visible';
                 render();
             }
             try {
@@ -662,6 +660,11 @@
             var btn = e.target.closest('.plat-pill');
             if (!btn) return;
             tick();
+        });
+                // Show platform pills once ready (prevents FOUC)
+        requestAnimationFrame(function() {
+            var pp = document.getElementById('platformPills');
+            if (pp) pp.style.visibility = 'visible';
         });
         document.getElementById('platformPills').addEventListener('click', function(e) {
             var btn = e.target.closest('.plat-pill');
