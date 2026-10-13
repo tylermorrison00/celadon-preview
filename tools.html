@@ -371,7 +371,7 @@
             var q = state.q.trim().toLowerCase();
             var favs = state.favOnly ? getFavs() : null;
             return state.prompts.filter(function(p) {
-                if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;)) return false;
+                if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
                 if (q && (String(p.name || '') + ' ' + String(p.description || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
                 return true;
             });

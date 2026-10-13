@@ -494,7 +494,7 @@
             var favs = state.favOnly ? getFavs() : null;
             return state.prompts.filter(function(p) {
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return false;
-                if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;)) return false;
+                if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
                 if (q && (String(p.title || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
                 return true;
             });
