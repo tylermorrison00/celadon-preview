@@ -108,6 +108,16 @@
                 </div>
                 <input type="hidden" id="pfMedia">
                 </div>
+                <div id="detailImgWrap" style="display:none;">
+                <label class="flabel">Detail images (up to 10)</label>
+                <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+                    <button class="btn solid" type="button" id="detailImgBtn">Add detail images</button>
+                    <input type="file" id="detailImgFile" accept="image/*" multiple style="display:none;">
+                    <span id="detailImgName" style="font-size:.85rem;color:#6b7a74;">No images selected</span>
+                </div>
+                <div id="detailImgPreview" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"></div>
+                <input type="hidden" id="pfDetailImgs">
+                </div>
                 <label class="pro" id="lblPro"><input type="checkbox" id="pfPro"> Pro only</label>
                 <label class="pro" id="lblTrend"><input type="checkbox" id="pfTrend"> Trending</label>
                 <p class="auth-err" id="pfErr"></p>
@@ -145,6 +155,7 @@
         var API = 'https://vfyuebkdkxhdrlduqxng.supabase.co';
         var editId = new URLSearchParams(location.search).get('id');
         var TABLE = new URLSearchParams(location.search).get('table') || 'prompts';
+        if (TABLE === 'niches') { var diw = document.getElementById('detailImgWrap'); if (diw) diw.style.display = 'block'; }
         var singular = TABLE === 'niches' ? 'niche' : (TABLE === 'tools' ? 'tool' : 'prompt');
         var IS_TOOLS = TABLE === 'tools';
         var IS_NICHES = TABLE === 'niches';
@@ -285,6 +296,31 @@
         }
         // image upload
         document.getElementById('imgUploadBtn').addEventListener('click', function() { press(); imgFile.click(); });
+        // Detail images (niches only, up to 10)
+        var detailUrls = [];
+        var detailImgFile = document.getElementById('detailImgFile');
+        document.getElementById('detailImgBtn').addEventListener('click', function() { press(); detailImgFile.click(); });
+        detailImgFile.addEventListener('change', async function() {
+            var files = Array.from(detailImgFile.files || []).slice(0, 10 - detailUrls.length);
+            if (!files.length) return;
+            document.getElementById('detailImgName').textContent = 'Uploading...';
+            var saveBtn = document.getElementById('pfSave');
+            if (saveBtn) saveBtn.disabled = true;
+            for (var i = 0; i < files.length; i++) {
+                try {
+                    var fname = Date.now() + '_' + i + '_' + files[i].name.replace(/[^a-zA-Z0-9.]/g, '_');
+                    var up2 = await sb.storage.from('prompt-media').upload(fname, files[i]);
+                    if (up2.error) throw up2.error;
+                    var pub2 = sb.storage.from('prompt-media').getPublicUrl(fname);
+                    detailUrls.push(pub2.data.publicUrl);
+                } catch (e) {}
+            }
+            document.getElementById('pfDetailImgs').value = JSON.stringify(detailUrls);
+            document.getElementById('detailImgName').textContent = detailUrls.length + ' image(s)';
+            var prev = document.getElementById('detailImgPreview');
+            prev.innerHTML = detailUrls.map(function(u) { return '<img src="' + u + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">'; }).join('');
+            if (saveBtn) saveBtn.disabled = false;
+        });
         imgFile.addEventListener('change', async function() {
             var f = imgFile.files[0]; if (!f) return;
             imgName.textContent = 'Uploading...';
@@ -356,6 +392,13 @@
                     fPro.checked = !!p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
+                    // Load existing detail images for niches
+                    if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length) {
+                        detailUrls = p.extra_images.slice(0, 10);
+                        document.getElementById('pfDetailImgs').value = JSON.stringify(detailUrls);
+                        document.getElementById('detailImgName').textContent = detailUrls.length + ' image(s)';
+                        document.getElementById('detailImgPreview').innerHTML = detailUrls.map(function(u) { return '<img src="' + u + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">'; }).join('');
+                    }
                 } else {
                     fTitle.value = p.title || '';
                     fCat.value = p.category || 'tiktok';
@@ -416,7 +459,8 @@
                     media_url: mu || null,
                     media_type: mu ? 'image' : null,
                     is_pro: fPro.checked,
-                    is_trending: fTrend.checked
+                    is_trending: fTrend.checked,
+                    extra_images: JSON.parse(document.getElementById('pfDetailImgs').value || '[]')
                 };
                 btn.disabled = true;
                 btn.textContent = 'Saving...';
