@@ -141,8 +141,7 @@
         .plat-pill.active { background-image: var(--gloss-jade); color: #0E3A2E; box-shadow: var(--lift-jade), var(--lip-jade); }
         #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; transition: transform .24s var(--ease), box-shadow .24s var(--ease); }
         #tagFilters .tag-pill:hover { transform: translateY(-3px); }
-        #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; }
-        @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem; min-height: 38px; box-sizing: border-box; } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; min-height: 38px; } }
+        @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem;  } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } }
         #promptCards .favbtn { width: 38px; height: 38px; border-radius: 50%; padding: 0; font-size: 1.1rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
         #promptCards .favbtn.active { color: #E8A020; }
         #tagFilters .tag-pill .dot { width: 8px; height: 8px; }
@@ -256,7 +255,7 @@
             try { localStorage.removeItem(AUTH_CACHE_KEY); } catch (e) {}
         }
         var _ca = getCachedAuth();
-        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
+        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
 
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
@@ -372,11 +371,7 @@
             var q = state.q.trim().toLowerCase();
             var favs = state.favOnly ? getFavs() : null;
             return state.prompts.filter(function(p) {
-                if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
-                if (state.trendOnly && !(p.trending_until && new Date(p.trending_until) > new Date())) return false;
-                if (state.proFilter === 'free' && p.is_paid) return false;
-                if (state.proFilter === 'premium' && !p.is_paid) return false;
-                if (state.tag && !(p.tags || []).some(function(t) { return String(t).toLowerCase() === String(state.tag).toLowerCase(); })) return false;
+                if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;)) return false;
                 if (q && (String(p.name || '') + ' ' + String(p.description || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
                 return true;
             });
@@ -483,11 +478,10 @@
             });
             var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
             var special = [
-                '<button class="tag-pill" data-special="all"><img src="icon-all.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">All Tools</button>',
-                '<button class="tag-pill" data-special="free"><img src="icon-free.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Free</button>',
-                '<button class="tag-pill" data-special="premium"><img src="icon-premium.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Paid</button>',
-                '<button class="tag-pill" data-special="fav"><img src="icon-favorite.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Favorite</button>',
-                '<button class="tag-pill" data-special="trending"><img src="icon-trending.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Trending</button>'
+                '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Tools</button>',
+                '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
+                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Paid</button>',
+                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>',
             ];
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
@@ -509,11 +503,10 @@
                 var sp = b.getAttribute('data-special');
                 var tg = b.getAttribute('data-tag');
                 var active = false;
-                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly && !state.trendOnly;
+                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly;
                 else if (sp === 'free') active = state.proFilter === 'free';
                 else if (sp === 'premium') active = state.proFilter === 'premium';
                 else if (sp === 'fav') active = state.favOnly;
-                else if (sp === 'trending') active = state.trendOnly;
                 else if (tg) active = state.tag === tg;
                 b.classList.toggle('active', active);
             });
@@ -523,11 +516,9 @@
             if (!btn) return;
             var sp = btn.getAttribute('data-special');
             var tag = btn.getAttribute('data-tag');
-            state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
-            if (sp === 'free') state.proFilter = 'free';
+            state.tag = ''; state.proFilter = null; state.favOnly = false; if (sp === 'free') state.proFilter = 'free';
             else if (sp === 'premium') state.proFilter = 'premium';
             else if (sp === 'fav') state.favOnly = true;
-            else if (sp === 'trending') state.trendOnly = true;
             else if (tag) state.tag = tag;
             state.page = 1;
             markActivePill();
