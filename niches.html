@@ -142,7 +142,8 @@
         #platformPills { display: flex; justify-content: center; gap: 16px; margin: 24px 0 0; }
         .plat-pill { padding: 16px 52px; border-radius: 999px; background: var(--gloss); border: none; box-shadow: var(--lift), var(--lip); font-size: 1.05rem; font-weight: 600; color: #3A4750; cursor: pointer; }
         .plat-pill.active { background-image: var(--gloss-jade); color: #0E3A2E; box-shadow: var(--lift-jade), var(--lip-jade); }
-        #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; }
+        #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; transition: transform .24s var(--ease), box-shadow .24s var(--ease); }
+        #tagFilters .tag-pill:hover { transform: translateY(-3px); }
         #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; }
         @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem; min-height: 38px; box-sizing: border-box; } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } #tagFilters .tag-pill:has(img) { padding-top: 1px; padding-bottom: 1px; min-height: 38px; } }
         #promptCards .favbtn { width: 38px; height: 38px; border-radius: 50%; padding: 0; font-size: 1.1rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -179,6 +180,10 @@
         .pmodal textarea { min-height: 140px; resize: vertical; }
         .pmodal .row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px; }
         .pmodal label.pro { display: flex; align-items: center; gap: 8px; font-size: .88rem; margin-bottom: 12px; }
+            .vault-btn { transition: transform .24s var(--ease); }
+        .vault-btn:hover { transform: translateY(-3px); }
+            #platformPills .plat-pill { transition: transform .24s var(--ease); }
+        #platformPills .plat-pill:hover { transform: translateY(-3px); }
     </style>
     <!-- add / edit prompt modal (admin only) -->
     <div class="pscrim" id="promptScrim">
