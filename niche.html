@@ -177,7 +177,7 @@
                     if (p.why_text) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">Why it works</h3><div class="pbox">' + esc(p.why_text) + '</div>';
                     if (p.detail_text) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">What\'s inside</h3><div class="pbox">' + esc(p.detail_text) + '</div>';
                     if (p.how_to_use) bodyHtml += '<h3 style="color:#0E3A2E;margin:22px 0 8px;">How to use</h3><div class="pbox">' + esc(p.how_to_use) + '</div>';
-                    if (p.link_url) { var linkLabel = 'Open Link'; var lu = String(p.link_url).toLowerCase(); if (lu.indexOf('tiktok.com') > -1) linkLabel = 'Open account'; else if (lu.indexOf('youtube.com') > -1 || lu.indexOf('youtu.be') > -1) linkLabel = 'Open channel'; bodyHtml += '<div class="copybar"><a class="btn solid" href="' + esc(p.link_url) + '" target="_blank" rel="noopener" style="font-size:1rem;padding:14px 34px;" onclick="press()">' + linkLabel + '</a></div>'; }
+                    if (p.link_url) { var linkLabel = 'Open Link'; var lu = String(p.link_url).toLowerCase(); if (lu.indexOf('tiktok.com') > -1) linkLabel = 'Open account'; else if (lu.indexOf('youtube.com') > -1 || lu.indexOf('youtu.be') > -1) linkLabel = 'Open channel'; else if (lu.indexOf('instagram.com') > -1) linkLabel = 'Open page'; else if (lu.indexOf('facebook.com') > -1 || lu.indexOf('fb.com') > -1) linkLabel = 'Open page'; bodyHtml += '<div class="copybar"><a class="btn solid" href="' + esc(p.link_url) + '" target="_blank" rel="noopener" style="font-size:1rem;padding:14px 34px;" onclick="press()">' + linkLabel + '</a></div>'; }
                 }
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
