@@ -52,6 +52,7 @@
             <a href="#" onclick="event.preventDefault()">Menu</a>
             <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
+            <a href="members.html" id="drawerMembers" style="display:none;">Members</a>
             <span id="drawerAuth"><a class="btn solid" href="signup.html?next=index.html">Start free</a></span>
         </aside>
         <main id="home">
@@ -526,7 +527,7 @@
                 : '';
             var mainBtn;
             if (state.isAdmin) {
-                var mb = document.getElementById('membersBtn'); if (mb) mb.style.display = '';
+                var mb = document.getElementById('membersBtn'); if (mb) mb.style.display = ''; var dm = document.getElementById('drawerMembers'); if (dm) dm.style.display = '';
 
                 mainBtn = '<button class="btn solid" data-view="' + p.id + '">Copy prompt</button>';
             } else if (p.is_pro) {

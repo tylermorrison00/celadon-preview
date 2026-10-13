@@ -48,6 +48,7 @@
         <aside class="drawer" id="drawer" aria-label="Menu">
 
             <a href="#" onclick="event.preventDefault()">Menu</a>
+            <a href="members.html" id="drawerMembers" style="display:none;">Members</a>
             <span id="drawerAuth"><a class="btn solid" href="signup.html?next=niches.html">Start free</a></span>
         </aside>
         <main id="home">
@@ -679,7 +680,7 @@
 
         /* ---- auth-aware nav + admin ---- */
         function renderNav() {
-            var mb = document.getElementById('membersBtn'); if (mb && state.isAdmin) mb.style.display = '';
+            var mb = document.getElementById('membersBtn'); if (mb && state.isAdmin) mb.style.display = ''; var dm = document.getElementById('drawerMembers'); if (dm && state.isAdmin) dm.style.display = '';
             
             if (!navAuth) return;
             var drawerAuth = document.getElementById('drawerAuth');
