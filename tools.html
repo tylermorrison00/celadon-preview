@@ -356,11 +356,11 @@
         function cardHTML(p) {
             var tags = (p.tags || []).map(function(t, i) {
                 var c = tagColors[i % tagColors.length];
-                return '<span class="tag-pill" style="padding:6px 12px;font-size:.75rem;cursor:default;"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</span>';
+                return '<span class="tag-pill tag-sm"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</span>';
             }).join('');
             var paidBadge = p.is_paid
-                ? '<span class="tag-pill" style="padding:6px 12px;font-size:.75rem;cursor:default;background:#7DE3A8;"><span class="dot" style="background:#0E3A2E;"></span>Paid</span>'
-                : '<span class="tag-pill" style="padding:6px 12px;font-size:.75rem;cursor:default;background:#7DE3A8;"><span class="dot" style="background:#0E3A2E;"></span>Free</span>';
+                ? '<span class="tag-pill tag-sm"><span class="dot" style="background:#E8A0A0;"></span>Paid</span>'
+                : '<span class="tag-pill tag-sm"><span class="dot" style="background:#7DE3A8;"></span>Free</span>';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
