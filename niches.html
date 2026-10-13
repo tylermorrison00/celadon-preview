@@ -266,6 +266,14 @@
         var _ca = getCachedAuth();
         var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: (_ca && _ca.userPlan) || 'free', editingId: null };
 
+        function optImg(url, w) {
+            if (!url || typeof url !== 'string') return url;
+            // Supabase storage image transformation
+            if (url.indexOf('/storage/v1/object/') > -1 && url.indexOf('?') === -1) {
+                return url + '?width=' + (w || 800) + '&quality=75';
+            }
+            return url;
+        }
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -424,7 +432,7 @@
             } else {
                 mainBtn = '<a class="btn solid" href="signup.html?next=niches.html" style="flex:1;text-align:center;padding:12px 20px;">View Details</a>';
             }
-            var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(p.media_url) + '" alt="" loading="lazy">' : '';
+            var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(optImg(p.media_url, 800)) + '" alt="" loading="lazy" decoding="async">' : '';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';

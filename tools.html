@@ -262,6 +262,14 @@
         var _ca = getCachedAuth();
         var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
 
+        function optImg(url, w) {
+            if (!url || typeof url !== 'string') return url;
+            // Supabase storage image transformation
+            if (url.indexOf('/storage/v1/object/') > -1 && url.indexOf('?') === -1) {
+                return url + '?width=' + (w || 800) + '&quality=75';
+            }
+            return url;
+        }
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];

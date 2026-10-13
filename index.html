@@ -384,6 +384,14 @@
         var _ca = getCachedAuth();
         var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
 
+        function optImg(url, w) {
+            if (!url || typeof url !== 'string') return url;
+            // Supabase storage image transformation
+            if (url.indexOf('/storage/v1/object/') > -1 && url.indexOf('?') === -1) {
+                return url + '?width=' + (w || 800) + '&quality=75';
+            }
+            return url;
+        }
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
                 return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
@@ -511,7 +519,7 @@
         function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
         function cardHTML(p) {
             var tags = (p.tags || []).map(function(t) { return '<span class="ptag">' + esc(t) + '</span>'; }).join('');
-            var img = p.media_url ? '<img class="pimg" src="' + esc(p.media_url) + '" alt="" loading="lazy">' : '';
+            var img = p.media_url ? '<img class="pimg" src="' + esc(optImg(p.media_url, 800)) + '" alt="" loading="lazy" decoding="async">' : '';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
