@@ -475,7 +475,12 @@
         }
         if (searchBtn) searchBtn.addEventListener('click', function() { press(); doSearch(); });
         if (searchInput) searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
-        var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8'];
+        function tagDotColor(i) {
+            var hue = (i * 137.508) % 360;
+            var sat = 55 + (i % 3) * 10;
+            var light = 68 + (i % 4) * 4;
+            return 'hsl(' + Math.round(hue) + ',' + sat + '%,' + light + '%)';
+        }
         function renderTagPills() {
             var tf = document.getElementById('tagFilters');
             if (!tf) return;
@@ -489,13 +494,13 @@
             });
             var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
             var special = [
-                '<button class="tag-pill" data-special="all"><span class="dot" style="background:#0E3A2E;"></span>All Niches</button>',
-                '<button class="tag-pill" data-special="free"><span class="dot" style="background:#7DE3A8;"></span>Free</button>',
-                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:#E8A0A0;"></span>Premium</button>',
-                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:#F0C980;"></span>Favorite</button>'
+                '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Niches</button>',
+                '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
+                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Premium</button>',
+                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>'
             ];
             var tagPills = tags.map(function(t, i) {
-                var c = tagColors[i % tagColors.length];
+                var c = tagDotColor(i + 4);
                 return '<button class="tag-pill" data-tag="' + esc(t) + '"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</button>';
             });
             tf.innerHTML = special.join('') + tagPills.join('');

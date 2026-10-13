@@ -378,7 +378,7 @@
         function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
         function cardHTML(p) {
             var tags = (p.tags || []).map(function(t, i) {
-                var c = tagColors[i % tagColors.length];
+                var c = tagDotColor(i + 4);
                 return '<span class="tag-pill tag-sm"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</span>';
             }).join('');
             var paidBadge = p.is_paid
@@ -448,7 +448,12 @@
         }
         if (searchBtn) searchBtn.addEventListener('click', function() { press(); doSearch(); });
         if (searchInput) searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') doSearch(); });
-        var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8'];
+        function tagDotColor(i) {
+            var hue = (i * 137.508) % 360;
+            var sat = 55 + (i % 3) * 10;
+            var light = 68 + (i % 4) * 4;
+            return 'hsl(' + Math.round(hue) + ',' + sat + '%,' + light + '%)';
+        }
         function renderTagPills() {
             var tf = document.getElementById('tagFilters');
             if (!tf) return;
@@ -461,13 +466,13 @@
             });
             var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
             var special = [
-                '<button class="tag-pill" data-special="all"><span class="dot" style="background:#0E3A2E;"></span>All Tools</button>',
-                '<button class="tag-pill" data-special="free"><span class="dot" style="background:#7DE3A8;"></span>Free</button>',
-                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:#E8A0A0;"></span>Premium</button>',
-                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:#F0C980;"></span>Favorite</button>'
+                '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Tools</button>',
+                '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
+                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Premium</button>',
+                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>'
             ];
             var tagPills = tags.map(function(t, i) {
-                var c = tagColors[i % tagColors.length];
+                var c = tagDotColor(i + 4);
                 return '<button class="tag-pill" data-tag="' + esc(t) + '"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</button>';
             });
             tf.innerHTML = special.join('') + tagPills.join('');
