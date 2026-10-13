@@ -495,11 +495,11 @@
             });
             var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
             var special = [
-                '<button class="tag-pill" data-special="all"><img src="icon-all.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">All Niches</button>',
-                '<button class="tag-pill" data-special="free"><img src="icon-free.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Free</button>',
-                '<button class="tag-pill" data-special="premium"><img src="icon-premium.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Premium</button>',
-                '<button class="tag-pill" data-special="fav"><img src="icon-favorite.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Favorite</button>',
-                '<button class="tag-pill" data-special="trending"><img src="icon-trending.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Trending</button>'
+                '<button class="tag-pill" data-special="all"><img src="icon-all.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">All Niches</button>',
+                '<button class="tag-pill" data-special="free"><img src="icon-free.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Free</button>',
+                '<button class="tag-pill" data-special="premium"><img src="icon-premium.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Premium</button>',
+                '<button class="tag-pill" data-special="fav"><img src="icon-favorite.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Favorite</button>',
+                '<button class="tag-pill" data-special="trending"><img src="icon-trending.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Trending</button>'
             ];
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
