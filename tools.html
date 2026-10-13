@@ -61,15 +61,12 @@
                         <input class="field" type="text" placeholder="Search tools..." aria-label="Search prompts" id="promptSearch" style="flex:1;min-width:0;">
                         <button class="btn solid" type="button" id="searchBtn" style="flex-shrink:0;">Search</button>
                     </div>
-                    <div id="platformPills">
-                        <button class="plat-pill active" data-platform="tiktok">TikTok</button>
-                        <button class="plat-pill" data-platform="youtube">YouTube</button>
-                    </div>
+
                     <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:700px;margin-left:auto;margin-right:auto;" id="tagFilters"></div>
                     <div id="adminBar" style="display:none;max-width:1200px;margin:20px auto 0;text-align:center;">
                         <a class="btn solid" href="prompt-form.html?table=tools" id="addPromptBtn" onclick="press()">+ Add new tool</a>
                     </div>
-                    <div id="promptCards"><div class="pempty">Loading prompts...</div></div>
+                    <div id="promptCards"><div class="pempty">Loading tools...</div></div>
                     </div>
                     <div style="margin-top:40px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center;" id="pagination">
                     </div>
@@ -180,16 +177,13 @@
     <!-- add / edit prompt modal (admin only) -->
     <div class="pscrim" id="promptScrim">
         <div class="pmodal">
-            <h3 id="promptModalTitle">Add new prompt</h3>
-            <input class="field" id="pfTitle" type="text" placeholder="Title" aria-label="Title">
-            <select class="field" id="pfCategory" aria-label="Category">
-                <option value="tiktok">TikTok</option>
-                <option value="youtube">YouTube</option>
-            </select>
-            <textarea class="field" id="pfText" placeholder="Prompt text..." aria-label="Prompt text"></textarea>
+            <h3 id="promptModalTitle">Add new tool</h3>
+            <input class="field" id="pfTitle" type="text" placeholder="Tool name" aria-label="Tool name">
+            <input class="field" id="pfCategory" type="text" placeholder="Category (optional)" aria-label="Category">
+            <textarea class="field" id="pfText" placeholder="Description..." aria-label="Description"></textarea>
             <input class="field" id="pfTags" type="text" placeholder="Tags (comma separated)" aria-label="Tags">
-            <input class="field" id="pfMedia" type="text" placeholder="Media image URL (optional)" aria-label="Media URL">
-            <label class="pro"><input type="checkbox" id="pfPro"> Pro only</label>
+            <input class="field" id="pfMedia" type="text" placeholder="Tool URL (https://...)" aria-label="Tool URL">
+            <label class="pro"><input type="checkbox" id="pfPro"> Paid tool</label>
             <p class="auth-err" id="pfErr" style="display:none;color:#b3261e;font-size:.85rem;"></p>
             <div class="row">
                 <button class="pbtn" type="button" id="pfCancel" style="font-size:.85rem;padding:10px 18px;border-radius:999px;border:1px solid #dfe6f2;background:#fff;cursor:pointer;font-weight:600;">Cancel</button>
@@ -233,7 +227,7 @@
         var searchBtn = document.getElementById('searchBtn');
 
         var isMobDesk = false; try { isMobDesk = window.innerWidth > (window.screen.width || 0) * 1.3; } catch (e) {}
-        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: null, isAdmin: false, editingId: null };
+        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: null, isAdmin: false, editingId: null };
 
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
@@ -291,7 +285,7 @@
             } catch (e) {}
         }
 
-        var PROMPTS_CACHE_KEY = 'ca_prompts_cache';
+        var PROMPTS_CACHE_KEY = 'ca_tools_cache';
         var PROMPTS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
         function getCachedPrompts() {
             try {
@@ -307,7 +301,7 @@
             try { localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
         async function fetchPrompts() {
-            var res = await fetch(API + '/rest/v1/tools?select=id,title,category,tags,media_url,media_type,is_pro,is_trending,sort_order,created_at&order=sort_order.asc&order=created_at.desc&limit=200', {
+            var res = await fetch(API + '/rest/v1/tools?select=id,name,category,description,url,tags,is_paid,sort_order,created_at&order=sort_order.asc&limit=200', {
                 headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
             });
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -349,12 +343,11 @@
             var q = state.q.trim().toLowerCase();
             var favs = state.favOnly ? getFavs() : null;
             return state.prompts.filter(function(p) {
-                if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return false;
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
-                if (state.proFilter === 'free' && p.is_pro) return false;
-                if (state.proFilter === 'premium' && !p.is_pro) return false;
+                if (state.proFilter === 'free' && p.is_paid) return false;
+                if (state.proFilter === 'premium' && !p.is_paid) return false;
                 if (state.tag && !(p.tags || []).some(function(t) { return String(t).toLowerCase() === state.tag; })) return false;
-                if (q && (String(p.title || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
+                if (q && (String(p.name || '') + ' ' + String(p.description || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
                 return true;
             });
         }
@@ -362,24 +355,21 @@
         function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
         function cardHTML(p) {
             var tags = (p.tags || []).map(function(t) { return '<span class="ptag">' + esc(t) + '</span>'; }).join('');
-            var img = p.media_url ? '<img class="pimg" src="' + esc(p.media_url) + '" alt="" loading="lazy">' : '';
+            var paidBadge = p.is_paid
+                ? '<span class="ptag" style="background:#E8A0A0;color:#5a1a1a;">Paid</span>'
+                : '<span class="ptag" style="background:#7DE3A8;color:#0E3A2E;">Free</span>';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
-            var mainBtn;
-            if (state.isAdmin) {
-                mainBtn = '<button class="btn solid" data-view="' + p.id + '">Copy prompt</button>';
-            } else if (p.is_pro) {
-                mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
-            } else if (state.user) {
-                mainBtn = '<button class="btn solid" data-view="' + p.id + '" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</button>';
-            } else {
-                mainBtn = '<a class="btn solid" href="signup.html?next=tools.html" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</a>';
-            }
+            var visitBtn = p.url
+                ? '<a class="btn solid" href="' + esc(p.url) + '" target="_blank" rel="noopener" style="flex:1;text-align:center;padding:12px 20px;" onclick="press()">Visit Tool</a>'
+                : '';
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
-            return '<article class="quote">' + img +
-                '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + '</div>' +
-                '<div class="pactions" style="justify-content:center;">' + mainBtn + favBtn + adminBtns + '</div>' +
+            return '<article class="quote">' +
+                '<div class="ptitle" style="font-size:1.35rem;font-weight:800;">' + esc(normTitle(p.name) || 'Untitled') + '</div>' +
+                (p.description ? '<div class="pdesc" style="margin:10px 0;color:#4a5a55;font-size:.95rem;line-height:1.5;">' + esc(p.description) + '</div>' : '') +
+                '<div class="ptags" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin:8px 0;">' + paidBadge + tags + '</div>' +
+                '<div class="pactions" style="justify-content:center;">' + visitBtn + favBtn + adminBtns + '</div>' +
                 '</article>';
         }
 
@@ -398,7 +388,6 @@
 
         grid.addEventListener('click', async function(e) {
             var t = e.target;
-            var vw = t.getAttribute('data-view');
             var fv = t.getAttribute('data-fav');
             var ed = t.getAttribute('data-edit');
             var del = t.getAttribute('data-del');
@@ -411,8 +400,7 @@
                 if (state.favOnly) render();
                 return;
             }
-            if (vw) { location.href = 'prompt.html?id=' + encodeURIComponent(vw); return; }
-            if (ed) { location.href = 'prompt-form.html?id=' + encodeURIComponent(ed); return; }
+            if (ed) { location.href = 'prompt-form.html?table=tools&id=' + encodeURIComponent(ed); return; }
             if (del) {
                 if (!confirm('Delete this tool?')) return;
                 var r = await sb.from('tools').delete().eq('id', del);
@@ -441,7 +429,6 @@
             state.prompts.forEach(function(p) {
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return;
                 (p.tags || []).forEach(function(t) {
-                    if (state.platform === 'youtube' && String(t).toLowerCase() === 'master prompt') return;
                     counts[t] = (counts[t] || 0) + 1;
                 });
             });
@@ -516,23 +503,6 @@
                 else if (path === href) o.classList.add('cur');
             });
         })();
-        document.getElementById('platformPills').addEventListener('pointerover', function(e) {
-            if (e.pointerType && e.pointerType !== 'mouse') return;
-            var btn = e.target.closest('.plat-pill');
-            if (!btn) return;
-            tick();
-        });
-        document.getElementById('platformPills').addEventListener('click', function(e) {
-            var btn = e.target.closest('.plat-pill');
-            if (!btn) return;
-            state.platform = btn.getAttribute('data-platform');
-            document.querySelectorAll('#platformPills .plat-pill').forEach(function(b) {
-                b.classList.toggle('active', b === btn);
-            });
-            state.page = 1;
-            renderTagPills();
-            render();
-        });
 
         /* ---- modal ---- */
         var scrim = document.getElementById('promptScrim');
@@ -547,20 +517,20 @@
 
         function openModal(id) {
             state.editingId = id || null;
-            mTitle.textContent = id ? 'Edit prompt' : 'Add new prompt';
+            mTitle.textContent = id ? 'Edit tool' : 'Add new tool';
             fErr.style.display = 'none';
             if (id) {
                 var p = state.prompts.find(function(x) { return String(x.id) === id; });
                 if (p) {
-                    fTitle.value = p.title || '';
-                    fCat.value = p.category || 'tiktok';
-                    fText.value = p.prompt_text || '';
+                    fTitle.value = p.name || '';
+                    fCat.value = p.category || '';
+                    fText.value = p.description || '';
                     fTags.value = (p.tags || []).join(', ');
-                    fMedia.value = p.media_url || '';
-                    fPro.checked = !!p.is_pro;
+                    fMedia.value = p.url || '';
+                    fPro.checked = !!p.is_paid;
                 }
             } else {
-                fTitle.value = ''; fCat.value = 'tiktok'; fText.value = '';
+                fTitle.value = ''; fCat.value = ''; fText.value = '';
                 fTags.value = ''; fMedia.value = ''; fPro.checked = false;
             }
             scrim.classList.add('show');
@@ -573,19 +543,19 @@
             press();
             var title = fTitle.value.trim();
             var text = fText.value.trim();
-            if (!title || !text) {
-                fErr.textContent = 'Title and prompt text are required.';
+            var toolUrl = fMedia.value.trim();
+            if (!title || !toolUrl) {
+                fErr.textContent = 'Tool name and URL are required.';
                 fErr.style.display = 'block';
                 return;
             }
             var row = {
-                title: title,
-                category: fCat.value,
-                prompt_text: text,
+                name: title,
+                category: fCat.value.trim() || null,
+                description: text || null,
+                url: toolUrl,
                 tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
-                media_url: fMedia.value.trim() || null,
-                media_type: fMedia.value.trim() ? 'image' : null,
-                is_pro: fPro.checked
+                is_paid: fPro.checked
             };
             var res = state.editingId
                 ? await sb.from('tools').update(row).eq('id', state.editingId)

@@ -73,8 +73,9 @@
         <h1 class="pform-title" id="formTitle">Add new</h1>
         <div id="formWrap" style="display:none;">
             <form class="pform" id="promptForm" onsubmit="return false;">
-                <label class="flabel" for="pfTitle">Title</label>
+                <label class="flabel" for="pfTitle" id="lblTitle">Title</label>
                 <input class="field" id="pfTitle" type="text" placeholder="Title" aria-label="Title">
+                <div id="catWrap">
                 <label class="flabel">Category</label>
                 <div class="cdrop" id="catDrop">
                     <button type="button" class="cdrop-btn" id="catBtn"><span id="catLabel">TikTok</span><span class="carr">&#9662;</span></button>
@@ -84,11 +85,17 @@
                     </div>
                 </div>
                 <input type="hidden" id="pfCategory" value="tiktok">
-                <label class="flabel" for="pfText">Prompt text</label>
+                </div>
+                <label class="flabel" for="pfText" id="lblText">Prompt text</label>
                 <textarea class="field" id="pfText" placeholder="Prompt text..." aria-label="Prompt text"></textarea>
                 <label class="flabel" for="pfTags">Tags</label>
                 <input class="field" id="pfTags" type="text" placeholder="Tags (comma separated)" aria-label="Tags">
                 <div id="tagPills" style="display:flex;flex-wrap:wrap;gap:8px;margin:-6px 0 14px;"></div>
+                <div id="urlWrap" style="display:none;">
+                <label class="flabel" for="pfUrl">Tool URL</label>
+                <input class="field" id="pfUrl" type="url" placeholder="https://..." aria-label="Tool URL">
+                </div>
+                <div id="mediaWrap">
                 <label class="flabel">Media image</label>
                 <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
                     <button class="btn solid" type="button" id="imgUploadBtn">Add image</button>
@@ -96,8 +103,9 @@
                     <span id="imgName" style="font-size:.85rem;color:#6b7a74;">No image selected</span>
                 </div>
                 <input type="hidden" id="pfMedia">
-                <label class="pro"><input type="checkbox" id="pfPro"> Pro only</label>
-                <label class="pro"><input type="checkbox" id="pfTrend"> Trending</label>
+                </div>
+                <label class="pro" id="lblPro"><input type="checkbox" id="pfPro"> Pro only</label>
+                <label class="pro" id="lblTrend"><input type="checkbox" id="pfTrend"> Trending</label>
                 <p class="auth-err" id="pfErr"></p>
                 <div class="row">
                     <button class="btn solid" type="submit" id="pfSave">Save prompt</button>
@@ -134,6 +142,9 @@
         var editId = new URLSearchParams(location.search).get('id');
         var TABLE = new URLSearchParams(location.search).get('table') || 'prompts';
         var singular = TABLE === 'niches' ? 'niche' : (TABLE === 'tools' ? 'tool' : 'prompt');
+        var IS_TOOLS = TABLE === 'tools';
+        var BACK_PAGE = TABLE === 'tools' ? 'tools.html' : (TABLE === 'niches' ? 'niches.html' : 'index.html');
+        var BACK_LABEL = TABLE === 'tools' ? 'Back to all tools' : (TABLE === 'niches' ? 'Back to all niches' : 'Back to all prompts');
         var sb = null;
         var fTitle = document.getElementById('pfTitle');
         var fCat = document.getElementById('pfCategory');
@@ -162,6 +173,29 @@
         function showForm() {
             formLoading.style.display = 'none';
             formWrap.style.display = 'block';
+        }
+        function setupToolsMode() {
+            if (!IS_TOOLS) return;
+            // Update labels
+            var lblTitle = document.getElementById('lblTitle'); if (lblTitle) lblTitle.textContent = 'Tool name';
+            var lblText = document.getElementById('lblText'); if (lblText) lblText.textContent = 'Description';
+            var lblPro = document.getElementById('lblPro');
+            if (lblPro) lblPro.innerHTML = '<input type="checkbox" id="pfPro"> Paid tool';
+            // Show URL field, hide category/media/trending
+            var urlWrap = document.getElementById('urlWrap'); if (urlWrap) urlWrap.style.display = 'block';
+            var catWrap = document.getElementById('catWrap'); if (catWrap) catWrap.style.display = 'none';
+            var mediaWrap = document.getElementById('mediaWrap'); if (mediaWrap) mediaWrap.style.display = 'none';
+            var lblTrend = document.getElementById('lblTrend'); if (lblTrend) lblTrend.style.display = 'none';
+            // Update placeholders
+            var fTitle = document.getElementById('pfTitle'); if (fTitle) fTitle.placeholder = 'Tool name';
+            var fText = document.getElementById('pfText'); if (fText) fText.placeholder = 'Description...';
+            // Update back/cancel links
+            var backBtn = document.getElementById('backBtn');
+            if (backBtn) { backBtn.href = BACK_PAGE; backBtn.innerHTML = '&larr; ' + BACK_LABEL; }
+            var cancelBtn = document.querySelector('.btn-cancel');
+            if (cancelBtn) cancelBtn.href = BACK_PAGE;
+            var pfSave = document.getElementById('pfSave');
+            if (pfSave) pfSave.textContent = 'Save tool';
         }
         // hover sound (laptop only)
         function tick() { try { if (window.matchMedia('(hover: hover)').matches) press(); } catch (e) {} }
@@ -264,16 +298,25 @@
                     return;
                 }
                 var p = res.data;
-                fTitle.value = p.title || '';
-                fCat.value = p.category || 'tiktok';
-                var cl = document.getElementById('catLabel'); if (cl) cl.textContent = (p.category === 'youtube') ? 'YouTube' : 'TikTok';
-                fText.value = p.prompt_text || '';
-                fTags.value = (p.tags || []).join(', ');
-                fMedia.value = p.media_url || '';
-                fPro.checked = !!p.is_pro;
-                if (fTrend) fTrend.checked = !!p.is_trending;
-                if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
+                if (IS_TOOLS) {
+                    fTitle.value = p.name || '';
+                    fText.value = p.description || '';
+                    fTags.value = (p.tags || []).join(', ');
+                    var pfUrl = document.getElementById('pfUrl'); if (pfUrl) pfUrl.value = p.url || '';
+                    var pfPro2 = document.getElementById('pfPro'); if (pfPro2) pfPro2.checked = !!p.is_paid;
+                } else {
+                    fTitle.value = p.title || '';
+                    fCat.value = p.category || 'tiktok';
+                    var cl = document.getElementById('catLabel'); if (cl) cl.textContent = (p.category === 'youtube') ? 'YouTube' : 'TikTok';
+                    fText.value = p.prompt_text || '';
+                    fTags.value = (p.tags || []).join(', ');
+                    fMedia.value = p.media_url || '';
+                    fPro.checked = !!p.is_pro;
+                    if (fTrend) fTrend.checked = !!p.is_trending;
+                    if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
+                }
             }
+            setupToolsMode();
             loadTagPills();
             // hover sounds for buttons (laptop only)
             document.querySelectorAll('.pform .btn, .pform .tpill, #imgUploadBtn, #backBtn, .pform .btn-cancel').forEach(function(b) { b.addEventListener('mouseenter', tick); });
@@ -283,36 +326,56 @@
         document.getElementById('promptForm').addEventListener('submit', async function() {
             press();
             hideErr();
-            var title = normTitle(fTitle.value.trim());
-            var text = fText.value.trim();
-            if (!title || !text) {
-                showErr('Title and prompt text are required.');
-                return;
-            }
-            var mu = (uploadedUrl || document.getElementById('pfMedia').value || '').trim();
-            var row = {
-                title: title,
-                category: fCat.value,
-                prompt_text: text,
-                tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
-                media_url: mu || null,
-                media_type: mu ? 'image' : null,
-                is_pro: fPro.checked,
-                is_trending: fTrend.checked
-            };
             var btn = document.getElementById('pfSave');
-            btn.disabled = true;
-            btn.textContent = 'Saving...';
+            var row;
+            if (IS_TOOLS) {
+                var tName = normTitle(fTitle.value.trim());
+                var tUrl = (document.getElementById('pfUrl').value || '').trim();
+                var tDesc = fText.value.trim();
+                if (!tName || !tUrl) {
+                    showErr('Tool name and URL are required.');
+                    return;
+                }
+                row = {
+                    name: tName,
+                    description: tDesc || null,
+                    url: tUrl,
+                    tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+                    is_paid: document.getElementById('pfPro').checked
+                };
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+            } else {
+                var title = normTitle(fTitle.value.trim());
+                var text = fText.value.trim();
+                if (!title || !text) {
+                    showErr('Title and prompt text are required.');
+                    return;
+                }
+                var mu = (uploadedUrl || document.getElementById('pfMedia').value || '').trim();
+                row = {
+                    title: title,
+                    category: fCat.value,
+                    prompt_text: text,
+                    tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+                    media_url: mu || null,
+                    media_type: mu ? 'image' : null,
+                    is_pro: fPro.checked,
+                    is_trending: fTrend.checked
+                };
+                btn.disabled = true;
+                btn.textContent = 'Saving...';
+            }
             var res = editId
                 ? await sb.from(TABLE).update(row).eq('id', editId)
                 : await sb.from(TABLE).insert(row);
             if (res.error) {
                 showErr(res.error.message);
                 btn.disabled = false;
-                btn.textContent = 'Save prompt';
+                btn.textContent = IS_TOOLS ? 'Save tool' : 'Save prompt';
                 return;
             }
-            location.href = 'index.html';
+            location.href = BACK_PAGE;
         });
 
         init();
