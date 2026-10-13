@@ -589,7 +589,16 @@
                     counts[t] = (counts[t] || 0) + 1;
                 });
             });
-            var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
+            var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+            // Priority: Master Prompt then Video Prompt right after special pills
+            var priority = ['master prompt', 'video prompt'];
+            var ptags = [], rest = [];
+            tags.forEach(function(t) {
+                if (priority.indexOf(String(t).toLowerCase()) !== -1) ptags.push(t);
+                else rest.push(t);
+            });
+            ptags.sort(function(a, b) { return priority.indexOf(String(a).toLowerCase()) - priority.indexOf(String(b).toLowerCase()); });
+            tags = ptags.concat(rest).slice(0, 12);
             var special = [
                 '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Prompts</button>',
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
