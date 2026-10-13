@@ -16,18 +16,10 @@
 </head>
 <body>
     <div id="app">
-        <header class="nav shell">
-            <a href="index.html" class="brand">
-                <span style="font-weight:700;font-size:1.2rem;color:#0E3A2E;">Creators Automation</span>
-            </a>
-            <div style="display:flex;gap:10px;align-items:center;">
-                <a class="btn solid" href="members.html" id="membersBtn" style="display:none;">Members</a>
-                <span id="navAuth"></span>
-            </div>
-        </header>
+        <!-- header removed per user request -->
         <main class="members-wrap">
             <a class="btn" href="index.html" style="margin-bottom:20px;display:inline-block;">&larr; Back</a>
-            <h1 style="color:#0E3A2E;margin-bottom:24px;">Members</h1>
+
             <div id="membersList"><p style="color:#6b7a74;">Loading...</p></div>
         </main>
     </div>
@@ -46,9 +38,7 @@
             var isAdmin = pr.data && !!pr.data.is_admin;
             if (!isAdmin) { location.href = 'index.html'; return; }
             
-            document.getElementById('membersBtn').style.display = '';
-            document.getElementById('navAuth').innerHTML = '<button class="btn solid" id="logoutBtn">Logout</button>';
-            document.getElementById('logoutBtn').addEventListener('click', async function() { await sb.auth.signOut(); location.href = 'index.html'; });
+            // admin verified, no header shown
             
             // Load members from profiles
             try {
