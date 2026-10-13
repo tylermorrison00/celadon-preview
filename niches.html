@@ -148,6 +148,7 @@
         #promptCards .favbtn.active { color: #E8A020; }
         #tagFilters .tag-pill .dot { width: 8px; height: 8px; }
         #promptCards .ptag { font-size: .72rem; padding: 3px 10px; border-radius: 999px; background: #eef4f1; color: #0E3A2E; }
+        #promptCards .pimg.blur-img { filter: blur(14px); }
         #promptCards .ptext { font-size: .88rem; color: #334155; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
         #promptCards .ptext.open { display: block; }
         #promptCards .pmore { background: none; border: none; color: #0E3A2E; font-weight: 600; font-size: .8rem; cursor: pointer; padding: 6px 0; text-align: left; }
@@ -233,7 +234,7 @@
         var searchBtn = document.getElementById('searchBtn');
 
         var isMobDesk = false; try { isMobDesk = window.innerWidth > (window.screen.width || 0) * 1.3; } catch (e) {}
-        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: null, isAdmin: false, editingId: null };
+        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: null, isAdmin: false, userPlan: 'free', editingId: null };
 
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
@@ -360,22 +361,43 @@
         }
 
         function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
+        function daysLeftNiche(created_at) {
+            try {
+                var dp = Math.floor((Date.now() - new Date(created_at).getTime()) / 86400000);
+                return 14 - dp;
+            } catch (e) { return 0; }
+        }
         function cardHTML(p) {
             var tags = (p.tags || []).map(function(t) { return '<span class="ptag">' + esc(t) + '</span>'; }).join('');
-            var img = p.media_url ? '<img class="pimg" src="' + esc(p.media_url) + '" alt="" loading="lazy">' : '';
+            var blurCls = '';
+            var mainBtn;
+            var viewBtn = function() { return '<button class="btn solid" data-view="' + p.id + '" style="flex:1;text-align:center;padding:12px 20px;">View Details</button>'; };
+            if (state.isAdmin || state.userPlan === 'pro') {
+                mainBtn = state.isAdmin
+                    ? '<button class="btn solid" data-view="' + p.id + '">View Details</button>'
+                    : viewBtn();
+            } else if (p.is_pro) {
+                if (state.userPlan === 'basic') {
+                    var dl = daysLeftNiche(p.created_at);
+                    if (dl > 0) {
+                        blurCls = ' blur-img';
+                        mainBtn = '<button class="btn solid" disabled style="flex:1;text-align:center;padding:12px 20px;opacity:.75;cursor:not-allowed;">' + dl + ' days left</button>';
+                    } else {
+                        mainBtn = viewBtn();
+                    }
+                } else {
+                    blurCls = ' blur-img';
+                    mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
+                }
+            } else if (state.user) {
+                mainBtn = viewBtn();
+            } else {
+                mainBtn = '<a class="btn solid" href="signup.html" style="flex:1;text-align:center;padding:12px 20px;">View Details</a>';
+            }
+            var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(p.media_url) + '" alt="" loading="lazy">' : '';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
-            var mainBtn;
-            if (state.isAdmin) {
-                mainBtn = '<button class="btn solid" data-view="' + p.id + '">Copy prompt</button>';
-            } else if (p.is_pro) {
-                mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
-            } else if (state.user) {
-                mainBtn = '<button class="btn solid" data-view="' + p.id + '" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</button>';
-            } else {
-                mainBtn = '<a class="btn solid" href="signup.html" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</a>';
-            }
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
             return '<article class="quote">' + img +
                 '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + '</div>' +
@@ -411,7 +433,7 @@
                 if (state.favOnly) render();
                 return;
             }
-            if (vw) { location.href = 'prompt.html?id=' + encodeURIComponent(vw); return; }
+            if (vw) { location.href = 'niche.html?id=' + encodeURIComponent(vw); return; }
             if (ed) { location.href = 'prompt-form.html?id=' + encodeURIComponent(ed); return; }
             if (del) {
                 if (!confirm('Delete this niche?')) return;
@@ -626,9 +648,10 @@
             var session = res.data && res.data.session;
             state.user = session ? session.user : null;
             state.isAdmin = false;
+            state.userPlan = 'free';
             if (state.user) {
-                var pr = await sb.from('profiles').select('is_admin').eq('id', state.user.id).single();
-                if (pr.data) state.isAdmin = !!pr.data.is_admin;
+                var pr = await sb.from('profiles').select('is_admin,plan').eq('id', state.user.id).single();
+                if (pr.data) { state.isAdmin = !!pr.data.is_admin; state.userPlan = String(pr.data.plan || 'free').toLowerCase(); }
             }
             if (adminBar) adminBar.style.display = state.isAdmin ? '' : 'none';
             try { var pf = localStorage.getItem('ca_pending_fav'); if (pf && state.user) { localStorage.removeItem('ca_pending_fav'); var f0 = getFavs(); if (f0.indexOf(String(pf)) < 0) { f0.push(String(pf)); try { localStorage.setItem('ca_favs', JSON.stringify(f0)); } catch (e) {} } } } catch (e) {}
