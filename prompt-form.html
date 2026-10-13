@@ -288,6 +288,8 @@
         imgFile.addEventListener('change', async function() {
             var f = imgFile.files[0]; if (!f) return;
             imgName.textContent = 'Uploading...';
+            var saveBtn = document.getElementById('pfSave');
+            if (saveBtn) saveBtn.disabled = true;
             try {
                 var name = Date.now() + '_' + f.name.replace(/[^a-zA-Z0-9.]/g, '_');
                 var up = await sb.storage.from('prompt-media').upload(name, f);
@@ -296,7 +298,9 @@
                 uploadedUrl = pub.data.publicUrl;
                 document.getElementById('pfMedia').value = uploadedUrl;
                 imgName.textContent = f.name;
-            } catch (e) { imgName.textContent = 'Upload failed'; }
+                var saveBtn2 = document.getElementById('pfSave');
+                if (saveBtn2) saveBtn2.disabled = false;
+            } catch (e) { imgName.textContent = 'Upload failed'; var saveBtn3 = document.getElementById('pfSave'); if (saveBtn3) saveBtn3.disabled = false; }
         });
 
         async function init() {
