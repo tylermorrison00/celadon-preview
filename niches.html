@@ -392,7 +392,7 @@
             return true;
         }
         function isTrending(p) {
-            if (!isTrending(p)) return false;
+            if (!p.is_trending) return false;
             if (p.trending_expires_at && new Date(p.trending_expires_at) <= new Date()) return false;
             return true;
         }
