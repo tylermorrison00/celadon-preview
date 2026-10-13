@@ -512,7 +512,7 @@
                     counts[t] = (counts[t] || 0) + 1;
                 });
             });
-            var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
+            var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
             var special = [
                 '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Tools</button>',
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',

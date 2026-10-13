@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="templatemo-633-celadon-style.css">
             <style>
         #themeToggle, #colorTheme { display: none !important; }
-        .trend-badge{position:absolute;top:10px;left:10px;background:linear-gradient(180deg,#ff8c42,#e85d1a);color:#fff;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:20px;z-index:2;box-shadow:0 3px 0 #b54a12,0 6px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.4);text-shadow:0 1px 2px rgba(0,0,0,.2);}.quote{position:relative;}</style>
+        .trend-badge{position:absolute;top:10px;left:10px;background:linear-gradient(180deg,#ffa06a 0%,#ff7b2e 50%,#f06414 100%);color:#fff;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:20px;z-index:2;box-shadow:0 3px 6px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 3px rgba(0,0,0,.15);text-shadow:0 1px 2px rgba(0,0,0,.25);border:1px solid rgba(0,0,0,.1);}.quote{position:relative;}</style>
     </head>
     <body>
         <header class="top" id="top">
@@ -530,7 +530,7 @@
                     counts[t] = (counts[t] || 0) + 1;
                 });
             });
-            var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
+            var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
             var special = [
                 '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Niches</button>',
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
