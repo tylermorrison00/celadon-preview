@@ -161,7 +161,7 @@
                         if (14 - dp > 0) locked = true; else hasAccess = true;
                     } else locked = true;
                 }
-                var img = p.media_url ? '<img class="pimg-lg' + (locked ? ' blur-img' : '') + '" src="' + esc(p.media_url) + '" alt="">' : '';
+                var img = ''; // Thumbnail not shown on detail page, only gallery
                 // Detail gallery images
                 var gallery = '';
                 if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length && !locked) {
