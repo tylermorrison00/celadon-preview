@@ -12,6 +12,11 @@
         .member-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border-radius: 14px; padding: 14px 18px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
         .member-row .email { font-weight: 600; color: #0E3A2E; }
         .member-row .plan { font-size: .85rem; color: #6b7a74; }
+        .plan-drop { position: relative; display: inline-block; }
+        .plan-btn { cursor: pointer; }
+        .plan-list { position: absolute; right: 0; top: 100%; margin-top: 4px; background: #fff; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,.12); min-width: 140px; z-index: 100; overflow: hidden; }
+        .plan-opt { display: block; width: 100%; text-align: left; padding: 10px 16px; border: none; background: none; font-size: .85rem; color: #0E3A2E; cursor: pointer; }
+        .plan-opt:hover { background: #e8f5f0; }
     </style>
 </head>
 <body>
@@ -51,25 +56,40 @@
                 }
                 list.innerHTML = res.data.map(function(m) {
                     var plan = (m.plan || 'free').toLowerCase();
-                    var isPro = plan === 'pro';
-                    var btnStyle = 'padding:6px 12px;font-size:.8rem;margin:2px;';
-                    return '<div class="member-row" style="flex-wrap:wrap;">' +
+                    var planLabel = plan === 'pro' ? 'Pro' : plan === 'basic' ? 'Basic' : 'Free';
+                    return '<div class="member-row">' +
                         '<span class="email">' + (m.email || '-') + '</span>' +
-                        '<div>' +
-                        '<button class="btn' + (plan === 'free' ? ' solid' : '') + '" data-plan="free" data-id="' + m.id + '" style="' + btnStyle + '">Free</button>' +
-                        '<button class="btn solid" data-plan="basic" data-id="' + m.id + '" style="' + btnStyle + '">Basic</button>' +
-                        '<button class="btn solid" data-plan="pro" data-id="' + m.id + '" style="' + btnStyle + '">Pro</button>' +
-                        '<button class="btn solid" data-plan="pro_always" data-id="' + m.id + '" style="' + btnStyle + '">Pro (Always)</button>' +
-                        '</div></div>';
+                        '<div class="plan-drop">' +
+                        '<button class="btn solid plan-btn" data-id="' + m.id + '">' + planLabel + ' &#9662;</button>' +
+                        '<div class="plan-list" hidden>' +
+                        '<button class="plan-opt" data-plan="free" data-id="' + m.id + '">Free</button>' +
+                        '<button class="plan-opt" data-plan="basic" data-id="' + m.id + '">Basic</button>' +
+                        '<button class="plan-opt" data-plan="pro" data-id="' + m.id + '">Pro</button>' +
+                        '<button class="plan-opt" data-plan="pro_always" data-id="' + m.id + '">Pro (Always)</button>' +
+                        '</div></div></div>';
                 }).join('');
                 
+                // Dropdown toggle
+                list.querySelectorAll('.plan-btn').forEach(function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        var list2 = btn.parentElement.querySelector('.plan-list');
+                        var wasHidden = list2.hidden;
+                        list.querySelectorAll('.plan-list').forEach(function(l) { l.hidden = true; });
+                        list2.hidden = !wasHidden;
+                    });
+                });
+                document.addEventListener('click', function() {
+                    list.querySelectorAll('.plan-list').forEach(function(l) { l.hidden = true; });
+                });
+                
                 // Plan change handlers
-                list.querySelectorAll('button[data-plan]').forEach(function(btn) {
-                    btn.addEventListener('click', async function() {
-                        var memberId = btn.getAttribute('data-id');
-                        var planType = btn.getAttribute('data-plan');
-                        btn.disabled = true;
-                        btn.textContent = '...';
+                list.querySelectorAll('.plan-opt').forEach(function(opt) {
+                    opt.addEventListener('click', async function(e) {
+                        e.stopPropagation();
+                        var memberId = opt.getAttribute('data-id');
+                        var planType = opt.getAttribute('data-plan');
+                        opt.textContent = '...';
                         try {
                             var update = {};
                             var now = new Date();
@@ -87,9 +107,8 @@
                             var ures = await sb.from('profiles').update(update).eq('id', memberId);
                             if (ures.error) throw ures.error;
                             init(); // reload
-                        } catch (e) {
-                            btn.disabled = false;
-                            btn.textContent = planType;
+                        } catch (err) {
+                            opt.textContent = planType;
                         }
                     });
                 });
