@@ -13,13 +13,34 @@
         .signup-wrap .close-plate { max-width: 720px; width: 100%; }
         .signup-wrap .form { flex-direction: column; align-items: stretch; max-width: 420px; margin: 0 auto; }
         .signup-wrap .field { width: 100%; }
-        .switch.auth-wide { width: 100%; max-width: 210px; height: 22px; margin: 4px auto 18px; display: flex; align-items: center; justify-content: center; background: #ffffff; }
+        /* wide sign up / sign in toggle */
+        .switch.auth-wide {
+            width: 100%;
+            max-width: 210px;
+            height: 22px;
+            margin: 4px auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff;
+        }
         .switch.auth-wide .knob { width: 46px; height: 16px; top: 3px; left: 3px; transition: left .34s var(--ease), transform .34s var(--ease), background .34s linear, box-shadow .34s; }
         .switch.auth-wide[aria-checked="true"] { background: var(--gloss-jade); }
-        .switch.auth-wide[aria-checked="true"] .knob { left: calc(100% - 49px); transform: none; }
+        .switch.auth-wide[aria-checked="true"] .knob {
+            left: calc(100% - 49px);
+            transform: none;
+        }
         .auth-toggle-text { font-weight: 600; font-size: .8rem; color: #111; pointer-events: none; }
         .switch.auth-wide[aria-checked="true"] .auth-toggle-text { color: #0E3A2E; }
-        .btn.google { background-color: #ffffff; color: #1f2937; border: 1px solid #dfe6f2; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn.google {
+            background-color: #ffffff;
+            color: #1f2937;
+            border: 1px solid #dfe6f2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
         .auth-err { display: none; color: #b3261e; font-size: .85rem; margin: 0 auto 12px; max-width: 420px; text-align: center; }
         .auth-err.show { display: block; }
     </style>
@@ -48,6 +69,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        /* mini sound engine — same voices as main site: toggle onSw/offSw, button press */
         var Snd = (function() {
             var ctx = null;
             function ac() {
@@ -75,6 +97,8 @@
                 press: function() { tone(520, 390, 0.13, 0.14); }
             };
         })();
+
+        /* Supabase Auth — Creators Automation accounts (users + admin) */
         var sb = window.supabase.createClient(
             'https://vfyuebkdkxhdrlduqxng.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmeXVlYmtka3hoZHJsZHVxeG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTI1NDQsImV4cCI6MjEwNjc2ODU0NH0.RY-VU33zwySGKmPH34pHs72HaxRt9yi4lAhHO9xn7_4'
@@ -89,6 +113,7 @@
             var errEl = document.getElementById('authErr');
             var authBox = document.getElementById('authBox');
             if (!sw || !label || !action) return;
+
             function showErr(msg) {
                 errEl.textContent = msg || '';
                 errEl.classList.toggle('show', !!msg);
@@ -99,7 +124,13 @@
                 action.textContent = signin ? 'Login' : 'Create account';
                 showErr('');
             }
-            function goHome() { window.location.href = '/'; }
+            function goHome() {
+                var m = location.search.match(/[?&]next=([^&]+)/);
+                var nxt = m ? decodeURIComponent(m[1]) : '/';
+                // Only allow local pages for safety
+                if (!/^(index\.html|niches\.html|tools\.html|niche\.html|prompt\.html)?(\?.*)?$/.test(nxt) && nxt !== '/') nxt = '/';
+                window.location.href = nxt;
+            }
             function flip() {
                 var signin = sw.getAttribute('aria-checked') !== 'true';
                 setMode(signin);
@@ -109,6 +140,7 @@
             sw.addEventListener('keydown', function(e) {
                 if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); }
             });
+
             action.addEventListener('click', async function() {
                 Snd.press();
                 var email = (emailEl.value || '').trim();
@@ -129,6 +161,7 @@
                     action.disabled = false;
                 }
             });
+
             if (google) google.addEventListener('click', async function() {
                 Snd.press();
                 showErr('');
@@ -142,6 +175,8 @@
                     showErr('Google login abhi setup nahi hua.');
                 }
             });
+
+            /* already logged in? go home. after OAuth redirect, session arrives here */
             sb.auth.getSession().then(function(res) {
                 var s = res.data && res.data.session;
                 if (s && s.user) goHome();
