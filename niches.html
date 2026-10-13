@@ -127,7 +127,8 @@
         <script src="templatemo-633-celadon-script.js"></script>
 
     <style>
-        #promptCards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;max-width:1200px;margin:64px auto 0;padding:0 12px}
+        #promptCards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;max-width:1200px;margin:64px auto 0;padding:0 12px;justify-content:center}
+        @media(min-width:769px){#promptCards{margin-left:auto!important;margin-right:auto!important;justify-content:center}}
         /* mobile in desktop-mode: center all sections */
         body.mobdesk{overflow-x:hidden}
         body.mobdesk .shell{width:min(var(--shell),calc(100% - 44px))!important;margin-left:auto!important;margin-right:auto!important}
