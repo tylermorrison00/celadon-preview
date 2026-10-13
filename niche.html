@@ -166,7 +166,7 @@
                 var gallery = '';
                 if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length && !locked) {
                     gallery = '<div style="display:flex;flex-wrap:wrap;gap:12px;margin:20px 0;justify-content:center;">' +
-                        p.extra_images.slice(0, 10).map(function(u) { return '<img src="' + esc(u) + '" style="width:100px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;" loading="lazy">'; }).join('') +
+                        p.extra_images.slice(0, 10).map(function(u) { return '<img src="' + esc(u) + '" style="width:150px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;" loading="lazy">'; }).join('') +
                         '</div>';
                 }
                 var bodyHtml = '';
