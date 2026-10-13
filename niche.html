@@ -119,7 +119,7 @@
                 var res = await sb.from('niches').select('*').eq('id', id).single();
                 if (res.error || !res.data) throw res.error || new Error('not found');
                 var p = res.data;
-                var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:50%;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
+                var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:3px;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
                 var plan = 'free', isAdm = false;
                 try {
                     var _caRaw = localStorage.getItem('ca_auth_state');

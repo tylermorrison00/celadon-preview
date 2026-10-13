@@ -118,7 +118,7 @@
                 var res = await sb.from('prompts').select('*').eq('id', id).single();
                 if (res.error || !res.data) throw res.error || new Error('not found');
                 var p = res.data;
-                var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:50%;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
+                var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:3px;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
                 var img = p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="">' : '';
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
