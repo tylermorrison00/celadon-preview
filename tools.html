@@ -145,6 +145,10 @@
         #promptCards .favbtn.active { color: #E8A020; }
         #tagFilters .tag-pill .dot { width: 8px; height: 8px; }
         #promptCards .ptag { font-size: .72rem; padding: 3px 10px; border-radius: 999px; background: #eef4f1; color: #0E3A2E; }
+        #promptCards .tag-pill.tag-sm { padding: 5px 10px; font-size: .68rem; cursor: default; }
+        #promptCards .tag-pill.tag-sm .dot { width: 8px; height: 8px; }
+        @media (min-width: 768px) { #promptCards .tag-pill.tag-sm { padding: 9px 18px; font-size: .85rem; } #promptCards .tag-pill.tag-sm .dot { width: 10px; height: 10px; } }
+        #promptCards .tag-pill.mint-3d { background: linear-gradient(180deg, #B8F5D4 0%, #8DEDB6 46%, #7DE3A8 46.01%, #6BD598 100%); color: #0E3A2E; }
         #promptCards .ptext { font-size: .88rem; color: #334155; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
         #promptCards .ptext.open { display: block; }
         #promptCards .pmore { background: none; border: none; color: #0E3A2E; font-weight: 600; font-size: .8rem; cursor: pointer; padding: 6px 0; text-align: left; }
@@ -359,8 +363,8 @@
                 return '<span class="tag-pill tag-sm"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</span>';
             }).join('');
             var paidBadge = p.is_paid
-                ? '<span class="tag-pill tag-sm"><span class="dot" style="background:#E8A0A0;"></span>Paid</span>'
-                : '<span class="tag-pill tag-sm"><span class="dot" style="background:#7DE3A8;"></span>Free</span>';
+                ? '<span class="tag-pill tag-sm mint-3d"><span class="dot" style="background:#5a1a1a;"></span>Paid</span>'
+                : '<span class="tag-pill tag-sm mint-3d"><span class="dot" style="background:#0E3A2E;"></span>Free</span>';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
