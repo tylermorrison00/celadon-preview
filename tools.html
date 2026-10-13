@@ -18,7 +18,7 @@
         <link rel="stylesheet" href="templatemo-633-celadon-style.css">
             <style>
         #themeToggle, #colorTheme { display: none !important; }
-        </style>
+        .trend-badge{position:absolute;top:10px;right:10px;background:#ff6b35;color:#fff;font-size:.75rem;font-weight:700;padding:4px 12px;border-radius:20px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.2);}.quote{position:relative;}</style>
     </head>
     <body>
         <header class="top" id="top">
@@ -344,7 +344,7 @@
             try { localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
         async function fetchPrompts() {
-            var res = await fetch(API + '/rest/v1/tools?select=id,name,category,description,url,tags,is_paid,trending_until,sort_order,created_at&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
+            var res = await fetch(API + '/rest/v1/tools?select=id,name,category,description,url,tags,is_paid,trending_until,sort_order,order_expires_at,created_at&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
                 headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
             });
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -382,10 +382,20 @@
             });
         }
 
+        function isPinned(p) {
+            if (!(p.sort_order >= 1 && p.sort_order <= 10)) return false;
+            if (p.order_expires_at && new Date(p.order_expires_at) <= new Date()) return false;
+            return true;
+        }
+        function isTrending(p) {
+            if (!p.is_trending) return false;
+            if (p.trending_expires_at && new Date(p.trending_expires_at) <= new Date()) return false;
+            return true;
+        }
         function pinSort(arr) {
             return arr.slice().sort(function(a, b) {
-                var ao = (a.sort_order >= 1 && a.sort_order <= 10) ? a.sort_order : 999;
-                var bo = (b.sort_order >= 1 && b.sort_order <= 10) ? b.sort_order : 999;
+                var ao = isPinned(a) ? a.sort_order : 999;
+                var bo = isPinned(b) ? b.sort_order : 999;
                 if (ao !== bo) return ao - bo;
                 return new Date(b.created_at) - new Date(a.created_at);
             });

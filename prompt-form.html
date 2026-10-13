@@ -492,9 +492,22 @@
                 btn.textContent = 'Saving...';
             }
             var ordVal = parseInt(document.getElementById('pfOrder').value, 10);
-            if (ordVal >= 1 && ordVal <= 10) row.sort_order = ordVal;
-            else if (!editId) row.sort_order = 0; // New unpinned items
-            else row.sort_order = 0; // Cleared order = unpinned
+            if (ordVal >= 1 && ordVal <= 10) {
+                row.sort_order = ordVal;
+                var expD = new Date(); expD.setDate(expD.getDate() + 30);
+                row.order_expires_at = expD.toISOString();
+            } else {
+                row.sort_order = 0;
+                row.order_expires_at = null;
+            }
+            // Trending 30-day expiry
+            var isTrend = document.getElementById('pfTrend') ? document.getElementById('pfTrend').checked : false;
+            if (isTrend) {
+                var tExp = new Date(); tExp.setDate(tExp.getDate() + 30);
+                row.trending_expires_at = tExp.toISOString();
+            } else {
+                row.trending_expires_at = null;
+            }
             var res = editId
                 ? await sb.from(TABLE).update(row).eq('id', editId)
                 : await sb.from(TABLE).insert(row);
