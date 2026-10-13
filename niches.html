@@ -254,7 +254,7 @@
             try { localStorage.removeItem(AUTH_CACHE_KEY); } catch (e) {}
         }
         var _ca = getCachedAuth();
-        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: (_ca && _ca.userPlan) || 'free', editingId: null };
+        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: (_ca && _ca.userPlan) || 'free', editingId: null };
 
         function esc(s) {
             return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) {
@@ -372,6 +372,7 @@
             return state.prompts.filter(function(p) {
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return false;
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
+                if (state.trendOnly && !p.is_trending) return false;
                 if (state.proFilter === 'free' && p.is_pro) return false;
                 if (state.proFilter === 'premium' && !p.is_pro) return false;
                 if (state.tag && !(p.tags || []).some(function(t) { return String(t).toLowerCase() === state.tag; })) return false;
@@ -494,10 +495,11 @@
             });
             var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
             var special = [
-                '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Niches</button>',
-                '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
-                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Premium</button>',
-                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>'
+                '<button class="tag-pill" data-special="all"><img src="icon-all.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">All Niches</button>',
+                '<button class="tag-pill" data-special="free"><img src="icon-free.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Free</button>',
+                '<button class="tag-pill" data-special="premium"><img src="icon-premium.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Premium</button>',
+                '<button class="tag-pill" data-special="fav"><img src="icon-favorite.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Favorite</button>',
+                '<button class="tag-pill" data-special="trending"><img src="icon-trending.webp" style="width:12px;height:12px;flex-shrink:0;" alt="">Trending</button>'
             ];
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
@@ -519,10 +521,11 @@
                 var sp = b.getAttribute('data-special');
                 var tg = b.getAttribute('data-tag');
                 var active = false;
-                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly;
+                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly && !state.trendOnly;
                 else if (sp === 'free') active = state.proFilter === 'free';
                 else if (sp === 'premium') active = state.proFilter === 'premium';
                 else if (sp === 'fav') active = state.favOnly;
+                else if (sp === 'trending') active = state.trendOnly;
                 else if (tg) active = state.tag === tg;
                 b.classList.toggle('active', active);
             });
@@ -532,10 +535,11 @@
             if (!btn) return;
             var sp = btn.getAttribute('data-special');
             var tag = btn.getAttribute('data-tag');
-            state.tag = ''; state.proFilter = null; state.favOnly = false;
+            state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
             if (sp === 'free') state.proFilter = 'free';
             else if (sp === 'premium') state.proFilter = 'premium';
             else if (sp === 'fav') state.favOnly = true;
+            else if (sp === 'trending') state.trendOnly = true;
             else if (tag) state.tag = tag;
             state.page = 1;
             markActivePill();
