@@ -120,6 +120,7 @@
                 </div>
                 <label class="pro" id="lblPro"><input type="checkbox" id="pfPro"> Pro only</label>
                 <label class="pro" id="lblTrend"><input type="checkbox" id="pfTrend"> Trending</label>
+                <div style="margin-top:10px;"><label style="font-size:.9rem;color:#0E3A2E;font-weight:600;">Order (1-10, blank = auto): <input type="number" id="pfOrder" min="1" max="10" placeholder="-" style="width:70px;padding:8px 10px;border-radius:10px;border:1px solid #d5ddd9;"></label></div>
                 <p class="auth-err" id="pfErr"></p>
                 <div class="row">
                     <button class="btn solid" type="submit" id="pfSave">Save prompt</button>
@@ -174,6 +175,7 @@
         var imgFile = document.getElementById('imgFile');
         var imgName = document.getElementById('imgName');
         var uploadedUrl = '';
+        var uploadFailed = false;
         var fErr = document.getElementById('pfErr');
         var formTitle = document.getElementById('formTitle');
         var formWrap = document.getElementById('formWrap');
@@ -323,6 +325,7 @@
         });
         imgFile.addEventListener('change', async function() {
             var f = imgFile.files[0]; if (!f) return;
+            uploadFailed = false; hideErr();
             imgName.textContent = 'Uploading...';
             var saveBtn = document.getElementById('pfSave');
             if (saveBtn) saveBtn.disabled = true;
@@ -336,7 +339,7 @@
                 imgName.textContent = f.name;
                 var saveBtn2 = document.getElementById('pfSave');
                 if (saveBtn2) saveBtn2.disabled = false;
-            } catch (e) { imgName.textContent = 'Upload failed'; var saveBtn3 = document.getElementById('pfSave'); if (saveBtn3) saveBtn3.disabled = false; }
+            } catch (e) { uploadFailed = true; imgName.textContent = 'Upload failed'; showErr('Image upload failed — nayi image save nahi hogi. Dobara image select karo.'); var saveBtn3 = document.getElementById('pfSave'); if (saveBtn3) saveBtn3.disabled = false; }
         });
 
         async function init() {
@@ -391,6 +394,7 @@
                     fMedia.value = p.media_url || '';
                     fPro.checked = !!p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
+                    var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                     // Load existing detail images for niches
                     if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length) {
@@ -408,6 +412,7 @@
                     fMedia.value = p.media_url || '';
                     fPro.checked = !!p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
+                    var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                 }
             }
@@ -422,6 +427,7 @@
         document.getElementById('promptForm').addEventListener('submit', async function() {
             press();
             hideErr();
+            if (uploadFailed) { showErr('Nayi image upload nahi hui — save rok diya gaya taake purani image ghalat fehmi me save na ho. Image dobara select karo.'); return; }
             var btn = document.getElementById('pfSave');
             var row;
             if (IS_TOOLS) {
@@ -485,7 +491,10 @@
                 btn.disabled = true;
                 btn.textContent = 'Saving...';
             }
-            if (!editId) row.sort_order = 0; // New items go to top
+            var ordVal = parseInt(document.getElementById('pfOrder').value, 10);
+            if (ordVal >= 1 && ordVal <= 10) row.sort_order = ordVal;
+            else if (!editId) row.sort_order = 0; // New unpinned items
+            else row.sort_order = 0; // Cleared order = unpinned
             var res = editId
                 ? await sb.from(TABLE).update(row).eq('id', editId)
                 : await sb.from(TABLE).insert(row);

@@ -382,6 +382,14 @@
             });
         }
 
+        function pinSort(arr) {
+            return arr.slice().sort(function(a, b) {
+                var ao = (a.sort_order >= 1 && a.sort_order <= 10) ? a.sort_order : 999;
+                var bo = (b.sort_order >= 1 && b.sort_order <= 10) ? b.sort_order : 999;
+                if (ao !== bo) return ao - bo;
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+        }
         function filtered() {
             var q = state.q.trim().toLowerCase();
             var favs = state.favOnly ? getFavs() : null;
@@ -421,7 +429,7 @@
         }
 
         function render() {
-            var list = filtered();
+            var list = pinSort(filtered());
             var pages = Math.max(1, Math.ceil(list.length / state.perPage));
             if (state.page > pages) state.page = pages;
             var slice = list.slice((state.page - 1) * state.perPage, state.page * state.perPage);
