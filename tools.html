@@ -387,7 +387,7 @@
             return state.prompts.filter(function(p) {
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
                 if (state.proFilter === 'free' && p.is_paid) return false;
-                if (state.proFilter === 'paid' && !p.is_paid) return false;
+                if (state.proFilter === 'premium' && !p.is_paid) return false;
                 if (state.tag && !(p.tags || []).some(function(t) { return String(t).toLowerCase() === state.tag; })) return false;
                 if (q && (String(p.name || '') + ' ' + String(p.description || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
                 return true;
