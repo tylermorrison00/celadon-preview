@@ -57,7 +57,7 @@
 
     <main class="pwrap">
         <a class="btn backlink" href="index.html" onclick="press()">&larr; Back to all prompts</a>
-        <div id="promptDetail"><div class="pempty">Loading...</div></div>
+        <div id="promptDetail"></div>
     </main>
 
     <script src="templatemo-633-celadon-script.js"></script>
@@ -140,20 +140,34 @@
                     }
                     setTimeout(function() { btn.textContent = 'Copy prompt'; }, 1500);
                 });
-                // auth-aware nav (login/logout only)
+                // auth-aware nav (login/logout only) — use cached auth for instant render
                 try {
-                    var s = await sb.auth.getSession();
+                    var _caNav = null;
+                    try {
+                        var _caRaw = localStorage.getItem('ca_auth_state');
+                        if (_caRaw) {
+                            var _c = JSON.parse(_caRaw);
+                            if (_c && _c.ts && (Date.now() - _c.ts < 30 * 60 * 1000) && _c.userId) _caNav = _c;
+                        }
+                    } catch (e0) {}
                     var navAuth = document.getElementById('navAuth');
                     var drawerAuth = document.getElementById('drawerAuth');
-                    if (navAuth && s.data.session) {
-                        navAuth.style.display = 'none';
+                    function showLoggedIn() {
+                        if (navAuth) navAuth.style.display = 'none';
                         if (drawerAuth) {
                             drawerAuth.innerHTML = '<button class="btn solid" type="button" id="drawerLogout" style="width:100%;text-align:center;">Logout</button>';
                             document.getElementById('drawerLogout').addEventListener('click', async function() {
+                                try { localStorage.removeItem('ca_auth_state'); } catch (e1) {}
                                 await sb.auth.signOut(); location.reload();
                             });
                         }
                     }
+                    if (_caNav) showLoggedIn();
+                    // Validate in background
+                    var s = await sb.auth.getSession();
+                    var loggedIn = !!(s.data && s.data.session);
+                    if (loggedIn && !_caNav) showLoggedIn();
+                    else if (!loggedIn && _caNav) location.reload();
                 } catch (e) {}
             } catch (err) {
                 box.innerHTML = '<div class="pempty">Prompt not found.</div>';

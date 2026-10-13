@@ -58,7 +58,7 @@
 
     <main class="pwrap">
         <a class="btn backlink" href="niches.html" onclick="press()">&larr; Back to all niches</a>
-        <div id="nicheDetail"><div class="pempty">Loading...</div></div>
+        <div id="nicheDetail"></div>
     </main>
 
     <script src="templatemo-633-celadon-script.js"></script>
@@ -122,12 +122,26 @@
                 var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:50%;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
                 var plan = 'free', isAdm = false;
                 try {
-                    var sess0 = await sb.auth.getSession();
-                    if (sess0.data && sess0.data.session) {
-                        var pr0 = await sb.from('profiles').select('is_admin,plan').eq('id', sess0.data.session.user.id).single();
-                        if (pr0.data) { isAdm = !!pr0.data.is_admin; plan = String(pr0.data.plan || 'free').toLowerCase(); }
+                    var _caRaw = localStorage.getItem('ca_auth_state');
+                    if (_caRaw) {
+                        var _ca = JSON.parse(_caRaw);
+                        if (_ca && _ca.ts && (Date.now() - _ca.ts < 30 * 60 * 1000) && _ca.userId) {
+                            isAdm = !!_ca.isAdmin; plan = String(_ca.userPlan || 'free').toLowerCase();
+                        }
                     }
                 } catch (e0) {}
+                // Validate in background, update if changed
+                (async function() {
+                    try {
+                        var sess0 = await sb.auth.getSession();
+                        var p2 = 'free', a2 = false;
+                        if (sess0.data && sess0.data.session) {
+                            var pr0 = await sb.from('profiles').select('is_admin,plan').eq('id', sess0.data.session.user.id).single();
+                            if (pr0.data) { a2 = !!pr0.data.is_admin; p2 = String(pr0.data.plan || 'free').toLowerCase(); }
+                        }
+                        if (a2 !== isAdm || p2 !== plan) { location.reload(); }
+                    } catch (e1) {}
+                })();
                 var hasAccess = isAdm || plan === 'pro';
                 var locked = false;
                 if (p.is_pro && !hasAccess) {

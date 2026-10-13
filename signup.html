@@ -131,6 +131,15 @@
                 if (!/^(index\.html|niches\.html|tools\.html|niche\.html|prompt\.html)?(\?.*)?$/.test(nxt) && nxt !== '/') nxt = '/';
                 window.location.href = nxt;
             }
+            async function setAuthCacheAndGo(userId) {
+                try {
+                    var pr = await sb.from('profiles').select('is_admin,plan').eq('id', userId).single();
+                    var isAdmin = pr.data ? !!pr.data.is_admin : false;
+                    var plan = pr.data ? String(pr.data.plan || 'free').toLowerCase() : 'free';
+                    localStorage.setItem('ca_auth_state', JSON.stringify({ ts: Date.now(), userId: userId, isAdmin: isAdmin, userPlan: plan }));
+                } catch (e) {}
+                goHome();
+            }
             function flip() {
                 var signin = sw.getAttribute('aria-checked') !== 'true';
                 setMode(signin);
@@ -154,7 +163,7 @@
                         ? await sb.auth.signInWithPassword({ email: email, password: password })
                         : await sb.auth.signUp({ email: email, password: password });
                     if (res.error) { showErr(res.error.message); return; }
-                    if (res.data.user) goHome();
+                    if (res.data.user) await setAuthCacheAndGo(res.data.user.id);
                 } catch (e) {
                     showErr('Kuch ghalat hua — dobara try karo.');
                 } finally {
@@ -177,12 +186,12 @@
             });
 
             /* already logged in? go home. after OAuth redirect, session arrives here */
-            sb.auth.getSession().then(function(res) {
+            sb.auth.getSession().then(async function(res) {
                 var s = res.data && res.data.session;
-                if (s && s.user) goHome();
+                if (s && s.user) await setAuthCacheAndGo(s.user.id);
             });
-            sb.auth.onAuthStateChange(function(evt, session) {
-                if (evt === 'SIGNED_IN' && session && session.user) goHome();
+            sb.auth.onAuthStateChange(async function(evt, session) {
+                if (evt === 'SIGNED_IN' && session && session.user) await setAuthCacheAndGo(session.user.id);
             });
         })();
     </script>

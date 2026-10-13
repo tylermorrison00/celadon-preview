@@ -117,7 +117,7 @@
                 </div>
             </form>
         </div>
-        <div id="formLoading" class="ploading">Loading...</div>
+        <div id="formLoading" class="ploading" style="display:none;"></div>
     </main>
 
     <script src="templatemo-633-celadon-script.js"></script>
@@ -167,6 +167,7 @@
         var formTitle = document.getElementById('formTitle');
         var formWrap = document.getElementById('formWrap');
         var formLoading = document.getElementById('formLoading');
+        formWrap.style.display = 'block'; // show immediately, no loading flash
 
         function showErr(msg) {
             fErr.textContent = msg;
