@@ -485,6 +485,7 @@
                 btn.disabled = true;
                 btn.textContent = 'Saving...';
             }
+            if (!editId) row.sort_order = 0; // New items go to top
             var res = editId
                 ? await sb.from(TABLE).update(row).eq('id', editId)
                 : await sb.from(TABLE).insert(row);
