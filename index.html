@@ -556,7 +556,7 @@
                 mainBtn = '<a class="btn solid" href="signup.html?next=index.html" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</a>';
             }
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
-            var trendBadge = isTrending(p) ? '<span class="tag-pill" style="position:absolute;top:10px;left:10px;cursor:default;pointer-events:none;z-index:2;"><span class="dot" style="background:#ff6b35;"></span>Trending</span>' : ''; return '<article class="quote">' + trendBadge + img +
+            var trendBadge = isTrending(p) ? '<span class="tag-pill" style="position:absolute;top:10px;left:10px;cursor:default;pointer-events:none;z-index:2;padding:3px 10px;font-size:.68rem;background:#ff6b35;border-color:#e55a28;color:#fff;"><span class="dot" style="background:#fff;width:8px;height:8px;"></span>Trending</span>' : ''; return '<article class="quote">' + trendBadge + img +
                 '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + '</div>' +
                 '<div class="pactions" style="justify-content:center;">' + mainBtn + favBtn + adminBtns + '</div>' +
                 '</article>';
