@@ -221,7 +221,23 @@
         // hover sound (laptop only)
         function tick() { try { if (window.matchMedia('(hover: hover)').matches) press(); } catch (e) {} }
         // load existing tags as pills
-        var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8'];
+        function tagDotColor(i) {
+            var hue = (i * 137.508) % 360;
+            var sat = 55 + (i % 3) * 10;
+            var light = 68 + (i % 4) * 4;
+            return 'hsl(' + Math.round(hue) + ',' + sat + '%,' + light + '%)';
+        }
+        function tagColorByName(t) {
+            var key = TABLE === 'niches' ? 'ca_niches_tagcolors' : (TABLE === 'tools' ? 'ca_tools_tagcolors' : 'ca_prompts_tagcolors');
+            try {
+                var cmap = JSON.parse(localStorage.getItem(key) || '{}');
+                var c = cmap[String(t).toLowerCase()];
+                if (c) return c;
+            } catch (e) {}
+            var h = 0; var s = String(t).toLowerCase();
+            for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997;
+            return tagDotColor(h % 360);
+        }
         async function loadTagPills() {
             try {
                 var r = await sb.from(TABLE).select('tags');
@@ -232,7 +248,7 @@
                 var cur = fTags.value.split(',').map(function(s){return s.trim().toLowerCase();}).filter(Boolean);
                 tagPills.innerHTML = '';
                 tags.forEach(function(k, i) {
-                    var c = tagColors[i % tagColors.length];
+                    var c = tagColorByName(k);
                     var b = document.createElement('button');
                     b.type = 'button'; b.className = 'tpill' + (cur.indexOf(k) >= 0 ? ' sel' : '');
                     var tc = orig[k].replace(/\w\S*/g, function(w){return w.charAt(0).toUpperCase()+w.slice(1);});

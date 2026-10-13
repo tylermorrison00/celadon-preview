@@ -504,6 +504,14 @@
                 return '<button class="tag-pill" data-tag="' + esc(t) + '"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</button>';
             });
             tf.innerHTML = special.join('') + tagPills.join('');
+            // Save tag->color mapping for detail/form pages
+            try {
+                var cmap = {};
+                tags.forEach(function(t, i) { cmap[String(t).toLowerCase()] = tagDotColor(i + 4); });
+                cmap['__all'] = tagDotColor(0); cmap['__free'] = tagDotColor(1);
+                cmap['__premium'] = tagDotColor(2); cmap['__fav'] = tagDotColor(3);
+                localStorage.setItem('ca_niches_tagcolors', JSON.stringify(cmap));
+            } catch (e) {}
             markActivePill();
         }
         function markActivePill() {

@@ -92,11 +92,22 @@
             });
         }
         var tagColors = ['#7CCFB0','#A8C5E8','#E8734A','#F0C980','#8FD6C8','#B8A9E8','#E8A0A0','#A0D6E8'];
+        function tagDotColor(i) {
+            var hue = (i * 137.508) % 360;
+            var sat = 55 + (i % 3) * 10;
+            var light = 68 + (i % 4) * 4;
+            return 'hsl(' + Math.round(hue) + ',' + sat + '%,' + light + '%)';
+        }
         function tagColor(t) {
+            try {
+                var cmap = JSON.parse(localStorage.getItem('ca_prompts_tagcolors') || '{}');
+                var c = cmap[String(t).toLowerCase()];
+                if (c) return c;
+            } catch (e) {}
             var h = 0;
             var s = String(t).toLowerCase();
             for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997;
-            return tagColors[h % tagColors.length];
+            return tagDotColor(h % 360);
         }
         function titleCase(s) {
             return String(s == null ? '' : s).replace(/\w\S*/g, function(w) {
