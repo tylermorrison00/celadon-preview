@@ -139,8 +139,8 @@
         #platformPills { display: flex; justify-content: center; gap: 16px; margin: 24px 0 0; }
         .plat-pill { padding: 16px 52px; border-radius: 999px; background: var(--gloss); border: none; box-shadow: var(--lift), var(--lip); font-size: 1.05rem; font-weight: 600; color: #3A4750; cursor: pointer; }
         .plat-pill.active { background-image: var(--gloss-jade); color: #0E3A2E; box-shadow: var(--lift-jade), var(--lip-jade); }
-        #tagFilters .tag-pill { padding: 5px 10px; font-size: .68rem; }
-        @media (min-width: 768px) { #tagFilters .tag-pill { padding: 9px 18px; font-size: .85rem; } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } }
+        #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; }
+        @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem; } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } }
         #promptCards .favbtn { width: 38px; height: 38px; border-radius: 50%; padding: 0; font-size: 1.1rem; line-height: 1; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
         #promptCards .favbtn.active { color: #E8A020; }
         #tagFilters .tag-pill .dot { width: 8px; height: 8px; }
@@ -477,11 +477,11 @@
             });
             var tags = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; }).slice(0, 12);
             var special = [
-                '<button class="tag-pill" data-special="all"><img src="icon-all.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">All Tools</button>',
-                '<button class="tag-pill" data-special="free"><img src="icon-free.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Free</button>',
-                '<button class="tag-pill" data-special="premium"><img src="icon-premium.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Paid</button>',
-                '<button class="tag-pill" data-special="fav"><img src="icon-favorite.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Favorite</button>',
-                '<button class="tag-pill" data-special="trending"><img src="icon-trending.webp" style="width:36px;height:36px;flex-shrink:0;object-fit:contain;" alt="">Trending</button>'
+                '<button class="tag-pill" data-special="all"><img src="icon-all.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">All Tools</button>',
+                '<button class="tag-pill" data-special="free"><img src="icon-free.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Free</button>',
+                '<button class="tag-pill" data-special="premium"><img src="icon-premium.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Paid</button>',
+                '<button class="tag-pill" data-special="fav"><img src="icon-favorite.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Favorite</button>',
+                '<button class="tag-pill" data-special="trending"><img src="icon-trending.webp" style="width:30px;height:30px;flex-shrink:0;object-fit:contain;" alt="">Trending</button>'
             ];
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
