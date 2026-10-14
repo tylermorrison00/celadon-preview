@@ -469,7 +469,9 @@
                 mainBtn = '<button class="btn solid" disabled style="flex:1;text-align:center;padding:12px 20px;cursor:default;">' + dl + ' days left</button>';
             } else {
                 blurCls = ' blur-img';
-                mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
+                mainBtn = p.is_pro
+                    ? '<a class="btn solid" href="index.html#plan-pro" style="flex:1;text-align:center;padding:12px 20px;">Get Pro</a>'
+                    : '<a class="btn solid" href="index.html#plan-basic" style="flex:1;text-align:center;padding:12px 20px;">Get Basic</a>';
             }
             var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(optImg(p.media_url, 800)) + '" alt="" loading="lazy" decoding="async">' : '';
             var adminBtns = state.isAdmin

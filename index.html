@@ -90,7 +90,7 @@
                 </div>
                 <div class="shell">
                     <div class="plans">
-                        <article class="plan rv">
+                        <article class="plan rv" id="plan-basic">
                             <span class="tag">Basic</span>
                             <div class="cost" style="justify-content:center;"><b class="price">499 PKR</b><span class="per">per month</span></div>
                             <a class="btn wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28499%20PKR/month%29.">Get Basic</a>
@@ -101,7 +101,7 @@
                                 <li><i></i>Weekly new niches</li>
                             </ul>
                         </article>
-                        <article class="plan hot rv d1">
+                        <article class="plan hot rv d1" id="plan-pro">
                             <span class="tag">Pro</span>
                             <div class="cost" style="justify-content:center;"><b class="price">999 PKR</b><span class="per">per month</span></div>
                             <a class="btn solid wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28999%20PKR/month%29.">Get Pro</a>
@@ -583,7 +583,9 @@
                 var _days = daysUntilBasic(p);
                 mainBtn = '<span class="btn solid" style="flex:1;text-align:center;padding:12px 20px;cursor:default;">' + _days + ' days left</span>';
             } else {
-                mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
+                mainBtn = p.is_pro
+                    ? '<a class="btn solid" href="#plan-pro" style="flex:1;text-align:center;padding:12px 20px;">Get Pro</a>'
+                    : '<a class="btn solid" href="#plan-basic" style="flex:1;text-align:center;padding:12px 20px;">Get Basic</a>';
             }
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
             var _tier = p.is_pro ? 'PRO' : (p.is_basic ? 'BASIC' : 'FREE');
