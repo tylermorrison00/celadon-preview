@@ -841,8 +841,8 @@
                 // Reset filters and set correct platform
                 state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
                 if (item.category) state.platform = String(item.category).toLowerCase();
-                // Use the real filtered() for accurate index
-                var list = filtered();
+                // Use the real pinSort(filtered()) for accurate index (same as render)
+                var list = pinSort(filtered());
                 var idx = -1;
                 for (var i = 0; i < list.length; i++) {
                     if (String(list[i].id) === String(targetId)) { idx = i; break; }

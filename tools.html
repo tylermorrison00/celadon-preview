@@ -655,7 +655,7 @@
                 if (!state.tools || !state.tools.length) return;
                 // Reset filters for accurate index
                 state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
-                var list = filtered();
+                var list = pinSort(filtered());
                 var idx = -1;
                 for (var i = 0; i < list.length; i++) {
                     if (String(list[i].id) === String(targetId)) { idx = i; break; }
