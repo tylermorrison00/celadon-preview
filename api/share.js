@@ -7,9 +7,9 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 const SITE = 'https://creators-automation.vercel.app';
 
 const TABLES = {
-  prompt: { table: 'prompts', title: 'title', image: 'image_url', page: 'index.html' },
-  niche: { table: 'niches', title: 'title', image: 'image_url', page: 'niches.html' },
-  tool: { table: 'tools', title: 'name', image: 'image_url', page: 'tools.html' },
+  prompt: { table: 'prompts', title: 'title', image: 'media_url', page: 'index.html' },
+  niche: { table: 'niches', title: 'title', image: 'media_url', page: 'niches.html' },
+  tool: { table: 'tools', title: 'name', image: null, page: 'tools.html' },
 };
 
 function esc(s) {
@@ -28,14 +28,15 @@ module.exports = async (req, res) => {
 
   if (id) {
     try {
+      const cols = cfg.image ? `${cfg.title},${cfg.image}` : cfg.title;
       const r = await fetch(
-        `${SUPABASE_URL}/rest/v1/${cfg.table}?id=eq.${encodeURIComponent(id)}&select=${cfg.title},${cfg.image}`,
+        `${SUPABASE_URL}/rest/v1/${cfg.table}?id=eq.${encodeURIComponent(id)}&select=${cols}`,
         { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } }
       );
       const rows = await r.json();
       if (rows && rows.length) {
         title = rows[0][cfg.title] || title;
-        if (rows[0][cfg.image]) image = rows[0][cfg.image];
+        if (cfg.image && rows[0][cfg.image]) image = rows[0][cfg.image];
         desc = title;
       }
     } catch (e) {}
