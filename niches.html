@@ -484,7 +484,9 @@
             var _tierBg = p.is_pro ? 'linear-gradient(180deg,#ffdf80 0%,#f5b800 46%,#e6a800 46.01%,#d19600 100%)' : (p.is_basic ? 'linear-gradient(180deg,#6ee7a8 0%,#34d399 46%,#10b981 46.01%,#059669 100%)' : 'linear-gradient(180deg,#FEFEFF 0%,#F5F8FD 46%,#E9EFFA 46.01%,#DEE7F6 100%)');
             var _tierColor = p.is_pro ? '#fff' : (p.is_basic ? '#fff' : '#334155');
             var tierBadge = '<span style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;display:inline-flex;align-items:center;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:600;background:' + _tierBg + ';color:' + _tierColor + ';box-shadow:0 2px 8px rgba(0,0,0,.08),inset 0 1px 0 0 rgba(255,255,255,.6),inset 0 -1px 0 0 rgba(35,45,60,.12);">' + _tier + '</span>';
-            var _flame = _trend ? '<div>(Trending 🔥)</div>' : ''; return '<article class="quote">' + tierBadge + img +
+            var _flame = _trend ? '<div>(Trending 🔥)</div>' : '';
+            var _menu = '<span class="cardmenu-btn" data-cardmenu="' + p.id + '" style="position:absolute;top:6px;right:8px;z-index:5;cursor:pointer;color:#a8b2c1;font-size:22px;line-height:1;padding:2px 6px;user-select:none;" title="Options">⋯</span><div class="cardmenu" id="cardmenu-' + p.id + '" style="display:none;position:absolute;top:34px;right:8px;z-index:20;background:#fff;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15);padding:6px;min-width:130px;"><button data-copylink="' + p.id + '" data-cardtype="niche" style="display:block;width:100%;text-align:left;background:none;border:none;padding:9px 12px;border-radius:6px;cursor:pointer;font-size:.85rem;color:#334155;">Copy link</button></div>';
+            return '<article class="quote" style="position:relative;">' + tierBadge + _menu + img +
                 '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + _flame + '</div>' +
                 '<div class="pactions" style="justify-content:center;margin-top:auto;padding-top:12px;">' + mainBtn + favBtn + adminBtns + '</div>' +
                 '</article>';
@@ -658,6 +660,84 @@
             _lastTickP = now;
             tick();
         });
+        /* card 3-dots menu: toggle + copy link */
+        document.addEventListener('click', function(e) {
+            var mbtn = e.target.closest('.cardmenu-btn');
+            if (mbtn) {
+                e.stopPropagation();
+                var mid = mbtn.getAttribute('data-cardmenu');
+                var menu = document.getElementById('cardmenu-' + mid);
+                document.querySelectorAll('.cardmenu').forEach(function(m) { if (m !== menu) m.style.display = 'none'; });
+                if (menu) menu.style.display = (menu.style.display === 'none' || !menu.style.display) ? 'block' : 'none';
+                return;
+            }
+            var cp = e.target.closest('[data-copylink]');
+            if (cp) {
+                e.stopPropagation();
+                var cid = cp.getAttribute('data-copylink');
+                var ctype = cp.getAttribute('data-cardtype');
+                var shareUrl = location.origin + '/api/share?type=' + ctype + '&id=' + cid;
+                var done = function() {
+                    var t = document.createElement('div');
+                    t.textContent = 'Link copied!';
+                    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:99px;font-size:.85rem;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);';
+                    document.body.appendChild(t);
+                    setTimeout(function() { t.remove(); }, 1800);
+                };
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(shareUrl).then(done).catch(function() {
+                        var ta = document.createElement('textarea');
+                        ta.value = shareUrl; document.body.appendChild(ta); ta.select();
+                        try { document.execCommand('copy'); } catch (err) {}
+                        ta.remove(); done();
+                    });
+                } else {
+                    var ta2 = document.createElement('textarea');
+                    ta2.value = shareUrl; document.body.appendChild(ta2); ta2.select();
+                    try { document.execCommand('copy'); } catch (err) {}
+                    ta2.remove(); done();
+                }
+                var pm = cp.closest('.cardmenu');
+                if (pm) pm.style.display = 'none';
+                return;
+            }
+            document.querySelectorAll('.cardmenu').forEach(function(m) { m.style.display = 'none'; });
+        });
+        /* deep link: #card-ID -> jump to that card (finds correct page) */
+        (function handleCardDeepLink() {
+            var mh = location.hash.match(/#card-([A-Za-z0-9-]+)/);
+            if (!mh) return;
+            var targetId = mh[1];
+            var tries = 0;
+            var iv = setInterval(function() {
+                tries++;
+                if (tries > 60) { clearInterval(iv); return; }
+                if (!state.niches || !state.niches.length) return;
+                var list = state.niches;
+                var idx = -1;
+                for (var i = 0; i < list.length; i++) {
+                    if (String(list[i].id) === String(targetId)) { idx = i; break; }
+                }
+                if (idx < 0) { clearInterval(iv); return; }
+                var perPage = state.perPage || 15;
+                var targetPage = Math.floor(idx / perPage) + 1;
+                if (state.page !== targetPage) {
+                    state.page = targetPage;
+                    render();
+                }
+                clearInterval(iv);
+                setTimeout(function() {
+                    var el = document.getElementById('cardmenu-' + targetId);
+                    if (!el) return;
+                    var card = el.closest('article');
+                    if (!card) return;
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.style.outline = '3px solid #3b82f6';
+                    card.style.outlineOffset = '4px';
+                    setTimeout(function() { card.style.outline = ''; card.style.outlineOffset = ''; }, 3000);
+                }, 600);
+            }, 500);
+        })();
                 // Show platform pills once ready (prevents FOUC)
         requestAnimationFrame(function() {
             var pp = document.getElementById('platformPills');
