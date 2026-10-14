@@ -734,8 +734,7 @@
                     var card = el.closest('article');
                     if (!card) return;
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    card.style.boxShadow = '0 18px 45px rgba(52,211,153,.6)';
-                    setTimeout(function() { card.style.boxShadow = ''; }, 3000);
+                    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
                 }, 600);
             }, 500);
         })();
