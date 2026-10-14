@@ -592,7 +592,7 @@
             var _tierColor = p.is_pro ? '#f0a500' : (p.is_basic ? '#3b82f6' : '#22c55e');
             var _trend = isTrending(p);
             var _tierBg = p.is_pro ? 'linear-gradient(180deg,#ffdf80 0%,#f5b800 46%,#e6a800 46.01%,#d19600 100%)' : (p.is_basic ? 'linear-gradient(180deg,#6ee7a8 0%,#34d399 46%,#10b981 46.01%,#059669 100%)' : 'linear-gradient(180deg,#FEFEFF 0%,#F5F8FD 46%,#E9EFFA 46.01%,#DEE7F6 100%)');
-            var _tierColor = p.is_pro ? '#334155' : (p.is_basic ? '#fff' : '#334155');
+            var _tierColor = '#334155';
             var tierBadge = '<span style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;display:inline-flex;align-items:center;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:600;background:' + _tierBg + ';color:' + _tierColor + ';box-shadow:0 2px 8px rgba(0,0,0,.08),inset 0 1px 0 0 rgba(255,255,255,.6),inset 0 -1px 0 0 rgba(35,45,60,.12);">' + _tier + '</span>';
             var _flame = _trend ? '<div>(Trending 🔥)</div>' : '';
             var _menu = '<span class="cardmenu-btn" data-cardmenu="' + p.id + '" style="position:absolute;top:6px;right:8px;z-index:5;cursor:pointer;color:#a8b2c1;font-size:22px;line-height:1;padding:2px 6px;user-select:none;" title="Options">⋯</span><div class="cardmenu" id="cardmenu-' + p.id + '" style="display:none;position:absolute;top:34px;right:8px;z-index:20;background:#fff;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.15);padding:6px;min-width:130px;"><button data-copylink="' + p.id + '" data-cardtype="prompt" style="display:block;width:100%;text-align:left;background:none;border:none;padding:9px 12px;border-radius:6px;cursor:pointer;font-size:.85rem;color:#334155;">Copy link</button></div>';
