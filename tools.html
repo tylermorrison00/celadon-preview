@@ -263,6 +263,7 @@
         }
         var _ca = getCachedAuth();
         var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
+        try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) state.page = Math.max(1, parseInt(_pm[1], 10)); } catch (e) {}
 
         function optImg(url, w) {
             if (!url || typeof url !== 'string') return url;
@@ -476,12 +477,12 @@
 
         pag.addEventListener('click', function(e) {
             var pg = e.target.getAttribute('data-page');
-            if (pg) { press(); state.page = parseInt(pg, 10); render(); grid.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            if (pg) { press(); state.page = parseInt(pg, 10); try { history.replaceState(null, '', '#p' + state.page); } catch (e) {} render(); grid.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
 
         function doSearch() {
             state.q = searchInput ? searchInput.value : '';
-            state.page = 1;
+            state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
             render();
         }
         if (searchBtn) searchBtn.addEventListener('click', function() { press(); doSearch(); });
@@ -556,7 +557,7 @@
             else if (sp === 'premium') state.proFilter = 'premium';
             else if (sp === 'fav') state.favOnly = true;
             else if (tag) state.tag = tag;
-            state.page = 1;
+            state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
             markActivePill();
             render();
         });
