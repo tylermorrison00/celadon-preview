@@ -262,7 +262,7 @@
             try { localStorage.removeItem(AUTH_CACHE_KEY); } catch (e) {}
         }
         var _ca = getCachedAuth();
-        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
+        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, platform: '', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, editingId: null };
         try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) { state.page = Math.max(1, parseInt(_pm[1], 10)); } else { var _lp = parseInt(localStorage.getItem('ca_page_tools') || '0', 10); if (_lp > 0) state.page = _lp; } } catch (e) {}
 
         function optImg(url, w) {
@@ -406,6 +406,7 @@
             var favs = state.favOnly ? getFavs() : null;
             return state.prompts.filter(function(p) {
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
+                if (state.trendOnly && !isTrending(p)) return false;
                 if (state.proFilter === 'free' && p.is_paid) return false;
                 if (state.proFilter === 'premium' && !p.is_paid) return false;
                 if (state.tag && !(p.tags || []).some(function(t) { return String(t).toLowerCase() === state.tag; })) return false;
@@ -519,6 +520,7 @@
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
                 '<button class="tag-pill" data-special="premium"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Paid</button>',
                 '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>',
+                '<button class="tag-pill" data-special="trending"><span class="dot" style="background:' + tagDotColor(4) + ';"></span>Trending</button>',
             ];
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
@@ -540,10 +542,11 @@
                 var sp = b.getAttribute('data-special');
                 var tg = b.getAttribute('data-tag');
                 var active = false;
-                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly;
+                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly && !state.trendOnly;
                 else if (sp === 'free') active = state.proFilter === 'free';
                 else if (sp === 'premium') active = state.proFilter === 'premium';
                 else if (sp === 'fav') active = state.favOnly;
+                else if (sp === 'trending') active = state.trendOnly;
                 else if (tg) active = state.tag === tg;
                 b.classList.toggle('active', active);
             });
@@ -553,9 +556,10 @@
             if (!btn) return;
             var sp = btn.getAttribute('data-special');
             var tag = btn.getAttribute('data-tag');
-            state.tag = ''; state.proFilter = null; state.favOnly = false; if (sp === 'free') state.proFilter = 'free';
+            state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false; if (sp === 'free') state.proFilter = 'free';
             else if (sp === 'premium') state.proFilter = 'premium';
             else if (sp === 'fav') state.favOnly = true;
+            else if (sp === 'trending') state.trendOnly = true;
             else if (tag) state.tag = tag;
             state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_tools'); } catch (e) {}
             markActivePill();
