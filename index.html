@@ -585,8 +585,12 @@
                 mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
             }
             var favBtn = state.isAdmin ? '' : '<button class="btn favbtn' + (isFav(p.id) ? ' active' : '') + '" data-fav="' + p.id + '" title="Favorite">' + (isFav(p.id) ? '★' : '☆') + '</button>';
-            var trendBadge = isTrending(p) ? '<span class="trend-badge">Trending</span>' : ''; return '<article class="quote">' + trendBadge + img +
-                '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + '</div>' +
+            var _tier = p.is_pro ? 'PRO' : (p.is_basic ? 'BASIC' : 'FREE');
+            var _tierColor = p.is_pro ? '#f0a500' : (p.is_basic ? '#3b82f6' : '#22c55e');
+            var _trend = isTrending(p);
+            var tierBadge = '<span class="tag-pill" style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;padding:3px 10px;font-size:.68rem;"><span class="dot" style="background:' + _tierColor + ';width:8px;height:8px;"></span>' + _tier + '</span>';
+            var _flame = _trend ? ' 🔥' : ''; return '<article class="quote">' + tierBadge + img +
+                '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + _flame + '</div>' +
                 '<div class="pactions" style="justify-content:center;">' + mainBtn + favBtn + adminBtns + '</div>' +
                 '</article>';
         }
