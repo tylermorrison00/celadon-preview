@@ -303,6 +303,41 @@
         var detailUrls = [];
         var detailImgFile = document.getElementById('detailImgFile');
         document.getElementById('detailImgBtn').addEventListener('click', function() { press(); detailImgFile.click(); });
+
+        // Auto-compress images before upload: max 1200px, WebP/JPEG ~80% quality
+        function compressImage(file) {
+            return new Promise(function(resolve) {
+                if (!file.type || file.type.indexOf('image/') !== 0) { resolve(file); return; }
+                var img = new Image();
+                var url = URL.createObjectURL(file);
+                img.onload = function() {
+                    try {
+                        var maxDim = 1200;
+                        var w = img.width, h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            var ratio = Math.min(maxDim / w, maxDim / h);
+                            w = Math.round(w * ratio); h = Math.round(h * ratio);
+                        }
+                        var canvas = document.createElement('canvas');
+                        canvas.width = w; canvas.height = h;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        URL.revokeObjectURL(url);
+                        var outType = 'image/webp';
+                        canvas.toBlob(function(blob) {
+                            if (!blob) { resolve(file); return; }
+                            var ext = '.webp';
+                            // Fallback to jpeg if webp not supported
+                            if (blob.type !== 'image/webp') ext = '.jpg';
+                            var newName = file.name.replace(/\.[^.]+$/, '') + ext;
+                            resolve(new File([blob], newName, { type: blob.type }));
+                        }, outType, 0.8);
+                    } catch (e) { URL.revokeObjectURL(url); resolve(file); }
+                };
+                img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+                img.src = url;
+            });
+        }
         detailImgFile.addEventListener('change', async function() {
             var files = Array.from(detailImgFile.files || []).slice(0, 10 - detailUrls.length);
             if (!files.length) return;
@@ -312,7 +347,7 @@
             for (var i = 0; i < files.length; i++) {
                 try {
                     var fname = Date.now() + '_' + i + '_' + files[i].name.replace(/[^a-zA-Z0-9.]/g, '_');
-                    var up2 = await sb.storage.from('prompt-media').upload(fname, files[i]);
+                    var cf2 = await compressImage(files[i]); var up2 = await sb.storage.from('prompt-media').upload(fname, cf2);
                     if (up2.error) throw up2.error;
                     var pub2 = sb.storage.from('prompt-media').getPublicUrl(fname);
                     detailUrls.push(pub2.data.publicUrl);
@@ -332,7 +367,7 @@
             if (saveBtn) saveBtn.disabled = true;
             try {
                 var name = Date.now() + '_' + f.name.replace(/[^a-zA-Z0-9.]/g, '_');
-                var up = await sb.storage.from('prompt-media').upload(name, f);
+                var cf = await compressImage(f); var up = await sb.storage.from('prompt-media').upload(name, cf);
                 if (up.error) throw up.error;
                 var pub = sb.storage.from('prompt-media').getPublicUrl(name);
                 uploadedUrl = pub.data.publicUrl;
