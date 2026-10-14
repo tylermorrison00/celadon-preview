@@ -638,16 +638,24 @@
                 else if (path === href) o.classList.add('cur');
             });
         })();
+        var _lastTick = 0;
         document.getElementById('tagFilters').addEventListener('pointerover', function(e) {
             if (e.pointerType && e.pointerType !== 'mouse') return;
             var btn = e.target.closest('.tag-pill');
             if (!btn) return;
+            var now = Date.now();
+            if (now - _lastTick < 300) return;
+            _lastTick = now;
             tick();
         });
+        var _lastTickP = 0;
         document.getElementById('platformPills').addEventListener('pointerover', function(e) {
             if (e.pointerType && e.pointerType !== 'mouse') return;
             var btn = e.target.closest('.plat-pill');
             if (!btn) return;
+            var now = Date.now();
+            if (now - _lastTickP < 300) return;
+            _lastTickP = now;
             tick();
         });
                 // Show platform pills once ready (prevents FOUC)
