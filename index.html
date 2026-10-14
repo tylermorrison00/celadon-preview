@@ -757,6 +757,12 @@
                 else if (path === href) o.classList.add('cur');
             });
         })();
+        document.getElementById('tagFilters').addEventListener('pointerover', function(e) {
+            if (e.pointerType && e.pointerType !== 'mouse') return;
+            var btn = e.target.closest('.tag-pill');
+            if (!btn) return;
+            tick();
+        });
         document.getElementById('platformPills').addEventListener('pointerover', function(e) {
             if (e.pointerType && e.pointerType !== 'mouse') return;
             var btn = e.target.closest('.plat-pill');
