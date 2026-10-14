@@ -588,7 +588,8 @@
             var _tier = p.is_pro ? 'PRO' : (p.is_basic ? 'BASIC' : 'FREE');
             var _tierColor = p.is_pro ? '#f0a500' : (p.is_basic ? '#3b82f6' : '#22c55e');
             var _trend = isTrending(p);
-            var tierBadge = '<span class="tag-pill" style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;padding:3px 10px;font-size:.68rem;background:' + _tierColor + ';color:#fff;font-weight:600;">' + _tier + '</span>';
+            var _tierGrad = p.is_pro ? 'linear-gradient(180deg,#ffd76a 0%,#f0a500 50%,#d18f00 100%)' : (p.is_basic ? 'linear-gradient(180deg,#6aa8ff 0%,#3b82f6 50%,#2563eb 100%)' : 'linear-gradient(180deg,#4ade80 0%,#22c55e 50%,#16a34a 100%)');
+            var tierBadge = '<span style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;background:' + _tierGrad + ';color:#fff;font-size:.75rem;font-weight:700;padding:5px 14px;border-radius:20px;box-shadow:0 3px 6px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -2px 3px rgba(0,0,0,.15);text-shadow:0 1px 2px rgba(0,0,0,.25);border:1px solid rgba(0,0,0,.1);">' + _tier + '</span>';
             var _flame = _trend ? ' (Trending 🔥)' : ''; return '<article class="quote">' + tierBadge + img +
                 '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + _flame + '</div>' +
                 '<div class="pactions" style="justify-content:center;margin-top:auto;padding-top:12px;">' + mainBtn + favBtn + adminBtns + '</div>' +
