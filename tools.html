@@ -653,7 +653,9 @@
                 tries++;
                 if (tries > 60) { clearInterval(iv); return; }
                 if (!state.tools || !state.tools.length) return;
-                var list = state.tools;
+                // Reset filters for accurate index
+                state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
+                var list = filtered();
                 var idx = -1;
                 for (var i = 0; i < list.length; i++) {
                     if (String(list[i].id) === String(targetId)) { idx = i; break; }
@@ -663,8 +665,8 @@
                 var targetPage = Math.floor(idx / perPage) + 1;
                 if (state.page !== targetPage) {
                     state.page = targetPage;
-                    render();
                 }
+                render();
                 clearInterval(iv);
                 setTimeout(function() {
                     var el = document.getElementById('cardmenu-' + targetId);

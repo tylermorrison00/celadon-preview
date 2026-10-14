@@ -832,11 +832,17 @@
                 tries++;
                 if (tries > 60) { clearInterval(iv); return; }
                 if (!state.prompts || !state.prompts.length) return;
-                // Find item index in filtered list
-                var list = state.prompts.filter(function(p) {
-                    if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return false;
-                    return true;
-                });
+                // Find the item first to get its platform
+                var item = null;
+                for (var j = 0; j < state.prompts.length; j++) {
+                    if (String(state.prompts[j].id) === String(targetId)) { item = state.prompts[j]; break; }
+                }
+                if (!item) { clearInterval(iv); return; }
+                // Reset filters and set correct platform
+                state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
+                if (item.category) state.platform = String(item.category).toLowerCase();
+                // Use the real filtered() for accurate index
+                var list = filtered();
                 var idx = -1;
                 for (var i = 0; i < list.length; i++) {
                     if (String(list[i].id) === String(targetId)) { idx = i; break; }
@@ -846,8 +852,9 @@
                 var targetPage = Math.floor(idx / perPage) + 1;
                 if (state.page !== targetPage) {
                     state.page = targetPage;
-                    render();
                 }
+                render();
+                markActivePill();
                 clearInterval(iv);
                 setTimeout(function() {
                     var el = document.getElementById('cardmenu-' + targetId);
