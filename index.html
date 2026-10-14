@@ -580,7 +580,7 @@
                 mainBtn = '<a class="btn solid" href="signup.html?next=index.html" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</a>';
             } else if (_plan === 'basic' && p.is_pro) {
                 var _days = daysUntilBasic(p);
-                mainBtn = '<span class="btn" style="flex:1;text-align:center;padding:12px 20px;cursor:default;opacity:.85;">' + _days + ' days left</span>';
+                mainBtn = '<span class="btn solid" style="flex:1;text-align:center;padding:12px 20px;cursor:default;">' + _days + ' days left</span>';
             } else {
                 mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
             }

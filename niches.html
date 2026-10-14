@@ -465,7 +465,7 @@
             } else if (_plan === 'basic' && p.is_pro) {
                 var dl = daysUntilBasic(p);
                 blurCls = ' blur-img';
-                mainBtn = '<button class="btn solid" disabled style="flex:1;text-align:center;padding:12px 20px;opacity:.75;cursor:not-allowed;">' + dl + ' days left</button>';
+                mainBtn = '<button class="btn solid" disabled style="flex:1;text-align:center;padding:12px 20px;cursor:default;">' + dl + ' days left</button>';
             } else {
                 blurCls = ' blur-img';
                 mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
