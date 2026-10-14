@@ -588,9 +588,9 @@
             var _tier = p.is_pro ? 'PRO' : (p.is_basic ? 'BASIC' : 'FREE');
             var _tierColor = p.is_pro ? '#f0a500' : (p.is_basic ? '#3b82f6' : '#22c55e');
             var _trend = isTrending(p);
-            var _tierBg = p.is_pro ? '#f0a500' : (p.is_basic ? '#22c55e' : '#ffffff');
+            var _tierBg = p.is_pro ? 'linear-gradient(180deg,#ffdf80 0%,#f5b800 46%,#e6a800 46.01%,#d19600 100%)' : (p.is_basic ? 'linear-gradient(180deg,#6ee7a8 0%,#34d399 46%,#10b981 46.01%,#059669 100%)' : 'linear-gradient(180deg,#FEFEFF 0%,#F5F8FD 46%,#E9EFFA 46.01%,#DEE7F6 100%)');
             var _tierColor = p.is_pro ? '#fff' : (p.is_basic ? '#fff' : '#334155');
-            var tierBadge = '<span style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;display:inline-flex;align-items:center;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:600;background:' + _tierBg + ';color:' + _tierColor + ';box-shadow:0 2px 8px rgba(0,0,0,.08);">' + _tier + '</span>';
+            var tierBadge = '<span style="position:absolute;top:10px;left:10px;z-index:2;pointer-events:none;display:inline-flex;align-items:center;padding:5px 14px;border-radius:99px;font-size:.75rem;font-weight:600;background:' + _tierBg + ';color:' + _tierColor + ';box-shadow:0 2px 8px rgba(0,0,0,.08),inset 0 1px 0 0 rgba(255,255,255,.6),inset 0 -1px 0 0 rgba(35,45,60,.12);">' + _tier + '</span>';
             var _flame = _trend ? ' (Trending 🔥)' : ''; return '<article class="quote">' + tierBadge + img +
                 '<div class="ptitle">' + esc(normTitle(p.title) || 'Untitled') + _flame + '</div>' +
                 '<div class="pactions" style="justify-content:center;margin-top:auto;padding-top:12px;">' + mainBtn + favBtn + adminBtns + '</div>' +
