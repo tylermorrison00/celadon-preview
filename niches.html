@@ -404,6 +404,29 @@
                 return new Date(b.created_at) - new Date(a.created_at);
             });
         }
+
+        // Tier access logic
+        function getPlan() { return state.isAdmin ? 'pro' : (state.userPlan || 'free'); }
+        function daysUntilBasic(p) {
+            // For pro prompts: days until basic members get access (14 days from created_at)
+            if (!p.is_pro || !p.created_at) return 0;
+            var created = new Date(p.created_at);
+            var unlock = new Date(created.getTime() + 14 * 24 * 60 * 60 * 1000);
+            var now = new Date();
+            var diff = Math.ceil((unlock - now) / (24 * 60 * 60 * 1000));
+            return diff > 0 ? diff : 0;
+        }
+        function canAccess(p) {
+            // Can view details and copy
+            var plan = getPlan();
+            if (plan === 'pro') return true;
+            if (p.is_pro) {
+                if (plan === 'basic') return daysUntilBasic(p) === 0;
+                return false;
+            }
+            if (p.is_basic) return plan === 'basic' || plan === 'pro';
+            return true;
+        }
         function filtered() {
             var q = state.q.trim().toLowerCase();
             var favs = state.favOnly ? getFavs() : null;
@@ -430,27 +453,21 @@
             var blurCls = '';
             var mainBtn;
             var viewBtn = function() { return '<button class="btn solid" data-view="' + p.id + '" style="flex:1;text-align:center;padding:12px 20px;">View Details</button>'; };
-            if (state.isAdmin || state.userPlan === 'pro') {
-                mainBtn = state.isAdmin
-                    ? '<button class="btn solid" data-view="' + p.id + '">View Details</button>'
-                    : viewBtn();
-            } else if (p.is_pro) {
-                if (state.userPlan === 'basic') {
-                    var dl = daysLeftNiche(p.created_at);
-                    if (dl > 0) {
-                        blurCls = ' blur-img';
-                        mainBtn = '<button class="btn solid" disabled style="flex:1;text-align:center;padding:12px 20px;opacity:.75;cursor:not-allowed;">' + dl + ' days left</button>';
-                    } else {
-                        mainBtn = viewBtn();
-                    }
-                } else {
-                    blurCls = ' blur-img';
-                    mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
-                }
-            } else if (state.user) {
+            var _canAccess = canAccess(p);
+            var _plan = getPlan();
+            if (state.isAdmin) {
+                mainBtn = '<button class="btn solid" data-view="' + p.id + '">View Details</button>';
+            } else if (_canAccess && state.user) {
                 mainBtn = viewBtn();
-            } else {
+            } else if (_canAccess) {
                 mainBtn = '<a class="btn solid" href="signup.html?next=niches.html" style="flex:1;text-align:center;padding:12px 20px;">View Details</a>';
+            } else if (_plan === 'basic' && p.is_pro) {
+                var dl = daysUntilBasic(p);
+                blurCls = ' blur-img';
+                mainBtn = '<button class="btn solid" disabled style="flex:1;text-align:center;padding:12px 20px;opacity:.75;cursor:not-allowed;">' + dl + ' days left</button>';
+            } else {
+                blurCls = ' blur-img';
+                mainBtn = '<a class="btn solid" href="#pricing" style="flex:1;text-align:center;padding:12px 20px;">Unlock Membership</a>';
             }
             var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(optImg(p.media_url, 800)) + '" alt="" loading="lazy" decoding="async">' : '';
             var adminBtns = state.isAdmin

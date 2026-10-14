@@ -160,6 +160,9 @@
                         var dp = Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000);
                         if (14 - dp > 0) locked = true; else hasAccess = true;
                     } else locked = true;
+                } else if (p.is_basic && !hasAccess) {
+                    if (plan === 'basic') hasAccess = true;
+                    else locked = true;
                 }
                 var img = ''; // Thumbnail not shown on detail page, only gallery
                 // Detail gallery images

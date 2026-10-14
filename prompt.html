@@ -129,6 +129,25 @@
                 var res = await sb.from('prompts').select('*').eq('id', id).single();
                 if (res.error || !res.data) throw res.error || new Error('not found');
                 var p = res.data;
+                // Tier access check
+                try {
+                    var sess = await sb.auth.getSession();
+                    var plan = 'free', isAdm = false;
+                    if (sess.data && sess.data.session) {
+                        var pr = await sb.from('profiles').select('is_admin,plan').eq('id', sess.data.session.user.id).single();
+                        if (pr.data) { isAdm = !!pr.data.is_admin; plan = String(pr.data.plan || 'free').toLowerCase(); }
+                    }
+                    var hasAccess = isAdm || plan === 'pro';
+                    if (!hasAccess && p.is_pro && plan === 'basic') {
+                        var dp = Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000);
+                        if (14 - dp <= 0) hasAccess = true;
+                    }
+                    if (!hasAccess && p.is_basic && plan === 'basic') hasAccess = true;
+                    if (!hasAccess && (p.is_pro || p.is_basic)) {
+                        box.innerHTML = '<div style="text-align:center;padding:60px 20px;"><h2 style="color:#0E3A2E;">Locked</h2><p style="color:#666;">This prompt requires a higher membership.</p><a class="btn solid" href="index.html#pricing" style="display:inline-block;margin-top:16px;padding:12px 32px;">Unlock Membership</a></div>';
+                        return;
+                    }
+                } catch (eAcc) {}
                 var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:3px;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
                 var img = p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="">' : '';
                 box.innerHTML =
