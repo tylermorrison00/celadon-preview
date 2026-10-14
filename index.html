@@ -887,17 +887,19 @@
             var session = res.data && res.data.session;
             var newUser = session ? session.user : null;
             var newIsAdmin = false;
+            var _oldPlan = state.userPlan;
             if (newUser) {
                 var pr = await sb.from('profiles').select('is_admin, plan').eq('id', newUser.id).single();
-                if (pr.data) { newIsAdmin = !!pr.data.is_admin; state.userPlan = pr.data.plan || 'free'; }
+                if (pr.data) { newIsAdmin = !!pr.data.is_admin; state.userPlan = String(pr.data.plan || 'free').toLowerCase(); }
             }
             // Only re-render if auth state actually changed (prevents flicker)
             var changed = (!!state.user !== !!newUser) ||
                 (state.user && newUser && state.user.id !== newUser.id) ||
-                (state.isAdmin !== newIsAdmin);
+                (state.isAdmin !== newIsAdmin) ||
+                (_oldPlan !== state.userPlan);
             state.user = newUser;
             state.isAdmin = newIsAdmin;
-            if (newUser) setCachedAuth(newUser.id, newIsAdmin, 'free');
+            if (newUser) setCachedAuth(newUser.id, newIsAdmin, state.userPlan);
             else clearCachedAuth();
             try { var pf = localStorage.getItem('ca_pending_fav'); if (pf && state.user) { localStorage.removeItem('ca_pending_fav'); var f0 = getFavs(); if (f0.indexOf(String(pf)) < 0) { f0.push(String(pf)); try { localStorage.setItem('ca_favs', JSON.stringify(f0)); } catch (e) {} } } } catch (e) {}
             if (changed) {
