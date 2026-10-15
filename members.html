@@ -25,6 +25,7 @@
         <main class="members-wrap">
             <a class="btn" href="index.html" style="margin-bottom:20px;display:inline-block;">&larr; Back</a>
 
+            <div id="memberCount" style="text-align:center;font-weight:800;font-size:1.4rem;color:#0E3A2E;margin-bottom:20px;"></div>
             <div id="membersList"><p style="color:#6b7a74;">Loading...</p></div>
         </main>
     </div>
@@ -47,6 +48,9 @@
             
             // Load members from profiles
             try {
+                var cnt = await sb.from('profiles').select('*', { count: 'exact', head: true });
+                var totalMembers = (cnt && typeof cnt.count === 'number') ? cnt.count : 0;
+                document.getElementById('memberCount').textContent = totalMembers + ' members joined';
                 var res = await sb.from('profiles').select('id, email, plan, created_at').order('created_at', { ascending: false }).limit(100);
                 if (res.error) throw res.error;
                 var list = document.getElementById('membersList');
