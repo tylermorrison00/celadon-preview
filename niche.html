@@ -165,11 +165,15 @@
                     else locked = true;
                 }
                 var img = ''; // Thumbnail not shown on detail page, only gallery
-                // Detail gallery images
+                // Detail gallery images - horizontal scroll with arrows (arrows only when scrollable)
                 var gallery = '';
                 if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length && !locked) {
-                    gallery = '<div style="display:flex;flex-wrap:wrap;gap:12px;margin:20px 0;justify-content:center;">' +
-                        p.extra_images.slice(0, 10).map(function(u) { return '<img src="' + esc(u) + '" style="width:150px;max-width:100%;height:auto;object-fit:contain;border-radius:12px;" loading="lazy">'; }).join('') +
+                    gallery = '<div class="gal-wrap" style="position:relative;margin:20px 0;">' +
+                        '<button class="gal-arrow gal-prev" style="display:none;position:absolute;left:4px;top:50%;transform:translateY(-50%);z-index:5;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;font-size:18px;color:#0E3A2E;">‹</button>' +
+                        '<div class="gal-scroll" style="display:flex;gap:12px;overflow-x:auto;scroll-behavior:smooth;padding:4px 2px;scrollbar-width:none;">' +
+                        p.extra_images.slice(0, 10).map(function(u) { return '<img src="' + esc(u) + '" style="width:150px;flex:0 0 auto;height:auto;object-fit:contain;border-radius:12px;" loading="lazy">'; }).join('') +
+                        '</div>' +
+                        '<button class="gal-arrow gal-next" style="display:none;position:absolute;right:4px;top:50%;transform:translateY(-50%);z-index:5;width:36px;height:36px;border-radius:50%;border:none;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.15);cursor:pointer;font-size:18px;color:#0E3A2E;">›</button>' +
                         '</div>';
                 }
                 var bodyHtml = '';
@@ -189,6 +193,24 @@
                     (tags ? '<div class="ptags-lg">' + tags + '</div>' : '') +
                     bodyHtml;
                 document.title = (p.title || 'Niche') + ' — Creators Automation';
+                // Gallery arrows: show only when scrollable, scroll on click
+                (function initGallery() {
+                    var wrap = document.querySelector('.gal-wrap');
+                    if (!wrap) return;
+                    var sc = wrap.querySelector('.gal-scroll');
+                    var prev = wrap.querySelector('.gal-prev');
+                    var next = wrap.querySelector('.gal-next');
+                    function updateArrows() {
+                        var canScroll = sc.scrollWidth > sc.clientWidth + 4;
+                        prev.style.display = canScroll ? 'block' : 'none';
+                        next.style.display = canScroll ? 'block' : 'none';
+                    }
+                    prev.addEventListener('click', function() { sc.scrollBy({ left: -320, behavior: 'smooth' }); });
+                    next.addEventListener('click', function() { sc.scrollBy({ left: 320, behavior: 'smooth' }); });
+                    updateArrows();
+                    window.addEventListener('resize', updateArrows);
+                    setTimeout(updateArrows, 500);
+                })();
                 // auth-aware nav (login/logout only)
                 try {
                     var s = await sb.auth.getSession();
