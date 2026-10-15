@@ -209,6 +209,7 @@
                         prev.style.display = canScroll ? 'block' : 'none';
                         next.style.display = canScroll ? 'block' : 'none';
                         arrowRow.style.display = canScroll ? 'flex' : 'none';
+                        sc.style.justifyContent = canScroll ? 'flex-start' : 'center';
                     }
                     prev.addEventListener('click', function() { sc.scrollBy({ left: -320, behavior: 'smooth' }); });
                     next.addEventListener('click', function() { sc.scrollBy({ left: 320, behavior: 'smooth' }); });
