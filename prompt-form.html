@@ -103,6 +103,10 @@
                 <label class="flabel" for="pfNicheLink">Link (TikTok/YouTube/Instagram)</label>
                 <input class="field" id="pfNicheLink" type="url" placeholder="https://..." aria-label="Niche link">
                 </div>
+                <div id="nichePromptWrap" style="display:none;">
+                <label class="flabel" for="pfNichePrompt">Prompt link (optional)</label>
+                <input class="field" id="pfNichePrompt" type="url" placeholder="https://... (leave empty if none)" aria-label="Prompt link">
+                </div>
                 <div id="mediaWrap">
                 <label class="flabel">Media image</label>
                 <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;">
@@ -228,8 +232,9 @@
             var lblText = document.getElementById('lblText'); if (lblText) lblText.textContent = 'Why it works';
             if (fText) { fText.placeholder = 'Why it works...'; fText.setAttribute('aria-label', 'Why it works'); }
             var detailWrap = document.getElementById('detailWrap'); if (detailWrap) detailWrap.style.display = 'block';
-            // Show link field for niches
+            // Show link fields for niches
             var nicheLinkWrap = document.getElementById('nicheLinkWrap'); if (nicheLinkWrap) nicheLinkWrap.style.display = 'block';
+            var nichePromptWrap = document.getElementById('nichePromptWrap'); if (nichePromptWrap) nichePromptWrap.style.display = 'block';
             // Update back/cancel links
             var backBtn = document.getElementById('backBtn');
             if (backBtn) { backBtn.href = BACK_PAGE; backBtn.innerHTML = '&larr; ' + BACK_LABEL; }
@@ -435,6 +440,7 @@
                     fTags.value = (p.tags || []).join(', ');
                     fMedia.value = p.media_url || '';
                     var pfNicheLink = document.getElementById('pfNicheLink'); if (pfNicheLink) pfNicheLink.value = p.link_url || '';
+                    var pfNichePrompt = document.getElementById('pfNichePrompt'); if (pfNichePrompt) pfNichePrompt.value = p.prompt_link || '';
                     fPro.checked = !!p.is_pro; if (fBasic) fBasic.checked = !!p.is_basic && !p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
                     var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
@@ -500,12 +506,14 @@
                 }
                 var mu = (uploadedUrl || document.getElementById('pfMedia').value || '').trim();
                 var nicheLink = (document.getElementById('pfNicheLink').value || '').trim();
+                var nichePrompt = (document.getElementById('pfNichePrompt').value || '').trim();
                 row = {
                     title: title,
                     category: fCat.value,
                     why_text: why,
                     detail_text: detail || null,
                     link_url: nicheLink || null,
+                    prompt_link: nichePrompt || null,
                     tags: fTags.value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
                     media_url: mu || null,
                     media_type: mu ? 'image' : null,
