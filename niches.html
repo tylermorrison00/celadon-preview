@@ -713,8 +713,15 @@
                 tries++;
                 if (tries > 60) { clearInterval(iv); return; }
                 if (!state.niches || !state.niches.length) return;
+                // Find the item first to get its platform
+                var nitem = null;
+                for (var j = 0; j < state.niches.length; j++) {
+                    if (String(state.niches[j].id) === String(targetId)) { nitem = state.niches[j]; break; }
+                }
+                if (!nitem) { clearInterval(iv); return; }
                 // Reset filters for accurate index
                 state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
+                if (nitem.category) state.platform = String(nitem.category).toLowerCase();
                 var list = pinSort(filtered());
                 var idx = -1;
                 for (var i = 0; i < list.length; i++) {
