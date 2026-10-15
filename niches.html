@@ -712,11 +712,11 @@
             var iv = setInterval(function() {
                 tries++;
                 if (tries > 60) { clearInterval(iv); return; }
-                if (!state.niches || !state.niches.length) return;
+                if (!state.prompts || !state.prompts.length) return;
                 // Find the item first to get its platform
                 var nitem = null;
-                for (var j = 0; j < state.niches.length; j++) {
-                    if (String(state.niches[j].id) === String(targetId)) { nitem = state.niches[j]; break; }
+                for (var j = 0; j < state.prompts.length; j++) {
+                    if (String(state.prompts[j].id) === String(targetId)) { nitem = state.prompts[j]; break; }
                 }
                 if (!nitem) { clearInterval(iv); return; }
                 // Reset filters for accurate index

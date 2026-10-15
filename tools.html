@@ -652,7 +652,7 @@
             var iv = setInterval(function() {
                 tries++;
                 if (tries > 60) { clearInterval(iv); return; }
-                if (!state.tools || !state.tools.length) return;
+                if (!state.prompts || !state.prompts.length) return;
                 // Reset filters for accurate index
                 state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
                 var list = pinSort(filtered());
