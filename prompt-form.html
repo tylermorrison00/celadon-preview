@@ -129,6 +129,7 @@
                 <label class="pro" id="lblPro"><input type="checkbox" id="pfPro"> Pro only</label>
                 <label class="pro" id="lblBasic"><input type="checkbox" id="pfBasic"> Basic</label>
                 <label class="pro" id="lblTrend"><input type="checkbox" id="pfTrend"> Trending</label>
+                <label class="pro" id="lblPrivate"><input type="checkbox" id="pfPrivate"> Private (admin only)</label>
                 <div style="margin-top:10px;"><label style="font-size:.9rem;color:#0E3A2E;font-weight:600;">Order (1-10, blank = auto): <input type="number" id="pfOrder" min="1" max="10" placeholder="-" style="width:70px;padding:8px 10px;border-radius:10px;border:1px solid #d5ddd9;"></label></div>
                 <p class="auth-err" id="pfErr"></p>
                 <div class="row">
@@ -443,6 +444,7 @@
                     var pfNichePrompt = document.getElementById('pfNichePrompt'); if (pfNichePrompt) pfNichePrompt.value = p.prompt_link || '';
                     fPro.checked = !!p.is_pro; if (fBasic) fBasic.checked = !!p.is_basic && !p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
+                    var pfPriv1 = document.getElementById('pfPrivate'); if (pfPriv1) pfPriv1.checked = !!p.is_private;
                     var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                     // Load existing detail images for niches
@@ -461,6 +463,7 @@
                     fMedia.value = p.media_url || '';
                     fPro.checked = !!p.is_pro; if (fBasic) fBasic.checked = !!p.is_basic && !p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
+                    var pfPriv2 = document.getElementById('pfPrivate'); if (pfPriv2) pfPriv2.checked = !!p.is_private;
                     var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                 }
@@ -520,6 +523,7 @@
                     is_pro: fPro.checked,
                     is_basic: !fPro.checked && document.getElementById('pfBasic').checked,
                     is_trending: fTrend.checked,
+                    is_private: document.getElementById('pfPrivate').checked,
                     extra_images: JSON.parse(document.getElementById('pfDetailImgs').value || '[]')
                 };
                 btn.disabled = true;
@@ -541,7 +545,8 @@
                     media_type: mu ? 'image' : null,
                     is_pro: fPro.checked,
                     is_basic: !fPro.checked && document.getElementById('pfBasic').checked,
-                    is_trending: fTrend.checked
+                    is_trending: fTrend.checked,
+                    is_private: document.getElementById('pfPrivate').checked
                 };
                 btn.disabled = true;
                 btn.textContent = 'Saving...';
