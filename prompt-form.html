@@ -270,8 +270,11 @@
                 var counts = {};
                 var orig = {};
                 (r.data || []).forEach(function(p) { (p.tags || []).forEach(function(t) { var k = String(t).toLowerCase(); counts[k] = (counts[k] || 0) + 1; if (!orig[k]) orig[k] = t; }); });
-                var tags = Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];}).slice(0,20);
+                // Stable order: count desc, then alphabetical — so pills never shuffle
+                var tags = Object.keys(counts).sort(function(a,b){ var d = counts[b]-counts[a]; return d !== 0 ? d : (a < b ? -1 : (a > b ? 1 : 0)); });
                 var cur = fTags.value.split(',').map(function(s){return s.trim().toLowerCase();}).filter(Boolean);
+                // Always include the current item's tags (even new/rare ones) so they show as selected
+                cur.forEach(function(k){ if (tags.indexOf(k) < 0) { tags.push(k); if (!orig[k]) orig[k] = k; } });
                 tagPills.innerHTML = '';
                 tags.forEach(function(k, i) {
                     var c = tagColorByName(k);
