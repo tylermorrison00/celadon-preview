@@ -268,6 +268,9 @@
         var _ca = getCachedAuth();
         var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: (_ca && _ca.userPlan) || 'free', editingId: null };
         try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) { state.page = Math.max(1, parseInt(_pm[1], 10)); } else { var _lp = parseInt(localStorage.getItem('ca_page_niches') || '0', 10); if (_lp > 0) state.page = _lp; } } catch (e) {}
+        // Persist tag/filter selection across edit-page trips
+        function saveFilters() { try { localStorage.setItem('ca_filters_niches', JSON.stringify({ tag: state.tag, proFilter: state.proFilter, favOnly: state.favOnly, trendOnly: state.trendOnly, platform: state.platform })); } catch (e) {} }
+        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_niches') || 'null'); if (_ff) { state.tag = _ff.tag || ''; state.proFilter = _ff.proFilter || null; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; if (_ff.platform) state.platform = _ff.platform; } } catch (e) {}
 
         function optImg(url, w) {
             if (!url || typeof url !== 'string') return url;
@@ -552,6 +555,10 @@
         function renderTagPills() {
             var tf = document.getElementById('tagFilters');
             if (!tf) return;
+            // Sync platform pill UI with restored state
+            document.querySelectorAll('#platformPills .plat-pill').forEach(function(b) {
+                b.classList.toggle('active', b.getAttribute('data-platform') === state.platform);
+            });
             var counts = {};
             state.prompts.forEach(function(p) {
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return;
@@ -608,6 +615,7 @@
             else if (sp === 'trending') state.trendOnly = true;
             else if (tag) state.tag = tag;
             state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_niches'); } catch (e) {}
+            saveFilters();
             markActivePill();
             render();
         });
@@ -759,6 +767,7 @@
                 b.classList.toggle('active', b === btn);
             });
             state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_niches'); } catch (e) {}
+            saveFilters();
             renderTagPills();
             render();
         });
