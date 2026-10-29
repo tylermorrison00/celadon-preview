@@ -392,10 +392,10 @@
 
         function optImg(url, w) {
             if (!url || typeof url !== 'string') return url;
-            // Supabase image transformation — REAL endpoint is /render/image/, NOT ?params on /object/ (wo ignore ho jate hen)
-            if (url.indexOf('/storage/v1/object/public/') > -1 && url.indexOf('?') === -1) {
-                return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=' + (w || 600) + '&quality=75&resize=contain';
-            }
+            // Images go through the /api/img edge-cache proxy (fast repeat loads);
+            // non-Supabase URLs pass through unchanged
+            var m = url.match(/\/storage\/v1\/object\/public\/prompt-media\/([^/?#]+)/);
+            if (m) return '/api/img?f=' + encodeURIComponent(m[1]) + '&w=' + (w || 600);
             return url;
         }
         function esc(s) {
