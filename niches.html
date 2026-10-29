@@ -276,7 +276,7 @@
             if (!url || typeof url !== 'string') return url;
             // Supabase image transformation — REAL endpoint is /render/image/, NOT ?params on /object/ (wo ignore ho jate hen)
             if (url.indexOf('/storage/v1/object/public/') > -1 && url.indexOf('?') === -1) {
-                return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=' + (w || 600) + '&quality=75';
+                return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=' + (w || 600) + '&quality=75&resize=contain';
             }
             return url;
         }
