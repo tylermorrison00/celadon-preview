@@ -114,6 +114,14 @@
                 return w.charAt(0).toUpperCase() + w.slice(1);
             });
         }
+        function optImg(url, w) {
+            if (!url || typeof url !== 'string') return url;
+            // Supabase image transformation — REAL endpoint is /render/image/, NOT ?params on /object/ (wo ignore ho jate hen)
+            if (url.indexOf('/storage/v1/object/public/') > -1 && url.indexOf('?') === -1) {
+                return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=' + (w || 1000) + '&quality=75';
+            }
+            return url;
+        }
         async function init() {
             var id = new URLSearchParams(location.search).get('id');
             if (!id) { box.innerHTML = '<div class="pempty">No prompt selected.</div>'; return; }
@@ -149,7 +157,7 @@
                     }
                 } catch (eAcc) {}
                 var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:3px;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
-                var img = p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="">' : '';
+                var img = p.media_url ? '<img class="pimg-lg" src="' + esc(optImg(p.media_url, 1000)) + '" alt="" decoding="async">' : '';
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
 

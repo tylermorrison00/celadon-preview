@@ -274,9 +274,9 @@
 
         function optImg(url, w) {
             if (!url || typeof url !== 'string') return url;
-            // Supabase storage image transformation
-            if (url.indexOf('/storage/v1/object/') > -1 && url.indexOf('?') === -1) {
-                return url + '?width=' + (w || 800) + '&quality=75';
+            // Supabase image transformation — REAL endpoint is /render/image/, NOT ?params on /object/ (wo ignore ho jate hen)
+            if (url.indexOf('/storage/v1/object/public/') > -1 && url.indexOf('?') === -1) {
+                return url.replace('/storage/v1/object/public/', '/storage/v1/render/image/public/') + '?width=' + (w || 600) + '&quality=75';
             }
             return url;
         }
@@ -337,7 +337,7 @@
         }
 
         var PROMPTS_CACHE_KEY = 'ca_niches_cache';
-        var PROMPTS_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+        var PROMPTS_CACHE_TTL = 30 * 60 * 1000; // 30 minutes (edits/deletes cache ko khud clear kar dete hen)
         function getCachedPrompts() {
             try {
                 var raw = localStorage.getItem(PROMPTS_CACHE_KEY);
@@ -352,7 +352,7 @@
             try { localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
         async function fetchPrompts() {
-            var res = await fetch(API + '/rest/v1/niches?select=*&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
+            var res = await fetch(API + '/rest/v1/niches?select=id,title,category,media_url,media_type,is_pro,early_until,tags,sort_order,created_at,link_url,trending_until,is_trending,order_expires_at,trending_expires_at,is_basic,prompt_link,is_private&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
                 headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
             });
             if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -477,7 +477,7 @@
                     ? '<a class="btn solid" href="index.html#plan-pro" style="flex:1;text-align:center;padding:12px 20px;">Get Pro</a>'
                     : '<a class="btn solid" href="index.html#plan-basic" style="flex:1;text-align:center;padding:12px 20px;">Get Basic</a>';
             }
-            var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(optImg(p.media_url, 800)) + '" alt="" loading="lazy" decoding="async">' : '';
+            var img = p.media_url ? '<img class="pimg' + blurCls + '" src="' + esc(optImg(p.media_url, 600)) + '" alt="" loading="lazy" decoding="async">' : '';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
@@ -567,7 +567,7 @@
                     counts[t] = (counts[t] || 0) + 1;
                 });
             });
-            var tags = Object.keys(counts).sort(function(a, b) { var d = counts[b] - counts[a]; return d !== 0 ? d : (String(a).toLowerCase() < String(b).toLowerCase() ? -1 : 1); });
+            var tags = Object.keys(counts).sort(function(a, b) { var d = counts[b] - counts[a]; if (d !== 0) return d; var al = String(a).toLowerCase(), bl = String(b).toLowerCase(); if (al < bl) return -1; if (al > bl) return 1; if (a < b) return -1; if (a > b) return 1; return 0; });
             var special = [
                 '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Niches</button>',
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
