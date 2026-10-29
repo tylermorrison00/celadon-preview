@@ -508,11 +508,14 @@
         function renderTagPills() {
             var tf = document.getElementById('tagFilters');
             if (!tf) return;
+            // Tags ko lowercase key par merge karo (wrna 'Seedance' vs 'seedance' do pills ban jate hen)
             var counts = {};
             state.prompts.forEach(function(p) {
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return;
                 (p.tags || []).forEach(function(t) {
-                    counts[t] = (counts[t] || 0) + 1;
+                    var k = String(t).trim().toLowerCase();
+                    if (!k) return;
+                    counts[k] = (counts[k] || 0) + 1;
                 });
             });
             var tags = Object.keys(counts).sort(function(a, b) { var d = counts[b] - counts[a]; if (d !== 0) return d; var al = String(a).toLowerCase(), bl = String(b).toLowerCase(); if (al < bl) return -1; if (al > bl) return 1; if (a < b) return -1; if (a > b) return 1; return 0; });
