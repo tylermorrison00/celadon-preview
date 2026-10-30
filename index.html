@@ -681,6 +681,14 @@
             });
             ptags.sort(function(a, b) { return priority.indexOf(String(a).toLowerCase()) - priority.indexOf(String(b).toLowerCase()); });
             tags = ptags.concat(rest);
+            // Grok tag hamesha Veo ke foran baad
+            var vi = tags.findIndex(function(t) { return String(t).toLowerCase() === 'veo'; });
+            var gi = tags.findIndex(function(t) { return String(t).toLowerCase() === 'grok'; });
+            if (vi !== -1 && gi !== -1 && gi !== vi + 1) {
+                var g = tags.splice(gi, 1)[0];
+                vi = tags.findIndex(function(t) { return String(t).toLowerCase() === 'veo'; });
+                tags.splice(vi + 1, 0, g);
+            }
             var special = [
                 '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Prompts</button>',
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
