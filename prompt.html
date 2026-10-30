@@ -157,7 +157,7 @@
                     }
                 } catch (eAcc) {}
                 var tags = (p.tags || []).map(function(t) { return '<span class="ptag-lg"><span class="dot" style="background:' + tagColor(t) + ';width:8px;height:8px;border-radius:3px;display:inline-block;"></span>' + esc(titleCase(t)) + '</span>'; }).join('');
-                var img = p.media_url ? '<img class="pimg-lg" src="' + esc(optImg(p.media_url, 1000)) + '" alt="" decoding="async">' : '';
+                var img = ''; // Thumbnail not shown on detail page, only gallery (niche wala system)
                 // Detail gallery (niche wala system): dusre button se upload ki hui images
                 var gallery = '';
                 if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length) {
