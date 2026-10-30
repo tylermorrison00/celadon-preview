@@ -517,7 +517,7 @@ body.lock {
 
 /* ---------- hero ---------- */
 .hero {
-    padding: calc(var(--bar) + 62px) 0 30px;
+    padding: calc(var(--bar) + 16px) 0 30px;
     text-align: center
 }
 
