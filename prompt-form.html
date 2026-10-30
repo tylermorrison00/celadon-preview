@@ -584,6 +584,14 @@
             var res = editId
                 ? await sb.from(TABLE).update(row).eq('id', editId)
                 : await sb.from(TABLE).insert(row);
+            if (res.error && row.extra_images && /extra_images/.test(res.error.message || '')) {
+                // Column abhi nahi bana: detail images ke baghair dobara save karo taake prompt to save ho jaye
+                delete row.extra_images;
+                res = editId
+                    ? await sb.from(TABLE).update(row).eq('id', editId)
+                    : await sb.from(TABLE).insert(row);
+                if (!res.error) { try { alert('Prompt save ho gaya, lekin detail images save nahi hui — prompts table me extra_images column abhi nahi hai. Column banne ke baad detail images dobara lagani hongi.'); } catch (eAl) {} }
+            }
             if (res.error) {
                 showErr(res.error.message);
                 btn.disabled = false;
