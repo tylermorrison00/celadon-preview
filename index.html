@@ -59,13 +59,13 @@
             <!-- hero -->
             <section class="hero">
                 <div class="shell">
+                    <div id="totalPrompts" style="text-align:center;font-weight:700;color:#0E3A2E;font-size:1.05rem;margin-bottom:12px;">Total Prompts: <span id="totalCount">0</span></div>
                     <div class="form" style="margin-top:0;max-width:650px;margin-left:auto;margin-right:auto;">
                         <input class="field" type="text" placeholder="Search prompts..." aria-label="Search prompts" id="promptSearch" style="flex:1;min-width:0;">
                         <button class="btn solid" type="button" id="searchBtn" style="flex-shrink:0;">Search</button>
                     </div>
                     <div id="platformPills" style="visibility:hidden;">
                         <button class="plat-pill active" data-platform="tiktok">TikTok</button>
-                        <button class="plat-pill" data-platform="youtube">YouTube</button>
                     </div>
                     <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:700px;margin-left:auto;margin-right:auto;min-height:44px;" id="tagFilters"></div>
                     <div id="adminBar" style="display:none;max-width:1200px;margin:20px auto 0;text-align:center;">
@@ -259,7 +259,7 @@
         body::before, body.dark-mode::before { display: none !important; }
         body.dark-mode { background-image: none !important; }
         #platformPills { display: flex; justify-content: center; gap: 16px; margin: 24px 0 0; }
-        .plat-pill { padding: 16px 52px; border-radius: 999px; background: var(--gloss); border: none; box-shadow: var(--lift), var(--lip); font-size: 1.05rem; font-weight: 600; color: #3A4750; cursor: pointer; }
+        .plat-pill { padding: 22px 84px; border-radius: 999px; background: var(--gloss); border: none; box-shadow: var(--lift), var(--lip); font-size: 1.35rem; font-weight: 700; color: #3A4750; cursor: pointer; }
         .plat-pill.active { background-image: var(--gloss-jade); color: #0E3A2E; box-shadow: var(--lift-jade), var(--lip-jade); }
         #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; transition: transform .24s var(--ease), box-shadow .24s var(--ease); }
         #tagFilters .tag-pill:hover { transform: translateY(-3px); }
@@ -308,7 +308,6 @@
             <input class="field" id="pfTitle" type="text" placeholder="Title" aria-label="Title">
             <select class="field" id="pfCategory" aria-label="Category">
                 <option value="tiktok">TikTok</option>
-                <option value="youtube">YouTube</option>
             </select>
             <textarea class="field" id="pfText" placeholder="Prompt text..." aria-label="Prompt text"></textarea>
             <input class="field" id="pfTags" type="text" placeholder="Tags (comma separated)" aria-label="Tags">
@@ -380,7 +379,7 @@
         try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) { state.page = Math.max(1, parseInt(_pm[1], 10)); } else { var _lp = parseInt(localStorage.getItem('ca_page_prompts') || '0', 10); if (_lp > 0) state.page = _lp; } } catch (e) {}
         // Persist tag/filter selection across edit-page trips
         function saveFilters() { try { localStorage.setItem('ca_filters_prompts', JSON.stringify({ tag: state.tag, proFilter: state.proFilter, favOnly: state.favOnly, trendOnly: state.trendOnly, platform: state.platform })); } catch (e) {} }
-        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_prompts') || 'null'); if (_ff) { state.tag = String(_ff.tag || '').toLowerCase(); state.proFilter = _ff.proFilter || null; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; if (_ff.platform) state.platform = _ff.platform; } } catch (e) {}
+        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_prompts') || 'null'); if (_ff) { state.tag = String(_ff.tag || '').toLowerCase(); state.proFilter = _ff.proFilter || null; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; } } catch (e) {}
 
         function optImg(url, w) {
             if (!url || typeof url !== 'string') return url;
@@ -599,6 +598,8 @@
         }
 
         function render() {
+            // Total prompts counter: TikTok prompts ki tadaad (tag/search filter se nahi badalti)
+            try { var tc = document.getElementById('totalCount'); if (tc) { var n = 0; state.prompts.forEach(function(p) { if (String(p.category || '').toLowerCase() === 'tiktok') n++; }); tc.textContent = n; } } catch (e) {}
             var list = pinSort(filtered());
             var pages = Math.max(1, Math.ceil(list.length / state.perPage));
             if (state.page > pages) state.page = pages;
@@ -842,9 +843,9 @@
                     if (String(state.prompts[j].id) === String(targetId)) { item = state.prompts[j]; break; }
                 }
                 if (!item) { clearInterval(iv); return; }
-                // Reset filters and set correct platform
+                // Reset filters; platform hamesha TikTok (YouTube section band hai)
                 state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
-                if (item.category) state.platform = String(item.category).toLowerCase();
+                state.platform = 'tiktok';
                 // Use the real pinSort(filtered()) for accurate index (same as render)
                 var list = pinSort(filtered());
                 var idx = -1;
