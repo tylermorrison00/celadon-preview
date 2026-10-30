@@ -166,7 +166,7 @@
         var API = 'https://vfyuebkdkxhdrlduqxng.supabase.co';
         var editId = new URLSearchParams(location.search).get('id');
         var TABLE = new URLSearchParams(location.search).get('table') || 'prompts';
-        if (TABLE === 'niches') { var diw = document.getElementById('detailImgWrap'); if (diw) diw.style.display = 'block'; }
+        if (TABLE === 'niches' || TABLE === 'prompts') { var diw = document.getElementById('detailImgWrap'); if (diw) diw.style.display = 'block'; }
         var singular = TABLE === 'niches' ? 'niche' : (TABLE === 'tools' ? 'tool' : 'prompt');
         var IS_TOOLS = TABLE === 'tools';
         var IS_NICHES = TABLE === 'niches';
@@ -469,6 +469,13 @@
                     var pfPriv2 = document.getElementById('pfPrivate'); if (pfPriv2) pfPriv2.checked = !!p.is_private;
                     var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
+                    // Load existing detail images for prompts (niche wala system)
+                    if (p.extra_images && Array.isArray(p.extra_images) && p.extra_images.length) {
+                        detailUrls = p.extra_images.slice(0, 10);
+                        document.getElementById('pfDetailImgs').value = JSON.stringify(detailUrls);
+                        document.getElementById('detailImgName').textContent = detailUrls.length + ' image(s)';
+                        document.getElementById('detailImgPreview').innerHTML = detailUrls.map(function(u) { return '<img src="' + u + '" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">'; }).join('');
+                    }
                 }
             }
             setupToolsMode();
@@ -551,6 +558,9 @@
                     is_trending: fTrend.checked,
                     is_private: document.getElementById('pfPrivate').checked
                 };
+                // Detail images (niche wala system): column banne tak sirf jab images hon tab bhejo
+                var di = []; try { di = JSON.parse(document.getElementById('pfDetailImgs').value || '[]'); } catch (eDi) {}
+                if (di.length) row.extra_images = di;
                 btn.disabled = true;
                 btn.textContent = 'Saving...';
             }
