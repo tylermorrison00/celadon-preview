@@ -59,15 +59,12 @@
             <!-- hero -->
             <section class="hero">
                 <div class="shell">
-                    <div id="totalPrompts" style="text-align:center;font-weight:700;color:#0E3A2E;font-size:1.05rem;margin-bottom:12px;">Total Prompts: <span id="totalCount">0</span></div>
+                    <div style="text-align:center;margin-bottom:12px;"><span class="plat-pill active" id="totalPill">Total Prompts: <span id="totalCount">0</span></span></div>
                     <div class="form" style="margin-top:0;max-width:650px;margin-left:auto;margin-right:auto;">
                         <input class="field" type="text" placeholder="Search prompts..." aria-label="Search prompts" id="promptSearch" style="flex:1;min-width:0;">
                         <button class="btn solid" type="button" id="searchBtn" style="flex-shrink:0;">Search</button>
                     </div>
-                    <div id="platformPills" style="visibility:hidden;">
-                        <button class="plat-pill active" data-platform="tiktok">TikTok</button>
-                    </div>
-                    <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:700px;margin-left:auto;margin-right:auto;min-height:44px;" id="tagFilters"></div>
+                    <div style="margin-top:0;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:700px;margin-left:auto;margin-right:auto;min-height:44px;" id="tagFilters"></div>
                     <div id="adminBar" style="display:none;max-width:1200px;margin:20px auto 0;text-align:center;">
                         <a class="btn solid" href="prompt-form.html" id="addPromptBtn" onclick="press()">+ Add new prompt</a>
                     </div>
@@ -261,6 +258,7 @@
         #platformPills { display: flex; justify-content: center; gap: 16px; margin: 24px 0 0; }
         .plat-pill { padding: 22px 84px; border-radius: 999px; background: var(--gloss); border: none; box-shadow: var(--lift), var(--lip); font-size: 1.35rem; font-weight: 700; color: #3A4750; cursor: pointer; }
         .plat-pill.active { background-image: var(--gloss-jade); color: #0E3A2E; box-shadow: var(--lift-jade), var(--lip-jade); }
+        #totalPill { display: inline-block; padding: 12px 44px; font-size: 1rem; font-weight: 700; cursor: default; }
         #tagFilters .tag-pill { padding: 3px 10px; font-size: .68rem; transition: transform .24s var(--ease), box-shadow .24s var(--ease); }
         #tagFilters .tag-pill:hover { transform: translateY(-3px); }
         @media (min-width: 768px) { #tagFilters .tag-pill { padding: 4px 18px; font-size: .85rem;  } #tagFilters .tag-pill .dot { width: 10px; height: 10px; } }
@@ -774,16 +772,6 @@
             _lastTick = now;
             tick();
         });
-        var _lastTickP = 0;
-        document.getElementById('platformPills').addEventListener('pointerover', function(e) {
-            if (e.pointerType && e.pointerType !== 'mouse') return;
-            var btn = e.target.closest('.plat-pill');
-            if (!btn) return;
-            var now = Date.now();
-            if (now - _lastTickP < 300) return;
-            _lastTickP = now;
-            tick();
-        });
         /* card 3-dots menu: toggle + copy link */
         document.addEventListener('click', function(e) {
             var mbtn = e.target.closest('.cardmenu-btn');
@@ -871,24 +859,6 @@
                 }, 600);
             }, 500);
         })();
-                // Show platform pills once ready (prevents FOUC)
-        requestAnimationFrame(function() {
-            var pp = document.getElementById('platformPills');
-            if (pp) pp.style.visibility = 'visible';
-        });
-        document.getElementById('platformPills').addEventListener('click', function(e) {
-            var btn = e.target.closest('.plat-pill');
-            if (!btn) return;
-            state.platform = btn.getAttribute('data-platform');
-            document.querySelectorAll('#platformPills .plat-pill').forEach(function(b) {
-                b.classList.toggle('active', b === btn);
-            });
-            state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_prompts'); } catch (e) {}
-            saveFilters();
-            renderTagPills();
-            render();
-        });
-
         /* ---- modal ---- */
         var scrim = document.getElementById('promptScrim');
         var mTitle = document.getElementById('promptModalTitle');
