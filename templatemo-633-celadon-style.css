@@ -2300,3 +2300,8 @@ body.dark-mode .pad {
 }
 
 
+
+/* Mobile: corner floating buttons (sound bottom-left, back-to-top bottom-right) hidden */
+@media (max-width: 767px) {
+    .sfx, .up { display: none !important; }
+}
