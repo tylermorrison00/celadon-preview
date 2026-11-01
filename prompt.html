@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://vfyuebkdkxhdrlduqxng.supabase.co" crossorigin>
 <title>Prompt — Creators Automation</title>
 <meta name="description" content="View and copy this AI prompt.">
 <link rel="stylesheet" href="templatemo-633-celadon-style.css">
@@ -11,7 +14,7 @@
     .backlink { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 6px; }
     .ptitle-lg { font-size: clamp(1.6rem, 5vw, 2.4rem); font-weight: 800; letter-spacing: -.02em; margin: 22px 0 12px; color: #0E3A2E; line-height: 1.2; }
     .pmeta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 18px; }
-    .pimg-lg { width: 100%; border-radius: 22px; object-fit: cover; max-height: 480px; box-shadow: 0 12px 32px rgba(14,58,46,.12); background: #eef2f7; }
+    .pimg-lg { display: block; width: 100%; max-width: 382px; height: auto; margin: 0 auto; border-radius: 22px; object-fit: contain; box-shadow: 0 12px 32px rgba(14,58,46,.12); background: #eef2f7; }
     .ptags-lg { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
     body::before, body.dark-mode::before { display: none !important; }
     body.dark-mode { background-image: none !important; }
@@ -172,7 +175,7 @@
                         '</div>';
                 }
                 // Detail images na hon to card wali image khud show ho
-                var img = gallery ? '' : (p.media_url ? '<img class="pimg-lg" src="' + esc(optImg(p.media_url, 1000)) + '" alt="" decoding="async">' : '');
+                var img = gallery ? '' : (p.media_url ? '<img class="pimg-lg" src="' + esc(optImg(p.media_url, 400)) + '" alt="" decoding="async">' : '');
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
 
