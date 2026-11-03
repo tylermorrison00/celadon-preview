@@ -174,11 +174,6 @@
                     d: .13,
                     g: .14
                 });
-                body({
-                    cut: 900,
-                    d: .05,
-                    g: .05
-                });
             },
             detent: function() {
                 tone({
