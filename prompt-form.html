@@ -284,7 +284,6 @@
                     b.innerHTML = '<span class="dot" style="background:' + c + ';"></span>' + tc;
                     (function(btn, tag) {
                         btn.onclick = function() { press(); toggleTagPill(btn, tag); };
-                        btn.onmouseenter = tick;
                     })(b, orig[k]);
                     tagPills.appendChild(b);
                 });
@@ -305,9 +304,7 @@
         var pfCatHidden = document.getElementById('pfCategory');
         if (catBtn) {
             catBtn.addEventListener('click', function(e) { e.stopPropagation(); press(); catList.style.display = catList.style.display === 'none' ? 'block' : 'none'; });
-            catBtn.addEventListener('mouseenter', tick);
             document.querySelectorAll('.cdrop-opt').forEach(function(o) {
-                o.addEventListener('mouseenter', tick);
                 o.addEventListener('click', function(e) { e.stopPropagation(); press(); pfCatHidden.value = o.getAttribute('data-val'); catLabel.textContent = o.textContent; catList.style.display = 'none'; });
             });
             document.addEventListener('click', function() { catList.style.display = 'none'; });
@@ -481,8 +478,6 @@
             setupToolsMode();
             setupNichesMode();
             loadTagPills();
-            // hover sounds for buttons (laptop only)
-            document.querySelectorAll('.pform .btn, .pform .tpill, #imgUploadBtn, #backBtn, .pform .btn-cancel').forEach(function(b) { b.addEventListener('mouseenter', tick); });
             showForm();
         }
 

@@ -810,23 +810,6 @@
         else if (e.target.closest(".chip")) Sound.play("tick");
         else if (e.target.closest(".tag-pill")) Sound.play("tick");
     }, true);
-    var lastHover = 0,
-        lastEl = null;
-    var hoverSel = ".nav a, .drawer a, .chip, .tag-pill, .btn, .arw, .stave:not(.open), .q, .switch, .footbar a, .up, .sbtn, .brand";
-    window.addEventListener("pointerover", function(e) {
-        if (e.pointerType && e.pointerType !== "mouse") return;
-        var el = e.target.closest(hoverSel);
-        if (!el || el === lastEl) return;
-        lastEl = el;
-        var now = Date.now();
-        if (now - lastHover < 70) return;
-        lastHover = now;
-        Sound.play("tick");
-    }, true);
-    window.addEventListener("pointerout", function(e) {
-        if (lastEl && !lastEl.contains(e.relatedTarget)) lastEl = null;
-    }, true);
-
     /* ---------- features slab, click only ---------- */
     var slabrow = document.getElementById("slabrow");
     if (slabrow) {
@@ -942,9 +925,11 @@
     if (!toggle) return;
     return; /* TEMP (Oct 11): dark-theme button disabled — light theme only for now. Dark-mode code below kept intact for later. */
     toggle.addEventListener('click', function() {
-        document.body.classList.toggle('dark-mode');
-        var isDark = document.body.classList.contains('dark-mode');
-        try { localStorage.setItem('ca-theme', isDark ? 'dark' : 'light'); } catch(e) {}
+        requestAnimationFrame(function() {
+            document.body.classList.toggle('dark-mode');
+            var isDark = document.body.classList.contains('dark-mode');
+            try { localStorage.setItem('ca-theme', isDark ? 'dark' : 'light'); } catch(e) {}
+        });
     });
     try {
         if (localStorage.getItem('ca-theme') === 'dark') document.body.classList.add('dark-mode');

@@ -84,9 +84,6 @@
             o.start(t); o.stop(t + 0.2);
         } catch (e) {}
     }
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.btn').forEach(function(b) { b.addEventListener('mouseenter', tick); });
-    });
     (function() {
         var box = document.getElementById('promptDetail');
         function esc(s) {

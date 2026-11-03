@@ -576,20 +576,7 @@
                 closeVault();
                 if (open) { vl.hidden = false; vb.setAttribute('aria-expanded', 'true'); }
             });
-            if (!isTouch) vb.addEventListener('mouseenter', function() { tick(); });
-        var _tf = document.getElementById('tagFilters');
-        if (_tf) var _lastTickT = 0;
-        _tf.addEventListener('pointerover', function(e) {
-            if (e.pointerType && e.pointerType !== 'mouse') return;
-            var btn = e.target.closest('.tag-pill');
-            if (!btn) return;
-            var now = Date.now();
-            if (now - _lastTickT < 300) return;
-            _lastTickT = now;
-            tick();
-        });
             vl.querySelectorAll('.vault-opt').forEach(function(o) {
-                if (!isTouch) o.addEventListener('mouseenter', function() { tick(); });
                 o.addEventListener('click', function() { press(); });
             });
             document.addEventListener('click', function(e) { if (!vd.contains(e.target)) closeVault(); });
