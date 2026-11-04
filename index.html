@@ -465,11 +465,21 @@
             try { localStorage.setItem(PROMPTS_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: data })); } catch (e) {}
         }
         async function fetchPrompts() {
-            var res = await fetch(API + '/rest/v1/prompts?select=id,category,title,media_url,media_type,is_pro,sort_order,created_at,tags,early_until,trending_until,is_trending,order_expires_at,trending_expires_at,is_basic,is_private&order=sort_order.asc.nullslast&order=created_at.desc&limit=200', {
-                headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
-            });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return await res.json() || [];
+            // Saare prompts lao, chahe 200 se upar bhi hon: 1000-1000 ki pages me loop karo jab tak page adhoora na mile
+            var all = [];
+            var offset = 0;
+            var pageSize = 1000;
+            while (true) {
+                var res = await fetch(API + '/rest/v1/prompts?select=id,category,title,media_url,media_type,is_pro,sort_order,created_at,tags,early_until,trending_until,is_trending,order_expires_at,trending_expires_at,is_basic,is_private&order=sort_order.asc.nullslast,created_at.desc&limit=' + pageSize + '&offset=' + offset, {
+                    headers: { 'apikey': ANON, 'Authorization': 'Bearer ' + ANON }
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                var page = await res.json() || [];
+                all = all.concat(page);
+                if (page.length < pageSize) break;
+                offset += pageSize;
+            }
+            return all;
         }
         async function loadPrompts() {
             // show cached immediately for instant render
