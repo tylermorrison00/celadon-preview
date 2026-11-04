@@ -376,7 +376,7 @@
             try { localStorage.removeItem(AUTH_CACHE_KEY); } catch (e) {}
         }
         var _ca = getCachedAuth();
-        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: _ca ? (_ca.userPlan || 'free') : 'free', editingId: null };
+        var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, adminOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: _ca ? (_ca.userPlan || 'free') : 'free', editingId: null };
         try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) { state.page = Math.max(1, parseInt(_pm[1], 10)); } else { var _lp = parseInt(localStorage.getItem('ca_page_prompts') || '0', 10); if (_lp > 0) state.page = _lp; } } catch (e) {}
         // Persist tag/filter selection across edit-page trips
         function saveFilters() { try { localStorage.setItem('ca_filters_prompts', JSON.stringify({ tag: state.tag, proFilter: state.proFilter, favOnly: state.favOnly, trendOnly: state.trendOnly, platform: state.platform })); } catch (e) {} }
@@ -546,6 +546,7 @@
             var favs = state.favOnly ? getFavs() : null;
             return state.prompts.filter(function(p) {
                 if (p.is_private && !state.isAdmin) return false;
+                if (state.adminOnly && !p.is_private) return false;
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return false;
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
                 if (state.trendOnly && !isTrending(p)) return false;
@@ -697,6 +698,7 @@
                 '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>',
                 '<button class="tag-pill" data-special="trending"><span class="dot" style="background:' + tagDotColor(4) + ';"></span>Trending</button>',
             ];
+            if (state.isAdmin) special.unshift('<button class="tag-pill" data-special="admin"><span class="dot" style="background:' + tagDotColor(5) + ';"></span>Admin only</button>');
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
                 return '<button class="tag-pill" data-tag="' + esc(t) + '"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</button>';
@@ -722,6 +724,7 @@
                 else if (sp === 'premium') active = state.proFilter === 'premium';
                 else if (sp === 'fav') active = state.favOnly;
                 else if (sp === 'trending') active = state.trendOnly;
+                else if (sp === 'admin') active = !!state.adminOnly;
                 else if (tg) active = state.tag === tg;
                 b.classList.toggle('active', active);
             });
@@ -731,10 +734,11 @@
             if (!btn) return;
             var sp = btn.getAttribute('data-special');
             var tag = btn.getAttribute('data-tag');
-            state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false; if (sp === 'free') state.proFilter = 'free';
+            state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false; state.adminOnly = false; if (sp === 'free') state.proFilter = 'free';
             else if (sp === 'premium') state.proFilter = 'premium';
             else if (sp === 'fav') state.favOnly = true;
             else if (sp === 'trending') state.trendOnly = true;
+            else if (sp === 'admin') state.adminOnly = true;
             else if (tag) state.tag = tag;
             state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_prompts'); } catch (e) {}
             saveFilters();
@@ -829,7 +833,7 @@
                 }
                 if (!item) { clearInterval(iv); return; }
                 // Reset filters; platform hamesha TikTok (YouTube section band hai)
-                state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false;
+                state.q = ''; state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false; state.adminOnly = false;
                 state.platform = 'tiktok';
                 // Use the real pinSort(filtered()) for accurate index (same as render)
                 var list = pinSort(filtered());
