@@ -172,7 +172,7 @@
                         '</div>';
                 }
                 // Detail images na hon to card wali image khud show ho
-                var img = gallery ? '' : (p.media_url ? '<img class="pimg-lg" src="' + esc(optImg(p.media_url, 400)) + '" alt="" decoding="async">' : '');
+                var img = gallery ? '' : (p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="" decoding="async">' : '');
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
 

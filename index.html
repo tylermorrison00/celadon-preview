@@ -84,8 +84,8 @@
                     <div class="plans">
                         <article class="plan rv" id="plan-basic">
                             <span class="tag">Basic</span>
-                            <div class="cost" style="justify-content:center;"><b class="price">499 PKR</b><span class="per">per month</span></div>
-                            <a class="btn wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28499%20PKR/month%29.">Get Basic</a>
+                            <div class="cost" style="justify-content:center;"><b class="price">$5</b><span class="per">per month</span></div>
+                            <a class="btn wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28%245/month%29.">Get Basic</a>
                             <ul class="feat">
                                 <li><i></i>Full prompt library</li>
                                 <li><i></i>Full niches</li>
@@ -95,8 +95,8 @@
                         </article>
                         <article class="plan hot rv d1" id="plan-pro">
                             <span class="tag">Pro</span>
-                            <div class="cost" style="justify-content:center;"><b class="price">999 PKR</b><span class="per">per month</span></div>
-                            <a class="btn solid wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28999%20PKR/month%29.">Get Pro</a>
+                            <div class="cost" style="justify-content:center;"><b class="price">$10</b><span class="per">per month</span></div>
+                            <a class="btn solid wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28%2410/month%29.">Get Pro</a>
                             <ul class="feat">
                                 <li><i></i>Everything in Basic</li>
                                 <li><i></i>2-week early access</li>
@@ -560,7 +560,7 @@
         function normTitle(s) { return String(s || '').replace(/[\u{1D400}-\u{1D7FF}]/gu, function(ch) { var cp = ch.codePointAt(0); if (cp >= 0x1D400 && cp <= 0x1D419) return String.fromCharCode(65 + cp - 0x1D400); if (cp >= 0x1D41A && cp <= 0x1D433) return String.fromCharCode(97 + cp - 0x1D41A); if (cp >= 0x1D7CE && cp <= 0x1D7D7) return String.fromCharCode(48 + cp - 0x1D7CE); if (cp >= 0x1D5D4 && cp <= 0x1D5ED) return String.fromCharCode(65 + cp - 0x1D5D4); if (cp >= 0x1D5EE && cp <= 0x1D607) return String.fromCharCode(97 + cp - 0x1D5EE); if (cp >= 0x1D7E2 && cp <= 0x1D7EB) return String.fromCharCode(48 + cp - 0x1D7E2); return ch; }); }
         function cardHTML(p) {
             var tags = (p.tags || []).map(function(t) { return '<span class="ptag">' + esc(t) + '</span>'; }).join('');
-            var img = p.media_url ? '<img class="pimg" src="' + esc(optImg(p.media_url, 400)) + '" alt="" loading="lazy" decoding="async">' : '';
+            var img = p.media_url ? '<img class="pimg" src="' + esc(optImg(p.media_url, 800)) + '" alt="" loading="lazy" decoding="async">' : '';
             var adminBtns = state.isAdmin
                 ? '<button class="btn" data-edit="' + p.id + '">Edit</button><button class="btn danger" data-del="' + p.id + '">Delete</button>'
                 : '';
