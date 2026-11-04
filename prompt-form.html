@@ -320,6 +320,8 @@
         function compressImage(file) {
             return new Promise(function(resolve) {
                 if (!file.type || file.type.indexOf('image/') !== 0) { resolve(file); return; }
+                // Chhoti files (screenshot jaisi) ko compress mat karo — wese hi chhoti hoti hain, compress se quality gir jati hai
+                if (file.size && file.size <= 1048576) { resolve(file); return; }
                 var img = new Image();
                 var url = URL.createObjectURL(file);
                 img.onload = function() {
