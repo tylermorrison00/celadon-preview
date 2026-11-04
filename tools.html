@@ -736,7 +736,7 @@
 
         /* ---- auth-aware nav + admin ---- */
         function renderNav() {
-            var mb = document.getElementById('membersBtn'); if (mb && state.isAdmin) mb.style.display = ''; var dm = document.getElementById('drawerMembers'); if (dm && state.isAdmin) dm.style.display = '';
+            var mb = document.getElementById('membersBtn'); if (mb) mb.style.display = state.isAdmin ? '' : 'none'; var dm = document.getElementById('drawerMembers'); if (dm) dm.style.display = state.isAdmin ? '' : 'none';
             
             if (!navAuth) return;
             var drawerAuth = document.getElementById('drawerAuth');

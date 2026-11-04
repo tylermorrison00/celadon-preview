@@ -568,8 +568,6 @@
             var _canAccess = canAccess(p);
             var _plan = getPlan();
             if (state.isAdmin) {
-                var mb = document.getElementById('membersBtn'); if (mb) mb.style.display = ''; var dm = document.getElementById('drawerMembers'); if (dm) dm.style.display = '';
-
                 mainBtn = '<button class="btn solid" data-view="' + p.id + '">Copy prompt</button>';
             } else if (_canAccess && state.user) {
                 mainBtn = '<button class="btn solid" data-view="' + p.id + '" style="flex:1;text-align:center;padding:12px 20px;">Copy prompt</button>';
@@ -925,6 +923,8 @@
 
         /* ---- auth-aware nav + admin ---- */
         function renderNav() {
+            var mb = document.getElementById('membersBtn'); if (mb) mb.style.display = state.isAdmin ? '' : 'none';
+            var dm = document.getElementById('drawerMembers'); if (dm) dm.style.display = state.isAdmin ? '' : 'none';
             if (!navAuth) return;
             var drawerAuth = document.getElementById('drawerAuth');
             if (!state.user) {
