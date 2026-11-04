@@ -69,6 +69,9 @@
                     </div>
                     <div style="margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:700px;margin-left:auto;margin-right:auto;min-height:44px;" id="tagFilters"></div>
                     <div id="adminBar" style="display:none;max-width:1200px;margin:20px auto 0;text-align:center;">
+                        <div style="margin-bottom:14px;">
+                            <button class="tag-pill" id="adminOnlyBtn" type="button"><span class="dot" style="background:hsl(328,75%,72%);"></span>Admin only</button>
+                        </div>
                         <a class="btn solid" href="prompt-form.html" id="addPromptBtn" onclick="press()">+ Add new prompt</a>
                     </div>
                     <div id="promptCards"></div>
@@ -698,7 +701,6 @@
                 '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>',
                 '<button class="tag-pill" data-special="trending"><span class="dot" style="background:' + tagDotColor(4) + ';"></span>Trending</button>',
             ];
-            if (state.isAdmin) special.unshift('<button class="tag-pill" data-special="admin"><span class="dot" style="background:' + tagDotColor(5) + ';"></span>Admin only</button>');
             var tagPills = tags.map(function(t, i) {
                 var c = tagDotColor(i + 4);
                 return '<button class="tag-pill" data-tag="' + esc(t) + '"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</button>';
@@ -719,15 +721,15 @@
                 var sp = b.getAttribute('data-special');
                 var tg = b.getAttribute('data-tag');
                 var active = false;
-                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly && !state.trendOnly;
+                if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly && !state.trendOnly && !state.adminOnly;
                 else if (sp === 'free') active = state.proFilter === 'free';
                 else if (sp === 'premium') active = state.proFilter === 'premium';
                 else if (sp === 'fav') active = state.favOnly;
                 else if (sp === 'trending') active = state.trendOnly;
-                else if (sp === 'admin') active = !!state.adminOnly;
                 else if (tg) active = state.tag === tg;
                 b.classList.toggle('active', active);
             });
+            var ab = document.getElementById('adminOnlyBtn'); if (ab) ab.classList.toggle('active', !!state.adminOnly);
         }
         document.getElementById('tagFilters').addEventListener('click', function(e) {
             var btn = e.target.closest('.tag-pill');
@@ -738,8 +740,14 @@
             else if (sp === 'premium') state.proFilter = 'premium';
             else if (sp === 'fav') state.favOnly = true;
             else if (sp === 'trending') state.trendOnly = true;
-            else if (sp === 'admin') state.adminOnly = true;
             else if (tag) state.tag = tag;
+            state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_prompts'); } catch (e) {}
+            saveFilters();
+            markActivePill();
+            render();
+        });
+        document.getElementById('adminOnlyBtn').addEventListener('click', function() {
+            state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false; state.adminOnly = true;
             state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_prompts'); } catch (e) {}
             saveFilters();
             markActivePill();
