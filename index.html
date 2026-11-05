@@ -381,9 +381,11 @@
         var _ca = getCachedAuth();
         var state = { prompts: [], q: '', tag: '', proFilter: null, favOnly: false, trendOnly: false, adminOnly: false, platform: 'tiktok', page: 1, perPage: (isMobDesk ? 16 : (window.innerWidth < 768 ? 8 : 15)), user: (_ca ? { id: _ca.userId } : null), isAdmin: _ca ? !!_ca.isAdmin : false, userPlan: _ca ? (_ca.userPlan || 'free') : 'free', editingId: null };
         try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) { state.page = Math.max(1, parseInt(_pm[1], 10)); } else { var _lp = parseInt(localStorage.getItem('ca_page_prompts') || '0', 10); if (_lp > 0) state.page = _lp; } } catch (e) {}
-        // Persist tag/filter selection across edit-page trips
-        function saveFilters() { try { localStorage.setItem('ca_filters_prompts', JSON.stringify({ tag: state.tag, proFilter: state.proFilter, favOnly: state.favOnly, trendOnly: state.trendOnly, platform: state.platform })); } catch (e) {} }
-        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_prompts') || 'null'); if (_ff) { state.tag = String(_ff.tag || '').toLowerCase(); state.proFilter = _ff.proFilter || null; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; } } catch (e) {}
+        // Persist tag/filter selection across edit-page trips (Admin only + page bhi, taake edit se back aane par wohi filter, wohi page, wohi row mile)
+        function saveFilters() { try { localStorage.setItem('ca_filters_prompts', JSON.stringify({ tag: state.tag, proFilter: state.proFilter, favOnly: state.favOnly, trendOnly: state.trendOnly, platform: state.platform, adminOnly: state.adminOnly, page: state.page })); } catch (e) {} }
+        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_prompts') || 'null'); if (_ff) { state.tag = String(_ff.tag || '').toLowerCase(); state.proFilter = _ff.proFilter || null; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; if (state.isAdmin) state.adminOnly = !!_ff.adminOnly; } } catch (e) {}
+        try { var _hm = (location.hash || '').match(/^#p(\d+)$/); if (!_hm && _ff && parseInt(_ff.page, 10) > 0) state.page = Math.max(1, parseInt(_ff.page, 10)); } catch (e) {}
+        var _returnCard = null; try { _returnCard = localStorage.getItem('ca_return_card'); } catch (e) {}
 
         function optImg(url, w) {
             if (!url || typeof url !== 'string') return url;
@@ -623,6 +625,14 @@
                 btns += '<button class="page-btn' + (i === state.page ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
             }
             pag.innerHTML = btns;
+            // Edit se wapas aaye hon to usi card wali row par scroll karo (aik dafa, phir key khatam)
+            if (_returnCard && state.prompts.length) {
+                var _rc = _returnCard; _returnCard = null;
+                try { localStorage.removeItem('ca_return_card'); } catch (e) {}
+                setTimeout(function() {
+                    try { var _el = document.getElementById('cardmenu-' + _rc); if (_el) { var _card = _el.closest('article'); if (_card) _card.scrollIntoView({ behavior: 'auto', block: 'center' }); } } catch (e2) {}
+                }, 350);
+            }
         }
 
         grid.addEventListener('click', async function(e) {
@@ -641,7 +651,7 @@
                 return;
             }
             if (vw) { location.href = 'prompt.html?id=' + encodeURIComponent(vw); return; }
-            if (ed) { location.href = 'prompt-form.html?id=' + encodeURIComponent(ed); return; }
+            if (ed) { try { saveFilters(); localStorage.setItem('ca_return_card', String(ed)); } catch (e) {} location.href = 'prompt-form.html?id=' + encodeURIComponent(ed); return; }
             if (del) {
                 if (!confirm('Delete this prompt?')) return;
                 var r = await sb.from('prompts').delete().eq('id', del);
@@ -652,12 +662,13 @@
 
         pag.addEventListener('click', function(e) {
             var pg = e.target.getAttribute('data-page');
-            if (pg) { press(); state.page = parseInt(pg, 10); try { history.replaceState(null, '', '#p' + state.page); localStorage.setItem('ca_page_prompts', String(state.page)); } catch (e) {} render(); grid.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+            if (pg) { press(); state.page = parseInt(pg, 10); try { history.replaceState(null, '', '#p' + state.page); localStorage.setItem('ca_page_prompts', String(state.page)); } catch (e) {} saveFilters(); render(); grid.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
 
         function doSearch() {
             state.q = searchInput ? searchInput.value : '';
             state.page = 1; try { history.replaceState(null, '', location.pathname + location.search); localStorage.removeItem('ca_page_prompts'); } catch (e) {}
+            saveFilters();
             render();
         }
         if (searchBtn) searchBtn.addEventListener('click', function() { press(); doSearch(); });
