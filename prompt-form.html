@@ -185,6 +185,7 @@
         var imgFile = document.getElementById('imgFile');
         var imgName = document.getElementById('imgName');
         var uploadedUrl = '';
+        var wasPrivate = false; // edit se pehle prompt private tha ya nahi (publish-to-top ke liye)
         var uploadFailed = false;
         var fErr = document.getElementById('pfErr');
         var formTitle = document.getElementById('formTitle');
@@ -445,6 +446,7 @@
                     fPro.checked = !!p.is_pro; if (fBasic) fBasic.checked = !!p.is_basic && !p.is_pro;
                     if (fTrend) fTrend.checked = !!p.is_trending;
                     var pfPriv2 = document.getElementById('pfPrivate'); if (pfPriv2) pfPriv2.checked = !!p.is_private;
+                    wasPrivate = !!p.is_private;
                     var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                     // Load existing detail images for prompts (niche wala system)
@@ -555,9 +557,18 @@
             } else {
                 row.trending_expires_at = null;
             }
+            // Admin only se publish: private se public hote hi created_at abhi ka lagao taake prompt pehle page pe pehle number pe aaye (har naya publish hone wala us se bhi upar)
+            if (editId && TABLE === 'prompts' && wasPrivate && !row.is_private) row.created_at = new Date().toISOString();
             var res = editId
                 ? await sb.from(TABLE).update(row).eq('id', editId)
                 : await sb.from(TABLE).insert(row);
+            if (res.error && row.created_at) {
+                // created_at bump reject ho to save to hona hi chahiye: bump hata ke dobara save karo
+                delete row.created_at;
+                res = editId
+                    ? await sb.from(TABLE).update(row).eq('id', editId)
+                    : await sb.from(TABLE).insert(row);
+            }
             if (res.error && row.extra_images && /extra_images/.test(res.error.message || '')) {
                 // Column abhi nahi bana: detail images ke baghair dobara save karo taake prompt to save ho jaye
                 delete row.extra_images;
