@@ -614,7 +614,7 @@
 
         function render() {
             // Total prompts counter: TikTok prompts ki tadaad (tag/search filter se nahi badalti)
-            try { var tc = document.getElementById('totalCount'); if (tc) { var n = 0; state.prompts.forEach(function(p) { if (String(p.category || '').toLowerCase() === 'tiktok') n++; }); tc.textContent = n; } } catch (e) {}
+            try { var tc = document.getElementById('totalCount'); if (tc) { var n = 0; state.prompts.forEach(function(p) { if (String(p.category || '').toLowerCase() !== 'tiktok') return; if (p.is_private && !state.isAdmin) return; n++; }); tc.textContent = n; } } catch (e) {}
             var list = pinSort(filtered());
             var pages = Math.max(1, Math.ceil(list.length / state.perPage));
             if (state.page > pages) state.page = pages;
