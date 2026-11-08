@@ -621,24 +621,23 @@
             if (state.page > pages) state.page = pages;
             var slice = list.slice((state.page - 1) * state.perPage, state.page * state.perPage);
             grid.innerHTML = slice.length ? slice.map(cardHTML).join('') : '<div class="pempty">No prompts found.</div>';
-            // Pagination: zyada se zyada 15 number wali pills; kinaron par jump pills (1 to X / Y to last)
+            // Pagination: kul zyada se zyada 16 number wali pills; kinaron par "to" jump (1..15 to last / 1 to window)
             var btns = '';
             var pgBtn = function(n) { return '<button class="page-btn' + (n === state.page ? ' active' : '') + '" data-page="' + n + '">' + n + '</button>'; };
-            var pgTo = '<span class="page-btn" style="cursor:default;opacity:.6;">to</span>';
-            var WIN = 15;
-            var start = 1, end = pages;
-            if (pages > WIN) {
-                start = Math.max(1, Math.min(state.page - 7, pages - WIN + 1));
-                end = start + WIN - 1;
-            }
-            if (start > 1) {
-                btns += pgBtn(1);
-                if (start - 1 > 1) btns += pgTo + pgBtn(start - 1);
-            }
-            for (var i = start; i <= end; i++) btns += pgBtn(i);
-            if (end < pages) {
-                if (end + 1 < pages) btns += pgBtn(end + 1) + pgTo + pgBtn(pages);
-                else btns += pgBtn(pages);
+            var pgTo = '<span class="page-btn" style="cursor:default;">to</span>';
+            var TOTAL = 16;
+            if (pages <= TOTAL) {
+                for (var i = 1; i <= pages; i++) btns += pgBtn(i);
+            } else if (state.page <= 8) {
+                for (var i = 1; i <= 15; i++) btns += pgBtn(i);
+                btns += pgTo + pgBtn(pages);
+            } else if (state.page >= pages - 7) {
+                btns += pgBtn(1) + pgTo;
+                for (var i = pages - 14; i <= pages; i++) btns += pgBtn(i);
+            } else {
+                btns += pgBtn(1) + pgTo;
+                for (var i = state.page - 7; i <= state.page + 6; i++) btns += pgBtn(i);
+                btns += pgTo + pgBtn(pages);
             }
             pag.innerHTML = btns;
             // Edit se wapas aaye hon to usi card wali row par scroll karo (aik dafa, phir key khatam)
