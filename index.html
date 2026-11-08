@@ -621,10 +621,10 @@
             if (state.page > pages) state.page = pages;
             var slice = list.slice((state.page - 1) * state.perPage, state.page * state.perPage);
             grid.innerHTML = slice.length ? slice.map(cardHTML).join('') : '<div class="pempty">No prompts found.</div>';
-            // Pagination: kul zyada se zyada 16 number wali pills; kinaron par sirf arrow (gol background nahi) — aage →, peeche ←
+            // Pagination: kul zyada se zyada 16 number wali pills; kinaron par gol pill pe arrow — aage →, peeche ←
             var btns = '';
             var pgBtn = function(n) { return '<button class="page-btn' + (n === state.page ? ' active' : '') + '" data-page="' + n + '">' + n + '</button>'; };
-            var pgArrow = function(ch) { return '<span style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--ink-2);font-size:1.15rem;font-weight:700;cursor:default;">' + ch + '</span>'; };
+            var pgArrow = function(ch) { return '<span class="page-btn" style="cursor:default;font-size:1.05rem;font-weight:700;">' + ch + '</span>'; };
             var TOTAL = 16;
             if (pages <= TOTAL) {
                 for (var i = 1; i <= pages; i++) btns += pgBtn(i);
