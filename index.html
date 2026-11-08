@@ -621,23 +621,23 @@
             if (state.page > pages) state.page = pages;
             var slice = list.slice((state.page - 1) * state.perPage, state.page * state.perPage);
             grid.innerHTML = slice.length ? slice.map(cardHTML).join('') : '<div class="pempty">No prompts found.</div>';
-            // Pagination: kul zyada se zyada 16 number wali pills; kinaron par "to" jump (1..15 to last / 1 to window)
+            // Pagination: kul zyada se zyada 16 number wali pills; kinaron par sirf arrow (gol background nahi) — aage →, peeche ←
             var btns = '';
             var pgBtn = function(n) { return '<button class="page-btn' + (n === state.page ? ' active' : '') + '" data-page="' + n + '">' + n + '</button>'; };
-            var pgTo = '<span class="page-btn" style="cursor:default;">to</span>';
+            var pgArrow = function(ch) { return '<span style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--ink-2);font-size:1.15rem;font-weight:700;cursor:default;">' + ch + '</span>'; };
             var TOTAL = 16;
             if (pages <= TOTAL) {
                 for (var i = 1; i <= pages; i++) btns += pgBtn(i);
             } else if (state.page <= 8) {
                 for (var i = 1; i <= 15; i++) btns += pgBtn(i);
-                btns += pgTo + pgBtn(pages);
+                btns += pgArrow('→') + pgBtn(pages);
             } else if (state.page >= pages - 7) {
-                btns += pgBtn(1) + pgTo;
+                btns += pgBtn(1) + pgArrow('←');
                 for (var i = pages - 14; i <= pages; i++) btns += pgBtn(i);
             } else {
-                btns += pgBtn(1) + pgTo;
+                btns += pgBtn(1) + pgArrow('←');
                 for (var i = state.page - 7; i <= state.page + 6; i++) btns += pgBtn(i);
-                btns += pgTo + pgBtn(pages);
+                btns += pgArrow('→') + pgBtn(pages);
             }
             pag.innerHTML = btns;
             // Edit se wapas aaye hon to usi card wali row par scroll karo (aik dafa, phir key khatam)
