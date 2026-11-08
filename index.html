@@ -383,7 +383,7 @@
         try { var _pm = (location.hash || '').match(/^#p(\d+)$/); if (_pm) { state.page = Math.max(1, parseInt(_pm[1], 10)); } else { var _lp = parseInt(localStorage.getItem('ca_page_prompts') || '0', 10); if (_lp > 0) state.page = _lp; } } catch (e) {}
         // Persist tag/filter selection across edit-page trips (Admin only + page bhi, taake edit se back aane par wohi filter, wohi page, wohi row mile)
         function saveFilters() { try { localStorage.setItem('ca_filters_prompts', JSON.stringify({ tag: state.tag, proFilter: state.proFilter, favOnly: state.favOnly, trendOnly: state.trendOnly, platform: state.platform, adminOnly: state.adminOnly, page: state.page })); } catch (e) {} }
-        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_prompts') || 'null'); if (_ff) { state.tag = String(_ff.tag || '').toLowerCase(); state.proFilter = _ff.proFilter || null; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; if (state.isAdmin) state.adminOnly = !!_ff.adminOnly; } } catch (e) {}
+        try { var _ff = JSON.parse(localStorage.getItem('ca_filters_prompts') || 'null'); if (_ff) { state.tag = String(_ff.tag || '').toLowerCase(); state.proFilter = _ff.proFilter || null; if (state.proFilter === 'premium') state.proFilter = 'pro'; state.favOnly = !!_ff.favOnly; state.trendOnly = !!_ff.trendOnly; if (state.isAdmin) state.adminOnly = !!_ff.adminOnly; } } catch (e) {}
         try { var _hm = (location.hash || '').match(/^#p(\d+)$/); if (!_hm && _ff && parseInt(_ff.page, 10) > 0) state.page = Math.max(1, parseInt(_ff.page, 10)); } catch (e) {}
         var _returnCard = null; try { _returnCard = localStorage.getItem('ca_return_card'); } catch (e) {}
 
@@ -566,7 +566,8 @@
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
                 if (state.trendOnly && !isTrending(p)) return false;
                 if (state.proFilter === 'free' && (p.is_pro || p.is_basic)) return false;
-                if (state.proFilter === 'premium' && !p.is_pro && !p.is_basic) return false;
+                if (state.proFilter === 'pro' && !p.is_pro) return false;
+                if (state.proFilter === 'basic' && !p.is_basic) return false;
                 if (state.tag && !(p.tags || []).some(function(t) { return String(t).toLowerCase() === state.tag; })) return false;
                 if (q && (String(p.title || '') + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) < 0) return false;
                 return true;
@@ -733,21 +734,22 @@
             var special = [
                 '<button class="tag-pill" data-special="all"><span class="dot" style="background:' + tagDotColor(0) + ';"></span>All Prompts</button>',
                 '<button class="tag-pill" data-special="free"><span class="dot" style="background:' + tagDotColor(1) + ';"></span>Free</button>',
-                '<button class="tag-pill" data-special="premium"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Premium</button>',
-                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Favorite</button>',
-                '<button class="tag-pill" data-special="trending"><span class="dot" style="background:' + tagDotColor(4) + ';"></span>Trending</button>',
+                '<button class="tag-pill" data-special="pro"><span class="dot" style="background:' + tagDotColor(2) + ';"></span>Pro</button>',
+                '<button class="tag-pill" data-special="basic"><span class="dot" style="background:' + tagDotColor(3) + ';"></span>Basic</button>',
+                '<button class="tag-pill" data-special="fav"><span class="dot" style="background:' + tagDotColor(4) + ';"></span>Favorite</button>',
+                '<button class="tag-pill" data-special="trending"><span class="dot" style="background:' + tagDotColor(5) + ';"></span>Trending</button>',
             ];
             var tagPills = tags.map(function(t, i) {
-                var c = tagDotColor(i + 4);
+                var c = tagDotColor(i + 5);
                 return '<button class="tag-pill" data-tag="' + esc(t) + '"><span class="dot" style="background:' + c + ';"></span>' + esc(titleCase(t)) + '</button>';
             });
             tf.innerHTML = special.join('') + tagPills.join('');
             // Save tag->color mapping for detail/form pages
             try {
                 var cmap = {};
-                tags.forEach(function(t, i) { cmap[String(t).toLowerCase()] = tagDotColor(i + 4); });
+                tags.forEach(function(t, i) { cmap[String(t).toLowerCase()] = tagDotColor(i + 5); });
                 cmap['__all'] = tagDotColor(0); cmap['__free'] = tagDotColor(1);
-                cmap['__premium'] = tagDotColor(2); cmap['__fav'] = tagDotColor(3);
+                cmap['__pro'] = tagDotColor(2); cmap['__basic'] = tagDotColor(3); cmap['__fav'] = tagDotColor(4);
                 localStorage.setItem('ca_prompts_tagcolors', JSON.stringify(cmap));
             } catch (e) {}
             markActivePill();
@@ -759,7 +761,8 @@
                 var active = false;
                 if (sp === 'all') active = !state.tag && !state.proFilter && !state.favOnly && !state.trendOnly && !state.adminOnly;
                 else if (sp === 'free') active = state.proFilter === 'free';
-                else if (sp === 'premium') active = state.proFilter === 'premium';
+                else if (sp === 'pro') active = state.proFilter === 'pro';
+                else if (sp === 'basic') active = state.proFilter === 'basic';
                 else if (sp === 'fav') active = state.favOnly;
                 else if (sp === 'trending') active = state.trendOnly;
                 else if (tg) active = state.tag === tg;
@@ -773,7 +776,8 @@
             var sp = btn.getAttribute('data-special');
             var tag = btn.getAttribute('data-tag');
             state.tag = ''; state.proFilter = null; state.favOnly = false; state.trendOnly = false; state.adminOnly = false; if (sp === 'free') state.proFilter = 'free';
-            else if (sp === 'premium') state.proFilter = 'premium';
+            else if (sp === 'pro') state.proFilter = 'pro';
+            else if (sp === 'basic') state.proFilter = 'basic';
             else if (sp === 'fav') state.favOnly = true;
             else if (sp === 'trending') state.trendOnly = true;
             else if (tag) state.tag = tag;
