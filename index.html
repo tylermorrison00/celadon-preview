@@ -352,17 +352,23 @@
         }
         mobDeskCheck();
         window.addEventListener('resize', mobDeskCheck);
-        /* Notification popup — on kar liya to kabhi dobara nahi; off ho to har refresh/reopen par aik dafa (aik load me sirf aik dafa) */
+        /* Notification popup — site entry pe theme-style white card; Turn on = push subscribe, Cancel = 7 din chhupao */
         var VAPID_PUBLIC_KEY = 'BJDNN9WMo80J9_TcF0eJ_2d9DhjaercNRqW-yvNsMKsOwizlX62EsoVffxzho3p8a2b0sfvOW1Ze1UZTHsfg0Xo';
         function _b64ToU8(s) { var p = s.replace(/-/g, '+').replace(/_/g, '/'); while (p.length % 4) p += '='; var raw = atob(p); var out = new Uint8Array(raw.length); for (var i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i); return out; }
         (function notifPop() {
             try {
                 var pop = document.getElementById('notifPop');
                 if (!pop || !('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
-                if (Notification.permission === 'granted') return;
+                if (Notification.permission !== 'default') return;
+                var hideUntil = 0;
+                try { hideUntil = parseInt(localStorage.getItem('ca_notif_hide_until') || '0', 10); } catch (e) {}
+                if (hideUntil && Date.now() < hideUntil) return;
                 setTimeout(function() { pop.style.display = 'flex'; }, 1200);
                 var cancelBtn = document.getElementById('notifCancelBtn');
-                if (cancelBtn) cancelBtn.addEventListener('click', function() { pop.style.display = 'none'; });
+                if (cancelBtn) cancelBtn.addEventListener('click', function() {
+                    pop.style.display = 'none';
+                    try { localStorage.setItem('ca_notif_hide_until', String(Date.now() + 7 * 24 * 60 * 60 * 1000)); } catch (e) {}
+                });
                 var onBtn = document.getElementById('notifOnBtn');
                 if (onBtn) onBtn.addEventListener('click', async function() {
                     var btn = this; btn.textContent = 'Turning on...'; btn.disabled = true;
