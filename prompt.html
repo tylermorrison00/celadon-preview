@@ -138,8 +138,10 @@
                 if (res.error || !res.data) throw res.error || new Error('not found');
                 var p = res.data;
                 // Tier access check
+                var loggedIn = false;
                 try {
                     var sess = await sb.auth.getSession();
+                    loggedIn = !!(sess.data && sess.data.session);
                     var plan = 'free', isAdm = false;
                     if (sess.data && sess.data.session) {
                         var pr = await sb.from('profiles').select('is_admin,plan').eq('id', sess.data.session.user.id).single();
@@ -152,7 +154,11 @@
                     }
                     if (!hasAccess && p.is_basic && plan === 'basic') hasAccess = true;
                     if (!hasAccess && (p.is_pro || p.is_basic)) {
-                        box.innerHTML = '<div style="text-align:center;padding:60px 20px;"><h2 style="color:#0E3A2E;">Locked</h2><p style="color:#666;">This prompt requires a higher membership.</p><a class="btn solid" href="index.html#pricing" style="display:inline-block;margin-top:16px;padding:12px 32px;">Unlock Membership</a></div>';
+                        if (!loggedIn) {
+                            box.innerHTML = '<div style="text-align:center;padding:60px 20px;"><h2 style="color:#0E3A2E;">Sign up to copy this prompt</h2><p style="color:#666;">Create a free account to copy this prompt.</p><a class="btn solid" href="signup.html?next=' + encodeURIComponent('prompt.html?id=' + id) + '" style="display:inline-block;margin-top:16px;padding:12px 32px;">Copy prompt</a></div>';
+                        } else {
+                            box.innerHTML = '<div style="text-align:center;padding:60px 20px;"><h2 style="color:#0E3A2E;">Locked</h2><p style="color:#666;">This prompt requires a higher membership.</p><a class="btn solid" href="index.html#pricing" style="display:inline-block;margin-top:16px;padding:12px 32px;">Unlock Membership</a></div>';
+                        }
                         return;
                     }
                 } catch (eAcc) {}
@@ -205,6 +211,7 @@
                 })();
                 document.getElementById('copyBtn').addEventListener('click', async function() {
                     var btn = this;
+                    if (!loggedIn) { location.href = 'signup.html?next=' + encodeURIComponent('prompt.html?id=' + id); return; }
                     try { await navigator.clipboard.writeText(p.prompt_text || ''); btn.textContent = 'Copied!'; }
                     catch (err) {
                         var ta = document.createElement('textarea');

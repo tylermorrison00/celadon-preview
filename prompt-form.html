@@ -583,6 +583,14 @@
                 btn.textContent = IS_TOOLS ? 'Save tool' : (IS_NICHES ? 'Save niche' : 'Save prompt');
                 return;
             }
+            // Naya public prompt live hua to subscribers ko push notification bhejo (admin only, fire-and-forget)
+            try {
+                if (TABLE === 'prompts' && !row.is_private && (!editId || (wasPrivate && !row.is_private))) {
+                    var _sess = await sb.auth.getSession();
+                    var _tok = _sess.data && _sess.data.session ? _sess.data.session.access_token : '';
+                    if (_tok) fetch('/api/notify', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tok }, body: JSON.stringify({ title: row.title || 'New prompt is live' }), keepalive: true }).catch(function() {});
+                }
+            } catch (eN) {}
             location.href = BACK_PAGE;
         });
 

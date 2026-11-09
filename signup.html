@@ -128,7 +128,7 @@
                 var m = location.search.match(/[?&]next=([^&]+)/);
                 var nxt = m ? decodeURIComponent(m[1]) : '/';
                 // Only allow local pages for safety
-                if (!/^(index\.html|niches\.html|tools\.html|niche\.html|prompt\.html)?(\?.*)?$/.test(nxt) && nxt !== '/') nxt = '/';
+                if (!/^(index\.html|niches\.html|tools\.html|niche\.html|prompt\.html)?([?#].*)?$/.test(nxt) && nxt !== '/') nxt = '/';
                 window.location.href = nxt;
             }
             async function setAuthCacheAndGo(userId) {
