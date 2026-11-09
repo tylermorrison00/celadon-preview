@@ -4,7 +4,7 @@
 
 const SUPABASE_URL = 'https://vfyuebkdkxhdrlduqxng.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZmeXVlYmtka3hoZHJsZHVxeG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExOTI1NDQsImV4cCI6MjEwNjc2ODU0NH0.RY-VU33zwySGKmPH34pHs72HaxRt9yi4lAhHO9xn7_4';
-const SITE = 'https://creators-automation.vercel.app';
+const SITE = 'https://creatorsautomation.vercel.app';
 
 const TABLES = {
   prompt: { table: 'prompts', title: 'title', image: 'media_url', page: 'index.html' },
