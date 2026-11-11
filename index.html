@@ -87,8 +87,8 @@
                     <div class="plans">
                         <article class="plan rv" id="plan-basic">
                             <span class="tag">Basic</span>
-                            <div class="cost" style="justify-content:center;"><b class="price">$5</b><span class="per">per month</span></div>
-                            <a class="btn wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28%245/month%29.">Get Basic</a>
+                            <div class="cost" style="justify-content:center;"><b class="price" id="priceBasic">$5</b><span class="per">per month</span></div>
+                            <a class="btn wide" id="waBasic" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28%245/month%29.">Get Basic</a>
                             <ul class="feat">
                                 <li><i></i>Full prompt library</li>
                                 <li><i></i>Full niches</li>
@@ -98,8 +98,8 @@
                         </article>
                         <article class="plan hot rv d1" id="plan-pro">
                             <span class="tag">Pro</span>
-                            <div class="cost" style="justify-content:center;"><b class="price">$10</b><span class="per">per month</span></div>
-                            <a class="btn solid wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28%2410/month%29.">Get Pro</a>
+                            <div class="cost" style="justify-content:center;"><b class="price" id="pricePro">$10</b><span class="per">per month</span></div>
+                            <a class="btn solid wide" id="waPro" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28%2410/month%29.">Get Pro</a>
                             <ul class="feat">
                                 <li><i></i>Everything in Basic</li>
                                 <li><i></i>2-week early access</li>
@@ -109,8 +109,8 @@
                         </article>
                         <article class="plan rv d2">
                             <span class="tag">Custom Prompts</span>
-                            <div class="cost" style="justify-content:center;"><b class="price">$3</b><span class="per">per prompt</span></div>
-                            <a class="btn wide" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20custom%20prompt%20banwana%20hai%20%28%243%29.">Order on WhatsApp</a>
+                            <div class="cost" style="justify-content:center;"><b class="price" id="priceCustom">$3</b><span class="per">per prompt</span></div>
+                            <a class="btn wide" id="waCustom" href="https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20custom%20prompt%20banwana%20hai%20%28%243%29.">Order on WhatsApp</a>
                             <ul class="feat">
                                 <li><i></i>Made for your niche</li>
                                 <li><i></i>2 Free updates on your prompt</li>
@@ -121,6 +121,24 @@
                     </div>
                 </div>
             </section>
+        <script>
+        /* Location pricing — Pakistan (Asia/Karachi timezone) ko PKR dikhao, baqi sab ko USD */
+        (function locPrice() {
+            try {
+                var tz = '';
+                try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+                if (tz !== 'Asia/Karachi') return;
+                var pb = document.getElementById('priceBasic'), pp = document.getElementById('pricePro'), pc = document.getElementById('priceCustom');
+                var wb = document.getElementById('waBasic'), wp = document.getElementById('waPro'), wc = document.getElementById('waCustom');
+                if (pb) pb.textContent = 'Rs 1,000';
+                if (pp) pp.textContent = 'Rs 2,000';
+                if (pc) pc.textContent = 'Rs 500';
+                if (wb) wb.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28Rs%201%2C000%2Fmonth%29.';
+                if (wp) wp.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28Rs%202%2C000%2Fmonth%29.';
+                if (wc) wc.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20custom%20prompt%20banwana%20hai%20%28Rs%20500%29.';
+            } catch (e) {}
+        })();
+        </script>
 <section class="pad" id="faq">
                 <div class="shell center">
                     <span class="eyebrow rv">Questions</span>
