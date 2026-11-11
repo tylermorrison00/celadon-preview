@@ -122,20 +122,44 @@
                 </div>
             </section>
         <script>
-        /* Location pricing — Pakistan (Asia/Karachi timezone) ko PKR dikhao, baqi sab ko USD */
+        /* Location pricing + FAQ — Pakistan (Asia/Karachi timezone) ko PKR + Roman Urdu FAQ, baqi sab ko USD + English FAQ */
         (function locPrice() {
             try {
                 var tz = '';
                 try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
-                if (tz !== 'Asia/Karachi') return;
-                var pb = document.getElementById('priceBasic'), pp = document.getElementById('pricePro'), pc = document.getElementById('priceCustom');
-                var wb = document.getElementById('waBasic'), wp = document.getElementById('waPro'), wc = document.getElementById('waCustom');
-                if (pb) pb.textContent = 'Rs 1000';
-                if (pp) pp.textContent = 'Rs 2000';
-                if (pc) pc.textContent = 'Rs 500';
-                if (wb) wb.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28Rs%201000%2Fmonth%29.';
-                if (wp) wp.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28Rs%202000%2Fmonth%29.';
-                if (wc) wc.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20custom%20prompt%20banwana%20hai%20%28Rs%20500%29.';
+                if (tz === 'Asia/Karachi') {
+                    var pb = document.getElementById('priceBasic'), pp = document.getElementById('pricePro'), pc = document.getElementById('priceCustom');
+                    var wb = document.getElementById('waBasic'), wp = document.getElementById('waPro'), wc = document.getElementById('waCustom');
+                    if (pb) pb.textContent = 'Rs 1000';
+                    if (pp) pp.textContent = 'Rs 2000';
+                    if (pc) pc.textContent = 'Rs 500';
+                    if (wb) wb.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Basic%20plan%20lena%20hai%20%28Rs%201000%2Fmonth%29.';
+                    if (wp) wp.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20Pro%20plan%20lena%20hai%20%28Rs%202000%2Fmonth%29.';
+                    if (wc) wc.href = 'https://wa.me/923093481582?text=Assalam%20o%20Alaikum%21%20Mujhe%20custom%20prompt%20banwana%20hai%20%28Rs%20500%29.';
+                    return;
+                }
+                /* Non-Pakistan: FAQ in English (heading + Q&A; "Questions" eyebrow stays as-is) */
+                var faqEn = [
+                    ["What is this website?", "Creators Automation is a library of AI prompts for TikTok and YouTube creators. Here you'll find ready-made prompts you can copy and use for your videos."],
+                    ["Can I use prompts for free?", "Yes, free prompts are for everyone. Create an account, star your favorite prompts and copy them. Some premium prompts are for Pro members."],
+                    ["What extra do I get with the Pro plan?", "Pro gives you the full prompt library, new prompts 2 weeks early, niches 2 weeks early and priority support. Basic includes the full library and new prompts every week."],
+                    ["How do I pay?", "Contact us on WhatsApp. Pay with Easypaisa and send your email and transaction ID. Your account will be upgraded."],
+                    ["Can I get a custom prompt made for me?", "Yes, there is a Custom Prompts option. Tell us your niche and you'll get a ready prompt within 24 hours. It also includes 2 free updates."],
+                    ["How do I create an account?", "Click 'Start free' above and sign up with your email. No card needed. Your free account will be created instantly."]
+                ];
+                var swapFaq = function() {
+                    var ft = document.querySelector('#faq h2');
+                    if (ft) ft.textContent = 'Frequently asked questions.';
+                    var items = document.querySelectorAll('#faq .faq .q');
+                    items.forEach(function(item, i) {
+                        if (!faqEn[i]) return;
+                        var h = item.querySelector('h3'), p = item.querySelector('.qb p');
+                        if (h) h.textContent = faqEn[i][0];
+                        if (p) p.textContent = faqEn[i][1];
+                    });
+                };
+                if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', swapFaq);
+                else swapFaq();
             } catch (e) {}
         })();
         </script>
