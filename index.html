@@ -657,6 +657,7 @@
             return state.prompts.filter(function(p) {
                 if (p.is_private && !state.isAdmin) return false;
                 if (state.adminOnly && !p.is_private) return false;
+                if (p.is_private && !state.adminOnly) return false;
                 if (state.platform && String(p.category || '').toLowerCase() !== state.platform) return false;
                 if (state.favOnly && favs.indexOf(String(p.id)) < 0) return false;
                 if (state.trendOnly && !isTrending(p)) return false;
