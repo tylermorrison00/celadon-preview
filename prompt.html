@@ -148,10 +148,6 @@
                         if (pr.data) { isAdm = !!pr.data.is_admin; plan = String(pr.data.plan || 'free').toLowerCase(); }
                     }
                     var hasAccess = isAdm || plan === 'pro';
-                    if (!hasAccess && p.is_pro && plan === 'basic') {
-                        var dp = Math.floor((Date.now() - new Date(p.created_at).getTime()) / 86400000);
-                        if (14 - dp <= 0) hasAccess = true;
-                    }
                     if (!hasAccess && p.is_basic && plan === 'basic') hasAccess = true;
                     if (!hasAccess && (p.is_pro || p.is_basic)) {
                         if (!loggedIn) {
