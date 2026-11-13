@@ -1336,7 +1336,7 @@ body.lock {
     grid-template-columns: repeat(3, 1fr);
     gap: 22px;
     margin-top: 44px;
-    align-items: start
+    align-items: stretch
 }
 
 .plans>* {
