@@ -447,6 +447,7 @@
                     if (fTrend) fTrend.checked = !!p.is_trending;
                     var pfPriv2 = document.getElementById('pfPrivate'); if (pfPriv2) pfPriv2.checked = !!p.is_private;
                     wasPrivate = !!p.is_private;
+                    var pfPL = document.getElementById('pfNicheLink'); if (pfPL) pfPL.value = p.link_url || '';
                     var pfOrd = document.getElementById('pfOrder'); if (pfOrd) pfOrd.value = (p.sort_order >= 1 && p.sort_order <= 10) ? p.sort_order : '';
                     if (p.media_url) { uploadedUrl = p.media_url; imgName.textContent = 'Image loaded'; }
                     // Load existing detail images for prompts (niche wala system)
@@ -458,6 +459,7 @@
             }
             setupToolsMode();
             setupNichesMode();
+            if (!IS_TOOLS && !IS_NICHES) { var plw = document.getElementById('nicheLinkWrap'); if (plw) plw.style.display = 'block'; }
             loadTagPills();
             showForm();
         }
@@ -522,6 +524,7 @@
                     return;
                 }
                 var mu = (uploadedUrl || document.getElementById('pfMedia').value || '').trim();
+                var promptLink = (document.getElementById('pfNicheLink').value || '').trim();
                 row = {
                     title: title,
                     category: fCat.value,
@@ -532,7 +535,8 @@
                     is_pro: fPro.checked,
                     is_basic: !fPro.checked && document.getElementById('pfBasic').checked,
                     is_trending: fTrend.checked,
-                    is_private: document.getElementById('pfPrivate').checked
+                    is_private: document.getElementById('pfPrivate').checked,
+                    link_url: promptLink || null
                 };
                 // Detail images (niche wala system): column banne tak sirf jab images hon tab bhejo
                 var di = []; try { di = JSON.parse(document.getElementById('pfDetailImgs').value || '[]'); } catch (eDi) {}

@@ -179,13 +179,24 @@
                 }
                 // Detail images na hon to card wali image khud show ho
                 var img = gallery ? '' : (p.media_url ? '<img class="pimg-lg" src="' + esc(p.media_url) + '" alt="" decoding="async">' : '');
+                // Link button (niches wala system): link ho to Copy prompt ke side me Open account/channel/page
+                var linkBtn = '';
+                if (p.link_url) {
+                    var linkLabel = 'Open Link';
+                    var lu = String(p.link_url || '').toLowerCase();
+                    if (lu.indexOf('tiktok.com') > -1) linkLabel = 'Open account';
+                    else if (lu.indexOf('youtube.com') > -1 || lu.indexOf('youtu.be') > -1) linkLabel = 'Open channel';
+                    else if (lu.indexOf('instagram.com') > -1) linkLabel = 'Open page';
+                    else if (lu.indexOf('facebook.com') > -1 || lu.indexOf('fb.com') > -1) linkLabel = 'Open page';
+                    linkBtn = '<a class="btn solid" href="' + esc(p.link_url) + '" target="_blank" rel="noopener" style="font-size:1rem;padding:14px 34px;" onclick="press()">' + linkLabel + '</a>';
+                }
                 box.innerHTML =
                     '<h1 class="ptitle-lg">' + esc(normTitle(p.title)) + '</h1>' +
 
                     img +
                     gallery +
                     (tags ? '<div class="ptags-lg">' + tags + '</div>' : '') +
-                    '<div class="copybar"><button class="btn solid" id="copyBtn" style="font-size:1rem;padding:14px 34px;" onclick="press()">Copy prompt</button></div>' +
+                    '<div class="copybar"><button class="btn solid" id="copyBtn" style="font-size:1rem;padding:14px 34px;" onclick="press()">Copy prompt</button>' + linkBtn + '</div>' +
                     '<div class="pbox" id="promptText">' + esc(p.prompt_text || '') + '</div>';
                 document.title = (p.title || 'Prompt') + ' — Creators Automation';
                 // Gallery arrows: show only when scrollable, scroll on click
